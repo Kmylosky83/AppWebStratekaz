@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mis Empresas - StrateKaz</title>
+    <style>
+        /* ... (usar los estilos que te compartí anteriormente) ... */
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>StrateKaz - Mis Empresas</h1>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Cerrar Sesión</a>
+    </div>
+
+    <div class="container">
+        <div class="header-section">
+            <h2>Mis Empresas</h2>
+            <button class="add-empresa-btn" onclick="window.location.href='{{ url_for('registrar_empresa') }}'">
+                + Agregar Nueva Empresa
+            </button>
+        </div>
+
+        <div class="empresas-grid">
+            {% for empresa in empresas %}
+            <div class="empresa-card">
+                <div class="empresa-logo">
+                    {% if empresa.logo_path %}
+                        <img src="{{ empresa.logo_path }}" alt="{{ empresa.nombre }}">
+                    {% else %}
+                        <div class="logo-placeholder">{{ empresa.nombre[0] }}</div>
+                    {% endif %}
+                </div>
+                <h3>{{ empresa.nombre }}</h3>
+                <p>NIT: {{ empresa.nit }}</p>
+                <div class="modulos-habilitados">
+                    {% for modulo in empresa.modulos_permitidos %}
+                        <span class="modulo-badge">{{ modulo }}</span>
+                    {% endfor %}
+                </div>
+                <a href="{{ url_for('gestionar_empresa', empresa_id=empresa.id) }}" class="gestionar-btn">
+                    Gestionar
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

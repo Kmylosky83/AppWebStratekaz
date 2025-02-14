@@ -1,0 +1,30 @@
+*.csv
+.env
+__pycache__/
+*.pyc
+# Archivos de datos
+*.csv
+*.xlsx
+*.xls
+
+# Entorno Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+.env
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+
+# Archivos de log
+*.log
