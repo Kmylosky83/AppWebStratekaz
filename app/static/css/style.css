@@ -1,0 +1,58 @@
+.card {
+    border: none;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.form-control {
+    height: 45px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.form-control:focus {
+    border-color: #ec268f;
+    box-shadow: none;
+}
+
+.btn-primary {
+    background-color: #ec268f;
+    border-color: #ec268f;
+    height: 45px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background-color: #d11f7d;
+    border-color: #d11f7d;
+    transform: translateY(-2px);
+}
+
+a {
+    text-decoration: none;
+    color: #ec268f;
+}
+
+a:hover {
+    color: #d11f7d;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #333;
+}
+
+/* Animación suave para el logo */
+.img-fluid {
+    transition: all 0.3s ease;
+}
+
+.img-fluid:hover {
+    transform: scale(1.05);
+}

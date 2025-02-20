@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AppWebStratekaz{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2>Bienvenido al Dashboard</h2>
+        <p>Selecciona una opción para comenzar:</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Gestión de Empresas</h5>
+                <p class="card-text">Administra la información de tus empresas.</p>
+                <a href="{{ url_for('empresas.index') }}" class="btn btn-primary">Ir a Empresas</a>
+            </div>
+        </div>
+    </div>
+    <!-- Puedes agregar más tarjetas aquí para otras funcionalidades -->
+</div>
+{% endblock %}
