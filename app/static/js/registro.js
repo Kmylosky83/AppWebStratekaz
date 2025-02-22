@@ -42,19 +42,38 @@ function selectUserType(type) {
 
 function selectCompanyType(type) {
     companyType = type;
+    
+    // Remover selección previa
     document.querySelectorAll('.company-type-card').forEach(card => {
         card.classList.remove('selected');
         card.style.borderColor = '';
+        // Remover efectos visuales adicionales
+        card.querySelector('i').style.color = '';
+        card.querySelector('h6').style.color = '';
     });
     
+    // Aplicar selección actual
     const selectedCard = event.currentTarget;
     selectedCard.classList.add('selected');
     selectedCard.style.borderColor = '#ec268f';
     
-    document.getElementById('nextBtn').classList.remove('disabled');
+    // Efectos visuales adicionales
+    selectedCard.querySelector('i').style.color = '#ec268f';
+    selectedCard.querySelector('h6').style.color = '#ec268f';
+    
+    // Habilitar botón y mostrar feedback visual
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.classList.remove('disabled');
+    nextBtn.classList.add('pulse'); // Agregar efecto de pulso
+    
+    // Actualizar la barra de progreso
+    updateProgressBar();
+    
+    // Guardar selección
+    localStorage.setItem('companyType', type);
 }
 
-function validateCurrentStep() {
+function validateCurrentStep() {    
     switch(currentStep) {
         case 1:
             // Validar selección de tipo de usuario
@@ -68,63 +87,130 @@ function validateCurrentStep() {
             }
             return true;
 
-            case 2: // Cuando estamos en el paso 2 del formulario
-            if (userType === 'professional') { // Si es un profesional independiente
-                // Obtener referencias a los elementos del formulario
+        case 2:
+            if (userType === 'professional') {
                 const form = document.getElementById('professionalForm');
-                const password = form.querySelector('input[name="password"]');
-                const confirmPassword = form.querySelector('input[name="password_confirm"]');
+                if (!form) return false;
+            
+                const password = form.querySelector('#password_prof');
+                const confirmPassword = form.querySelector('#password_confirm_prof');
                 const email = form.querySelector('input[name="email"]');
-
-                // Validar el email
+                const terms = form.querySelector('#terms_prof');
+                const privacy = form.querySelector('#privacy_prof');
+            
+                // Validar email
                 if (!validateEmailInRealTime(email)) {
-                    showValidationMessage(email, 'Por favor ingrese un correo electrónico válido');
+                    showValidationMessage(null, 'Por favor ingrese un correo electrónico válido');
                     return false;
                 }
-
-                // Validar que las contraseñas coincidan
-                if (!validatePasswordMatch(password, confirmPassword)) {
-                    showValidationMessage(confirmPassword, 'Las contraseñas no coinciden');
-                    return false;
+            
+                // Validar contraseña
+                if (password && confirmPassword) {
+                    const validation = validatePassword(password.value, confirmPassword.value, 'professional');
+                    if (!validation.isValid) {
+                        showValidationMessage(null, 'La contraseña debe cumplir todos los requisitos');
+                        return false;
+                    }
+                    if (password.value !== confirmPassword.value) {
+                        showValidationMessage(null, 'Las contraseñas no coinciden');
+                        return false;
+                    }
                 }
 
-                // Si no pasa la validación general del formulario
+                // Validar términos y condiciones
+                if (!terms.checked || !privacy.checked) {
+                    showValidationMessage(null, 'Debe aceptar los términos y condiciones y la política de privacidad');
+                    return false;
+                }
+            
+                // Validar que todos los campos requeridos estén completos
                 if (!form.checkValidity()) {
                     form.classList.add('was-validated');
-                    showValidationMessage(form, 'Por favor complete todos los campos requeridos');
+                    showValidationMessage(null, 'Por favor complete todos los campos requeridos');
                     return false;
                 }
+            
+                return true;
+            } else if (userType === 'company') {
+                // Validación para el tipo empresa
+                const companyTypeSelected = companyType !== null;
+                if (!companyTypeSelected) {
+                    showValidationMessage(null, 'Por favor seleccione un tipo de empresa');
+                    return false;
+                }
+                return true;
             }
             return true;
 
         case 3:
-            const form = userType === 'company' ? 
-                document.getElementById('companyForm') : 
-                document.getElementById('verificationForm');
-            if (form && !form.checkValidity()) {
-                form.classList.add('was-validated');
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Campos requeridos',
-                    text: 'Por favor, completa todos los campos requeridos.'
-                });
-                return false;
+            if (userType === 'company') {
+                const form = document.getElementById('companyForm');
+                if (!form) return false;
+        
+                // Validar NIT
+                const nit = form.querySelector('input[name="nit"]');
+                if (nit && !validateNIT(nit.value)) {
+                    showValidationMessage(null, 'Por favor ingrese un NIT válido');
+                    return false;
+                }
+        
+                // Validar email corporativo
+                const email = form.querySelector('input[name="contact_email"]');
+                if (!validateEmailInRealTime(email)) {
+                    showValidationMessage(null, 'Por favor ingrese un correo electrónico válido');
+                    return false;
+                }
+        
+                // Validar contraseña
+                const password = form.querySelector('#password_company');
+                const confirmPassword = form.querySelector('#password_confirm_company');
+                if (password && confirmPassword) {
+                    const validation = validatePassword(password.value, confirmPassword.value, 'company');
+                    if (!validation.isValid) {
+                        showValidationMessage(null, 'La contraseña debe cumplir todos los requisitos');
+                        return false;
+                    }
+                    if (password.value !== confirmPassword.value) {
+                        showValidationMessage(null, 'Las contraseñas no coinciden');
+                        return false;
+                    }
+                }
+        
+                // Validar términos y condiciones
+                const terms = form.querySelector('#terms_company');
+                const privacy = form.querySelector('#privacy_company');
+                if (!terms.checked || !privacy.checked) {
+                    showValidationMessage(null, 'Debe aceptar los términos y condiciones y la política de privacidad');
+                    return false;
+                }
+        
+                // Validar formulario completo
+                if (!form.checkValidity()) {
+                    form.classList.add('was-validated');
+                    showValidationMessage(null, 'Por favor complete todos los campos requeridos');
+                    return false;
+                }
             }
+            finishRegistration();
             return true;
 
         case 4:
-            const verificationForm = document.getElementById('verificationForm');
-            if (verificationForm && !verificationForm.checkValidity()) {
-                verificationForm.classList.add('was-validated');
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Verificación requerida',
-                    text: 'Por favor, acepta los términos y condiciones para continuar.'
-                });
-                return false;
+            if (userType === 'company') {
+                finishRegistration();
             }
             return true;
+            
+        default:
+            return true;
     }
+}
+
+
+function validateNIT(nit) {
+    // Verificar que tenga 9 dígitos
+    if (!/^\d{9}$/.test(nit)) return false;
+    
+    // Aquí puedes agregar validaciones adicionales específicas para NITs colombianos
     return true;
 }
 
@@ -183,11 +269,14 @@ function updateStepContent() {
             if (userType === 'company') {
                 stepDiv.innerHTML = getCompanyFormHTML();
             } else {
-                stepDiv.innerHTML = getVerificationHTML();
+                // Para profesionales, completar registro directamente
+                finishRegistration();
             }
             break;
         case 4:
-            stepDiv.innerHTML = getVerificationHTML();
+            if (userType === 'company') {
+                finishRegistration();
+            }
             break;
     }
     
@@ -269,24 +358,33 @@ function getProfessionalFormHTML() {
                             name="password" 
                             id="password_prof"
                             required
-                            oninput="validatePasswordStrength(this.value)">
+                            oninput="validatePassword(this.value, null, 'professional')">
                         <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password_prof')">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
                     <div class="mt-2">
-                        <div class="progress" style="height: 3px;">
-                            <div id="password-strength-prof" class="progress-bar" role="progressbar"></div>
-                        </div>
-                        <div class="d-flex justify-content-between mt-1 small">
-                            <span data-requirement="8+" class="text-muted"><i class="fas fa-circle"></i> 8+</span>
-                            <span data-requirement="ABC" class="text-muted"><i class="fas fa-circle"></i> ABC</span>
-                            <span data-requirement="abc" class="text-muted"><i class="fas fa-circle"></i> abc</span>
-                            <span data-requirement="123" class="text-muted"><i class="fas fa-circle"></i> 123</span>
-                            <span data-requirement="@#$" class="text-muted"><i class="fas fa-circle"></i> @#$</span>
+                        <div class="password-requirements mt-2">
+                            <div class="d-flex justify-content-between gap-2">
+                                <span class="badge bg-light text-dark" data-requirement="8+">
+                                    <i class="fas fa-circle me-1"></i>8+
+                                </span>
+                                <span class="badge bg-light text-dark" data-requirement="ABC">
+                                    <i class="fas fa-circle me-1"></i>ABC
+                                </span>
+                                <span class="badge bg-light text-dark" data-requirement="abc">
+                                    <i class="fas fa-circle me-1"></i>abc
+                                </span>
+                                <span class="badge bg-light text-dark" data-requirement="123">
+                                    <i class="fas fa-circle me-1"></i>123
+                                </span>
+                                <span class="badge bg-light text-dark" data-requirement="@#$">
+                                    <i class="fas fa-circle me-1"></i>@#$
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </div>      
                 <div class="col-md-6">
                     <label class="form-label">Confirmar Contraseña</label>
                     <div class="input-group">
@@ -295,19 +393,118 @@ function getProfessionalFormHTML() {
                             name="password_confirm" 
                             id="password_confirm_prof"
                             required
-                            oninput="validatePasswordMatch('password_prof', 'password_confirm_prof')">
+                            oninput="validatePassword(document.getElementById('password_prof').value, this.value, 'professional')">
                         <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password_confirm_prof')">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
                     <div class="invalid-feedback">Las contraseñas no coinciden</div>
+                    <div class="col-12 mt-4">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="terms_prof" required>
+                            <label class="form-check-label" for="terms_prof">
+                                He leído y acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Términos y Condiciones</a>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="privacy_prof" required>
+                            <label class="form-check-label" for="privacy_prof">
+                                He leído y acepto la <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Política de Privacidad</a>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>
     `;
 }
 
-// Continúa el código...
+function validatePassword(password, confirmPassword = null, type = 'professional') {
+    // Objeto para almacenar el estado de validación
+    const validation = {
+        isValid: false,
+        strength: 0,
+        message: '',
+        requirements: {
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            lowercase: /[a-z]/.test(password),
+            number: /\d/.test(password),
+            special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+        }
+    };
+
+    // Calcular fortaleza
+    validation.strength = Object.values(validation.requirements).filter(Boolean).length;
+    validation.isValid = validation.strength === 5;
+
+    // Actualizar indicadores visuales
+    const idPrefix = type === 'professional' ? '_prof' : '_company';
+    const strengthBar = document.getElementById(`password-strength${idPrefix}`);
+    const requirements = document.querySelectorAll(`[data-requirement]`);
+
+    // Actualizar barra de progreso
+    if (strengthBar) {
+        const percentage = (validation.strength / 5) * 100;
+        strengthBar.style.width = `${percentage}%`;
+        strengthBar.setAttribute('aria-valuenow', percentage);
+
+         // Actualizar clase y color según fortaleza
+        strengthBar.className = 'progress-bar';        
+        if (validation.strength <= 2) {
+            strengthBar.classList.add('bg-danger');
+        } else if (validation.strength <= 4) {
+            strengthBar.classList.add('bg-warning');
+        } else {
+            strengthBar.classList.add('bg-success');
+        }
+    }
+
+    // Actualizar indicadores de requisitos
+    requirements.forEach(indicator => {
+        const requirement = indicator.getAttribute('data-requirement');
+        let isValid = false;
+
+        switch (requirement) {
+            case '8+': isValid = validation.requirements.length; break;
+            case 'ABC': isValid = validation.requirements.uppercase; break;
+            case 'abc': isValid = validation.requirements.lowercase; break;
+            case '123': isValid = validation.requirements.number; break;
+            case '@#$': isValid = validation.requirements.special; break;
+        }
+
+        indicator.classList.toggle('text-success', isValid);
+        indicator.classList.toggle('text-muted', !isValid);
+        const icon = indicator.querySelector('i');
+        if (icon) {
+            icon.className = isValid ? 'fas fa-check-circle' : 'fas fa-circle';
+        }
+    });
+
+    // Validar coincidencia si hay confirmación
+    if (confirmPassword !== null) {
+        const confirmInput = document.getElementById(`password_confirm${idPrefix}`);
+        const errorMessage = confirmInput.nextElementSibling;
+        
+        if (password === confirmPassword && validation.isValid) {
+            confirmInput.classList.add('is-valid');
+            confirmInput.classList.remove('is-invalid');
+            if (errorMessage) errorMessage.style.display = 'none';
+        } else {
+            confirmInput.classList.add('is-invalid');
+            confirmInput.classList.remove('is-valid');
+            if (errorMessage) {
+                errorMessage.textContent = password !== confirmPassword ? 
+                    'Las contraseñas no coinciden' : 
+                    'La contraseña no cumple con los requisitos mínimos';
+                errorMessage.style.display = 'block';
+            }
+        }
+    }
+
+    return validation;
+}
+
 function getCompanyTypeHTML() {
     return `
         <h5 class="text-center mb-4">¿Qué tipo de empresa eres?</h5>
@@ -409,6 +606,10 @@ function getCompanyFormHTML() {
                         Por favor ingrese un número de teléfono válido de 10 dígitos
                     </div>
                 </div>
+                <div class="col-12">
+                    <hr class="my-4">
+                    <h6 class="mb-3">Seguridad de la cuenta</h6>
+                </div>
                 <div class="col-md-6">
                     <label class="form-label">Contraseña</label>
                     <div class="input-group">
@@ -416,132 +617,66 @@ function getCompanyFormHTML() {
                             class="form-control" 
                             name="password" 
                             id="password_company"
-                            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
-                            oninput="updatePasswordStrength(this.value)"
-                            required>
+                            required
+                            oninput="validatePassword(this.value, null, 'company')">
                         <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password_company')">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
-                    <div class="progress mt-2" style="height: 5px;">
-                        <div id="password-strength" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                    <div class="password-requirements mt-2">
+                        <div class="d-flex justify-content-between gap-2">
+                            <span class="badge bg-light text-dark" data-requirement="8+">
+                                <i class="fas fa-circle me-1"></i>8+
+                            </span>
+                            <span class="badge bg-light text-dark" data-requirement="ABC">
+                                <i class="fas fa-circle me-1"></i>ABC
+                            </span>
+                            <span class="badge bg-light text-dark" data-requirement="abc">
+                                <i class="fas fa-circle me-1"></i>abc
+                            </span>
+                            <span class="badge bg-light text-dark" data-requirement="123">
+                                <i class="fas fa-circle me-1"></i>123
+                            </span>
+                            <span class="badge bg-light text-dark" data-requirement="@#$">
+                                <i class="fas fa-circle me-1"></i>@#$
+                            </span>
+                        </div>
                     </div>
-                    <div class="password-requirements small text-muted mt-1">
-                        <div id="req-length"><i class="fas fa-circle"></i> Mínimo 8 caracteres</div>
-                        <div id="req-uppercase"><i class="fas fa-circle"></i> Una mayúscula</div>
-                        <div id="req-lowercase"><i class="fas fa-circle"></i> Una minúscula</div>
-                        <div id="req-number"><i class="fas fa-circle"></i> Un número</div>
-                        <div id="req-special"><i class="fas fa-circle"></i> Un carácter especial</div>
-                    </div>
-                </div>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Confirmar Contraseña</label>
-                    <input type="password" class="form-control" name="password_confirm" required>
+                    <div class="input-group">
+                        <input type="password" 
+                            class="form-control" 
+                            name="password_confirm" 
+                            id="password_confirm_company"
+                            required
+                            oninput="validatePassword(document.getElementById('password_company').value, this.value, 'company')">
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password_confirm_company')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="invalid-feedback">Las contraseñas no coinciden</div>
+                </div>
+                <div class="col-12 mt-4">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="terms_company" required>
+                        <label class="form-check-label" for="terms_company">
+                            He leído y acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Términos y Condiciones</a>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="privacy_company" required>
+                        <label class="form-check-label" for="privacy_company">
+                            He leído y acepto la <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Política de Privacidad</a>
+                        </label>
+                    </div>
                 </div>
             </div>
         </form>
     `;
 }
 
-function getVerificationHTML() {
-    return `
-        <h5 class="text-center mb-4">Verificación Final</h5>
-        <form id="verificationForm" class="needs-validation" novalidate>
-            <div class="mb-4">
-                <div class="g-recaptcha" data-sitekey="TU_CLAVE_RECAPTCHA"></div>
-            </div>
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="terms" required>
-                <label class="form-check-label" for="terms">
-                    Acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Términos y Condiciones</a>
-                </label>
-            </div>
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="privacy" required>
-                <label class="form-check-label" for="privacy">
-                    Acepto la <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Política de Privacidad</a>
-                </label>
-            </div>
-            <div class="d-grid">
-                <button type="submit" class="btn btn-primary">Completar Registro</button>
-            </div>
-        </form>
-    `;
-}
-
-function validatePassword(password, confirmPassword) {
-    const input = document.getElementById('password');
-    const requirements = {
-        length: password.length >= 8,
-        uppercase: /[A-Z]/.test(password),
-        lowercase: /[a-z]/.test(password),
-        number: /\d/.test(password),
-        special: /[@$!%*?&]/.test(password)
-    };
-
-    const isValid = Object.values(requirements).every(Boolean);
-    
-    if (isValid) {
-        input.classList.add('is-valid');
-        input.classList.remove('is-invalid');
-        return true;
-    } else {
-        input.classList.add('is-invalid');
-        input.classList.remove('is-valid');
-        return false;
-    }
-}
-
-function validatePasswordStrength(password) {
-    // Definir los criterios
-    const criteria = {
-        minLength: password.length >= 8,
-        hasUpperCase: /[A-Z]/.test(password),
-        hasLowerCase: /[a-z]/.test(password),
-        hasNumbers: /\d/.test(password),
-        hasSpecialChar: /[@$!%*?&#]/.test(password)
-    };
-
-    // Actualizar cada indicador individualmente
-    const indicators = {
-        '8+': criteria.minLength,
-        'ABC': criteria.hasUpperCase,
-        'abc': criteria.hasLowerCase,
-        '123': criteria.hasNumbers,
-        '@#$': criteria.hasSpecialChar
-    };
-
-    // Actualizar los indicadores visuales
-    Object.entries(indicators).forEach(([key, isValid]) => {
-        const indicator = document.querySelector(`[data-requirement="${key}"]`);
-        if (indicator) {
-            indicator.classList.toggle('text-success', isValid);
-            indicator.classList.toggle('text-muted', !isValid);
-        }
-    });
-
-    // Calcular fortaleza total
-    const strength = Object.values(criteria).filter(Boolean).length;
-    const strengthBar = document.getElementById('password-strength-prof');
-    
-    if (strengthBar) {
-        const percentage = (strength / 5) * 100;
-        strengthBar.style.width = `${percentage}%`;
-        
-        // Actualizar color de la barra
-        strengthBar.className = 'progress-bar';
-        if (strength <= 2) {
-            strengthBar.classList.add('bg-danger');
-        } else if (strength <= 4) {
-            strengthBar.classList.add('bg-warning');
-        } else {
-            strengthBar.classList.add('bg-success');
-        }
-    }
-
-    return strength === 5;
-}
 
 function togglePassword(inputId) {
     const input = document.getElementById(inputId);
@@ -557,7 +692,6 @@ function togglePassword(inputId) {
     }
 }
 
-// Agregar esta función
 function validateEmailInRealTime(input) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isValid = emailRegex.test(input.value);
@@ -574,25 +708,6 @@ function validateEmailInRealTime(input) {
     }
 }
 
-function validatePasswordMatch(passwordId, confirmPasswordId) {
-    const password = document.getElementById(passwordId);
-    const confirmPassword = document.getElementById(confirmPasswordId);
-    
-    const isMatch = password && confirmPassword && password.value === confirmPassword.value;
-    
-    if (confirmPassword) {
-        if (isMatch) {
-            confirmPassword.classList.add('is-valid');
-            confirmPassword.classList.remove('is-invalid');
-        } else {
-            confirmPassword.classList.add('is-invalid');
-            confirmPassword.classList.remove('is-valid');
-        }
-    }
-    
-    return isMatch;
-}
-
 function showValidationMessage(input, message, type = 'error') {
     Swal.fire({
         icon: type === 'error' ? 'error' : 'warning',
@@ -604,51 +719,6 @@ function showValidationMessage(input, message, type = 'error') {
         timer: 3000,
         timerProgressBar: true
     });
-}
-
-function validatePasswordStrength(password) {
-    const criteria = {
-        minLength: password.length >= 8,
-        hasUpperCase: /[A-Z]/.test(password),
-        hasLowerCase: /[a-z]/.test(password),
-        hasNumbers: /\d/.test(password),
-        hasSpecialChar: /[!@#$%^&*]/.test(password)
-    };
-
-    const strength = Object.values(criteria).filter(Boolean).length;
-
-    // Actualizar indicadores visuales
-    Object.keys(criteria).forEach(key => {
-        const element = document.getElementById(`password-req-${key}`);
-        if (element) {
-            if (criteria[key]) {
-                element.classList.remove('text-muted');
-                element.classList.add('text-success');
-                element.querySelector('i').className = 'fas fa-check-circle';
-            } else {
-                element.classList.add('text-muted');
-                element.classList.remove('text-success');
-                element.querySelector('i').className = 'fas fa-circle';
-            }
-        }
-    });
-
-    // Actualizar barra de progreso
-    const strengthBar = document.getElementById('password-strength-prof');
-    if (strengthBar) {
-        const percentage = (strength / 5) * 100;
-        strengthBar.style.width = `${percentage}%`;
-        
-        if (strength <= 2) {
-            strengthBar.className = 'progress-bar bg-danger';
-        } else if (strength <= 4) {
-            strengthBar.className = 'progress-bar bg-warning';
-        } else {
-            strengthBar.className = 'progress-bar bg-success';
-        }
-    }
-
-    return strength === 5;
 }
 
 function handlePasswordInput(input) {
@@ -669,14 +739,32 @@ function handlePasswordInput(input) {
         validatePasswordMatch('password_prof', 'password_confirm_prof');
     }
 }
-   
-// Agregar al final del archivo
-document.addEventListener('DOMContentLoaded', function() {
-    // Event listener para contraseña
-    const passwordInput = document.getElementById('password_prof');
-    if (passwordInput) {
-        passwordInput.addEventListener('input', function() {
-            validatePasswordStrength(this.value);
-        });
+
+function finishRegistration() {
+    // Ocultar toda la tarjeta del formulario
+    const card = document.querySelector('.card');
+    if (card) {
+        card.style.display = 'none';
     }
-});
+
+    // Ocultar los botones de navegación
+    const buttons = document.querySelector('.d-flex.justify-content-between');
+    if (buttons) {
+        buttons.style.display = 'none';
+    }
+
+    Swal.fire({
+        icon: 'success',
+        title: '¡Registro exitoso!',
+        text: 'Tu cuenta ha sido creada correctamente.',
+        showConfirmButton: false,
+        timer: 2000,
+        backdrop: 'rgba(255, 255, 255, 0.9)',
+        customClass: {
+            popup: 'swal-custom-popup'
+        },
+        didClose: () => {
+            window.location.href = '/auth/login';
+        }
+    });
+}

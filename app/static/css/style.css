@@ -56,3 +56,126 @@ a:hover {
 .img-fluid:hover {
     transform: scale(1.05);
 }
+
+.password-requirements {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.requirement {
+    color: #6c757d;
+    transition: all 0.3s ease;
+}
+
+.requirement.text-success {
+    color: #28a745 !important;
+}
+
+.requirement i {
+    width: 14px;
+}
+
+.requirement {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    margin-bottom: 4px;
+}
+
+.requirement i {
+    font-size: 12px;
+}
+
+.requirement.text-success {
+    color: #28a745;
+}
+
+/* Estilos para las tarjetas de tipo de empresa */
+.company-type-card {
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.company-type-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(236, 38, 143, 0.1);
+}
+
+.company-type-card.selected {
+    border-color: #ec268f;
+    box-shadow: 0 4px 15px rgba(236, 38, 143, 0.2);
+}
+
+/* Efecto de pulso para el botón */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.btn.pulse {
+    animation: pulse 0.5s;
+}
+
+.badge {
+    padding: 0.5rem;
+    font-weight: normal;
+    transition: all 0.3s ease;
+}
+
+.badge.text-success {
+    background-color: #28a745 !important;
+    color: white !important;
+}
+
+.password-requirements .badge i {
+    font-size: 8px;
+}
+
+.swal-custom-popup {
+    z-index: 9999 !important;
+}
+
+.swal2-backdrop-show {
+    background: rgba(255, 255, 255, 0.9) !important;
+}
+
+    .badge {
+    padding: 0.5rem;
+    font-weight: normal;
+    transition: all 0.3s ease;
+}
+
+.badge.text-success {
+    background-color: #ec268f !important;
+    color: white !important;
+}
+
+.password-requirements .badge i {
+    font-size: 8px;
+}
+
+.form-check-input:checked {
+    background-color: #ec268f;
+    border-color: #ec268f;
+}
+
+.form-check-label a {
+    color: #ec268f;
+    text-decoration: none;
+}
+
+.form-check-label a:hover {
+    text-decoration: underline;
+}
+
+.swal-custom-popup {
+    z-index: 9999 !important;
+}
+
+.swal2-backdrop-show {
+    background: rgba(255, 255, 255, 0.9) !important;
+}

@@ -14,7 +14,7 @@
             <div class="card-body p-4">
                 <!-- Logo -->
                 <div class="text-center mb-4">
-                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" class="img-fluid mb-3" style="max-height: 45px;">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" class="img-fluid mb-3" style="max-height: 65px;">
                 </div>
 
                 <!-- Progress bar -->
@@ -53,9 +53,7 @@
                 <!-- Step 3: Formulario adicional -->
                 <div class="step d-none" id="step3"></div>
 
-                <!-- Step 4: Verificación -->
-                <div class="step d-none" id="step4"></div>
-
+                
                 <!-- Navigation buttons -->
                 <div class="d-flex justify-content-between mt-4">
                     <button class="btn btn-secondary d-none" id="prevBtn" onclick="prevStep()">
@@ -79,7 +77,23 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <!-- Contenido de términos y condiciones -->
+                <h6>1. Aceptación de los Términos</h6>
+                <p>Al registrarse y utilizar StrateKaz, usted acepta estar sujeto a estos términos y condiciones. Si no está de acuerdo con alguna parte de estos términos, no podrá usar nuestros servicios.</p>
+            
+                <h6>2. Uso del Servicio</h6>
+                <p>El servicio debe utilizarse de acuerdo con todas las leyes aplicables y de manera ética. Está prohibido usar el servicio para actividades ilegales o no autorizadas.</p>
+            
+                <h6>3. Cuenta de Usuario</h6>
+                <p>Usted es responsable de mantener la confidencialidad de su cuenta y contraseña. Debe notificar inmediatamente cualquier uso no autorizado de su cuenta.</p>
+            
+                <h6>4. Privacidad y Datos</h6>
+                <p>La información proporcionada será tratada según nuestra política de privacidad. Nos comprometemos a proteger su información personal.</p>
+            
+                <h6>5. Propiedad Intelectual</h6>
+                <p>Todo el contenido y materiales disponibles en StrateKaz están protegidos por derechos de autor y otras leyes de propiedad intelectual.</p>
+            
+                <h6>6. Limitación de Responsabilidad</h6>
+                <p>StrateKaz no será responsable por daños indirectos, incidentales o consecuentes que surjan del uso del servicio.</p>
             </div>
         </div>
     </div>
@@ -93,7 +107,31 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <!-- Contenido de política de privacidad -->
+                <h6>1. Información que Recopilamos</h6>
+                <p>Recopilamos información personal que usted nos proporciona directamente, incluyendo nombre, correo electrónico, y datos profesionales o empresariales.</p>
+            
+                <h6>2. Uso de la Información</h6>
+                <p>Utilizamos su información para:
+                    - Proporcionar y mantener nuestros servicios
+                    - Personalizar su experiencia
+                    - Enviar comunicaciones importantes
+                    - Mejorar nuestros servicios</p>
+            
+                <h6>3. Protección de Datos</h6>
+                <p>Implementamos medidas de seguridad técnicas y organizativas para proteger su información personal contra acceso no autorizado o pérdida.</p>
+            
+                <h6>4. Compartir Información</h6>
+                <p>No vendemos ni compartimos su información personal con terceros, excepto cuando sea necesario para proporcionar nuestros servicios o cuando lo exija la ley.</p>
+            
+                <h6>5. Sus Derechos</h6>
+                <p>Tiene derecho a:
+                    - Acceder a su información personal
+                    - Corregir datos inexactos
+                    - Solicitar la eliminación de sus datos
+                    - Oponerse al procesamiento de sus datos</p>
+            
+                <h6>6. Cambios en la Política</h6>
+                <p>Podemos actualizar esta política ocasionalmente. Le notificaremos cualquier cambio material en el procesamiento de información personal.</p>
             </div>
         </div>
     </div>
@@ -120,6 +158,14 @@
         box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
         transform: none !important;
         transition: none !important;
+        border: none;
+        position: static !important;
+    }
+
+    /* Específicamente desactivar hover effects en la tarjeta principal */
+    .card.shadow-sm:hover {
+        transform: none !important;
+        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
     }
     
     /* Tarjetas seleccionadas */
@@ -159,7 +205,7 @@
     </style>
 {% endblock %}
 
-{% block scripts %}
+{% block extra_scripts %}
 <!-- Font Awesome -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 <!-- Custom JS -->
