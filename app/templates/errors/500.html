@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}500 - Error del Servidor{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-md-6 text-center">
+                <!-- Logo -->
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" class="img-fluid mb-4" style="max-height: 60px;">
+                
+                <!-- Error SVG -->
+                <svg viewBox="0 0 400 100" class="w-full max-w-lg mx-auto mb-8">
+                    <text x="50%" y="50%" text-anchor="middle" class="text-8xl font-bold" fill="#ec268f" style="font-size: 72px;">
+                        500
+                    </text>
+                    <path d="M50,80 C150,90 250,70 350,80" stroke="#ec268f" fill="none" stroke-width="2" stroke-dasharray="5,5"/>
+                </svg>
+                
+                <!-- Mensaje de Error -->
+                <h1 class="h3 mb-3">¡Ups! Algo salió mal</h1>
+                <p class="text-muted mb-4">
+                    Estamos experimentando problemas técnicos.<br>
+                    Por favor, inténtalo de nuevo más tarde.
+                </p>
+                
+                <!-- Botones de Acción -->
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="javascript:history.back()" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Regresar
+                    </a>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+                        <i class="fas fa-home me-2"></i>Ir al Inicio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .min-h-screen {
+        min-height: 100vh;
+    }
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 9999px;
+        transition: all 0.3s ease;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+    .btn-primary {
+        background-color: #ec268f;
+        border-color: #ec268f;
+    }
+    .btn-outline-primary {
+        color: #ec268f;
+        border-color: #ec268f;
+    }
+    .btn-outline-primary:hover {
+        background-color: #ec268f;
+        color: white;
+    }
+</style>
+{% endblock %}

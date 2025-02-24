@@ -61,3 +61,14 @@ class RegistrationForm(FlaskForm):
     def validate_nit(self, field):
         if field.data and User.query.filter_by(nit=field.data).first():
             raise ValidationError('Este NIT ya está registrado.')
+    
+def validate_password(self, field):
+    if not User.validate_password_strength(field.data):
+        raise ValidationError('''
+            La contraseña debe tener:
+            - Al menos 8 caracteres
+            - Un número
+            - Una mayúscula
+            - Una minúscula
+            - Un carácter especial
+        ''')    

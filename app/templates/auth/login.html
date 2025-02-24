@@ -5,8 +5,8 @@
 {% block content %}
 <div class="row justify-content-center align-items-center min-vh-100">
     <div class="col-md-4">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
+        <div class="card static-card">
+            <div class="card-body">
                 <div class="text-center mb-4">
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" class="img-fluid mb-3" style="max-height: 65px;">
                 </div>
@@ -19,7 +19,12 @@
                     
                     <div class="mb-3">
                         <label for="password" class="form-label">Contraseña:</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="password" name="password" required>
+                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="d-grid gap-2">
@@ -28,10 +33,26 @@
                 </form>
                 
                 <div class="text-center mt-3">
-                    <small>¿No tienes una cuenta? <a href="{{ url_for('auth.registro') }}">Regístrate</a></small>
+                    <small>¿No tienes una cuenta? <a href="{{ url_for('auth.registro') }}" style="color: #ec268f; text-decoration: none;">Regístrate</a></small>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const button = input.nextElementSibling;
+    const icon = button.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+</script>
 {% endblock %}

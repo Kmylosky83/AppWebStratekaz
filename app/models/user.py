@@ -1,6 +1,8 @@
 from app.config.database import db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
+from flask_login import current_user
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -9,6 +11,9 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256))
+    login_attempts = db.Column(db.Integer, default=0)
+    last_attempt_time = db.Column(db.DateTime, nullable=True)
+    is_locked = db.Column(db.Boolean, default=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -18,3 +23,43 @@ class User(UserMixin, db.Model):
 
     def get_id(self):
         return str(self.id)
+    
+    def increment_login_attempts(self):
+        """Incrementa los intentos de login y bloquea si es necesario"""
+        now = datetime.utcnow()
+        
+        # Resetear intentos si han pasado más de 15 minutos
+        if (self.last_attempt_time and 
+            now - self.last_attempt_time > timedelta(minutes=15)):
+            self.login_attempts = 0
+        
+        self.login_attempts += 1
+        self.last_attempt_time = now
+        
+        # Bloquear después de 5 intentos fallidos
+        if self.login_attempts >= 5:
+            self.is_locked = True
+        
+        db.session.commit()
+
+    def reset_login_attempts(self):
+        """Resetea los intentos de login"""
+        self.login_attempts = 0
+        self.is_locked = False
+        self.last_attempt_time = None
+        db.session.commit()
+
+    @staticmethod
+    def validate_password_strength(password):
+        """Validación robusta de contraseña"""
+        if len(password) < 8:
+            return False
+        if not any(char.isdigit() for char in password):
+            return False
+        if not any(char.isupper() for char in password):
+            return False
+        if not any(char.islower() for char in password):
+            return False
+        if not any(char in "!@#$%^&*()_+-=[]{}|;:,.<>?" for char in password):
+            return False
+        return True

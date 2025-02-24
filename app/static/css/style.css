@@ -1,181 +1,103 @@
+/* Estilos base para tarjetas */
 .card {
     border: none;
-    border-radius: 10px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.form-control {
-    height: 45px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-}
-
-.form-control:focus {
-    border-color: #ec268f;
-    box-shadow: none;
-}
-
-.btn-primary {
-    background-color: #ec268f;
-    border-color: #ec268f;
-    height: 45px;
-    border-radius: 8px;
-    font-weight: 500;
-}
-
-.btn-primary:hover {
-    background-color: #d11f7d;
-    border-color: #d11f7d;
-    transform: translateY(-2px);
-}
-
-a {
-    text-decoration: none;
-    color: #ec268f;
-}
-
-a:hover {
-    color: #d11f7d;
-}
-
-.form-label {
-    font-weight: 500;
-    color: #333;
-}
-
-/* Animación suave para el logo */
-.img-fluid {
-    transition: all 0.3s ease;
-}
-
-.img-fluid:hover {
-    transform: scale(1.05);
-}
-
-.password-requirements {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.requirement {
-    color: #6c757d;
-    transition: all 0.3s ease;
-}
-
-.requirement.text-success {
-    color: #28a745 !important;
-}
-
-.requirement i {
-    width: 14px;
-}
-
-.requirement {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #6c757d;
-    margin-bottom: 4px;
-}
-
-.requirement i {
-    font-size: 12px;
-}
-
-.requirement.text-success {
-    color: #28a745;
-}
-
-/* Estilos para las tarjetas de tipo de empresa */
+/* Animación para tarjetas de selección */
+.user-type-card,
 .company-type-card {
+    transform: translateY(0);
     border: 2px solid transparent;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.user-type-card:hover,
 .company-type-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 15px rgba(236, 38, 143, 0.1);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px rgba(236, 38, 143, 0.1);
 }
 
+.user-type-card.selected,
 .company-type-card.selected {
     border-color: #ec268f;
-    box-shadow: 0 4px 15px rgba(236, 38, 143, 0.2);
+    box-shadow: 0 0 0 2px rgba(236, 38, 143, 0.2);
 }
 
-/* Efecto de pulso para el botón */
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+/* Barra de progreso personalizada */
+.progress {
+    height: 4px;
+    background-color: #f3f4f6;
+    overflow: hidden;
+    border-radius: 2px;
 }
 
-.btn.pulse {
-    animation: pulse 0.5s;
+.progress-bar {
+    background-color: #ec268f;
+    transition: width 0.4s ease;
 }
 
-.badge {
-    padding: 0.5rem;
-    font-weight: normal;
+/* Líneas divisorias */
+hr {
+    border-color: rgba(236, 38, 143, 0.1);
+    margin: 1.5rem 0;
+}
+
+/* Estilos para modales */
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(236, 38, 143, 0.1);
+    padding: 1.5rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+/* Animaciones para elementos del formulario */
+.form-control,
+.form-select {
     transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
 }
 
-.badge.text-success {
-    background-color: #28a745 !important;
-    color: white !important;
+.form-control:focus,
+.form-select:focus {
+    border-color: #ec268f;
+    box-shadow: 0 0 0 3px rgba(236, 38, 143, 0.1);
 }
 
-.password-requirements .badge i {
-    font-size: 8px;
-}
-
-.swal-custom-popup {
-    z-index: 9999 !important;
-}
-
-.swal2-backdrop-show {
-    background: rgba(255, 255, 255, 0.9) !important;
-}
-
-    .badge {
-    padding: 0.5rem;
-    font-weight: normal;
-    transition: all 0.3s ease;
-}
-
-.badge.text-success {
-    background-color: #ec268f !important;
-    color: white !important;
-}
-
-.password-requirements .badge i {
-    font-size: 8px;
-}
-
+/* Checkboxes personalizados */
 .form-check-input:checked {
     background-color: #ec268f;
     border-color: #ec268f;
 }
 
-.form-check-label a {
-    color: #ec268f;
-    text-decoration: none;
+/* Badges para requisitos de contraseña */
+.badge {
+    transition: all 0.3s ease;
 }
 
-.form-check-label a:hover {
-    text-decoration: underline;
+.badge.text-success {
+    background-color: rgba(236, 38, 143, 0.1) !important;
+    color: #ec268f !important;
 }
 
-.swal-custom-popup {
-    z-index: 9999 !important;
+/* Animación para mensajes de validación */
+.invalid-feedback {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
 }
 
-.swal2-backdrop-show {
-    background: rgba(255, 255, 255, 0.9) !important;
+.is-invalid ~ .invalid-feedback {
+    opacity: 1;
+    transform: translateY(0);
 }

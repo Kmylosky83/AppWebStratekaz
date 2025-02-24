@@ -10,7 +10,7 @@
 {% block content %}
 <div class="row justify-content-center align-items-center py-4">
     <div class="col-md-8">
-        <div class="card shadow-sm">
+        <div class="card static-card">
             <div class="card-body p-4">
                 <!-- Logo -->
                 <div class="text-center mb-4">
@@ -140,36 +140,26 @@
 
 {% block styles %}
 <style>
-    /* Estilos base de las tarjetas de selección */
-    .user-type-card, .company-type-card {
+    /* Estilos para las tarjetas de selección */
+    .step .user-type-card,
+    .step .company-type-card {
         border: 2px solid transparent;
         cursor: pointer;
         transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        background: white;
+        border-radius: 0.5rem;
     }
-    
-    /* Efecto hover SOLO para tarjetas de selección */
-    .user-type-card:hover, .company-type-card:hover {
+
+    /* Hover efecto SOLO para tarjetas de selección */
+    .step .user-type-card:hover,
+    .step .company-type-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 4px 15px rgba(236, 38, 143, 0.1);
     }
     
-    /* Tarjeta principal - sin efectos de movimiento */
-    .card.shadow-sm {
-        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
-        transform: none !important;
-        transition: none !important;
-        border: none;
-        position: static !important;
-    }
-
-    /* Específicamente desactivar hover effects en la tarjeta principal */
-    .card.shadow-sm:hover {
-        transform: none !important;
-        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
-    }
-    
     /* Tarjetas seleccionadas */
-    .user-type-card.selected, .company-type-card.selected {
+    .user-type-card.selected, 
+    .company-type-card.selected {
         border-color: #ec268f;
         box-shadow: 0 4px 15px rgba(236, 38, 143, 0.2);
     }
@@ -181,12 +171,17 @@
         overflow: hidden;
     }
     
-    .form-control:focus, .form-select:focus {
+    .form-control:focus, 
+    .form-select:focus {
         border-color: #ec268f;
         box-shadow: 0 0 0 0.2rem rgba(236, 38, 143, 0.25);
     }
     
     /* Barra de progreso */
+    .progress {
+        background-color: #f8f9fa;
+    }
+
     .progress-bar {
         background-color: #ec268f;
         transition: width 0.3s ease;
@@ -202,7 +197,23 @@
         background-color: #d11f7d;
         border-color: #d11f7d;
     }
-    </style>
+
+    /* Estilos para íconos en las tarjetas */
+    .user-type-card i,
+    .company-type-card i {
+        color: #ec268f;
+    }
+
+    /* Modales */
+    .modal-content {
+        border: none;
+        border-radius: 0.5rem;
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #f1f1f1;
+    }
+</style>
 {% endblock %}
 
 {% block extra_scripts %}
