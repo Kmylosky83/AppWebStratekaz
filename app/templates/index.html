@@ -3,7 +3,7 @@
 {% block title %}StrateKaz - Gestión Empresarial{% endblock %}
 
 {% block content %}
-<!-- Navegación Superior -->
+<!-- Navegación Superior con Logo y Botones -->
 <nav class="navbar">
     <div class="container">
         <a href="/" class="navbar-brand">
@@ -16,16 +16,55 @@
     </div>
 </nav>
 
-<!-- Contenido Principal -->
+<!-- Hero Section Mejorada -->
 <div class="hero-section">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6">
                 <h1 class="hero-title">Gestión Empresarial Inteligente</h1>
                 <p class="hero-text">Optimiza tus procesos y alcanza tus objetivos empresariales con nuestra plataforma integral de gestión.</p>
-                <a href="{{ url_for('auth.registro') }}" class="btn btn-primary btn-lg">Empezar Ahora</a>
+                <div class="hero-buttons">
+                    <a href="{{ url_for('auth.registro') }}" class="btn btn-primary btn-lg">Empezar Ahora</a>
+                    <a href="#beneficios" class="btn btn-link btn-lg">Conocer más</a>
+                </div>
+                
+                <!-- Tarjetas de beneficios -->
+                <div class="benefit-cards mt-5">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="benefit-card">
+                                <i class="fas fa-shield-alt"></i>
+                                <h5>Gestión Normativa</h5>
+                                <p>Cumple y gestiona todas tus normas en un solo lugar</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="benefit-card">
+                                <i class="fas fa-chart-line"></i>
+                                <h5>Informes en Tiempo Real</h5>
+                                <p>Visualiza el avance de tus sistemas de gestión</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="benefit-card">
+                                <i class="fas fa-tasks"></i>
+                                <h5>Procesos Optimizados</h5>
+                                <p>Automatiza tareas repetitivas y mejora la eficiencia</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="benefit-card">
+                                <i class="fas fa-users"></i>
+                                <h5>Trabajo Colaborativo</h5>
+                                <p>Asigna roles y responsabilidades de forma eficiente</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <!-- Laberinto Animado Mejorado (a la derecha) -->
             <div class="col-md-6">
+                <!-- Aquí va el código del laberinto mejorado -->
                 <div class="maze-container">
                     <svg viewBox="0 0 400 400" class="maze-svg">
                         <defs>
@@ -33,30 +72,101 @@
                                 <stop offset="0%" stop-color="#EC4899"/>
                                 <stop offset="100%" stop-color="#D946EF"/>
                             </linearGradient>
+                            <!-- Patrón de puntos para efecto de animación de fondo -->
+                            <pattern id="maze-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
+                                <circle cx="10" cy="10" r="1" fill="#f472b6" opacity="0.3"/>
+                            </pattern>
+                            <!-- Filtro para efecto de brillo -->
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                            </filter>
                         </defs>
                         
-                        <!-- Laberinto Base -->
+                        <!-- Fondo con patrón de puntos -->
+                        <rect width="400" height="400" fill="url(#maze-pattern)" opacity="0.5"/>
+                        
+                        <!-- Laberinto Base con diseño más complejo -->
                         <path class="maze-base"
-                              d="M50,50 L350,50 L350,350 L50,350 L50,50 M100,100 L300,100 L300,300 L100,300 L100,100"
+                              d="M50,50 H350 V350 H50 V50 M100,100 H300 V300 H100 V100 
+                                 M100,150 H250 V250 H150 V200 H200 V150
+                                 M250,100 V150
+                                 M300,200 H250
+                                 M200,250 V300
+                                 M150,300 V250"
                               stroke="#f3f4f6"
                               stroke-width="4"
                               fill="none"/>
                         
                         <!-- Camino Animado -->
                         <path class="maze-path"
-                              d="M50,50 L350,50 L350,350 L50,350 L50,50 M100,100 L300,100 L300,300 L100,300 L100,100"
+                              d="M50,50 H350 V350 H50 V50 M100,100 H300 V300 H100 V100
+                                 M100,150 H250 V250 H150 V200 H200 V150
+                                 M250,100 V150
+                                 M300,200 H250
+                                 M200,250 V300
+                                 M150,300 V250"
                               stroke="url(#gradient)"
                               stroke-width="4"
-                              fill="none"/>
+                              fill="none"
+                              filter="url(#glow)"/>
                         
-                        <!-- Punto Interactivo -->
-                        <circle class="maze-point" r="8" fill="url(#gradient)"/>
+                        <!-- Punto Animado que recorre el laberinto -->
+                        <circle class="maze-point" cx="50" cy="50" r="8" fill="url(#gradient)" filter="url(#glow)"/>
                     </svg>
+                </div>                
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sección "Cómo Funciona" -->
+<div class="how-it-works-section py-5" id="beneficios">
+    <div class="container">
+        <h2 class="text-center mb-5">¿Cómo funciona StrateKaz?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h4>Regístrate</h4>
+                    <p>Crea tu cuenta como profesional independiente o empresa en menos de 2 minutos.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h4>Configura tu perfil</h4>
+                    <p>Selecciona los módulos que necesitas según tus requerimientos empresariales.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h4>Comienza a gestionar</h4>
+                    <p>Implementa tus sistemas de gestión con nuestra interfaz intuitiva y herramientas especializadas.</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Footer Simple -->
+<footer class="footer-section py-4 mt-4">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" style="height: 30px;">
+                <span class="ms-2 text-muted">© 2025 StrateKaz. Todos los derechos reservados.</span>
+            </div>
+            <div class="social-icons">
+                <a href="#" class="me-2"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="me-2"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="me-2"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </div>
+</footer>
 {% endblock %}
 
 {% block styles %}
@@ -103,39 +213,125 @@
     margin-bottom: 2rem;
 }
 
-/* Estilos del laberinto */
-.maze-container {
-    width: 100%;
-    height: 400px;
-    position: relative;
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
 }
 
-.maze-svg {
-    width: 100%;
+.btn-link {
+    color: #ec268f;
+    text-decoration: none;
+}
+
+.btn-link:hover {
+    color: #d11f7d;
+    text-decoration: underline;
+}
+
+/* Estilos para tarjetas de beneficios */
+.benefit-card {
+    background-color: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     height: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
-.maze-path {
-    stroke-dasharray: 1000;
-    stroke-dashoffset: 1000;
-    animation: drawPath 3s linear infinite;
+.benefit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(236, 38, 143, 0.1);
 }
 
-.maze-point {
-    animation: pulse 2s ease-in-out infinite;
+.benefit-card i {
+    font-size: 2rem;
+    color: #ec268f;
+    margin-bottom: 1rem;
 }
 
-@keyframes drawPath {
-    to {
-        stroke-dashoffset: 0;
-    }
+.benefit-card h5 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
 }
 
-@keyframes pulse {
-    0% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.2); opacity: 1; }
-    100% { transform: scale(1); opacity: 0.8; }
+.benefit-card p {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0;
 }
+
+/* Estilos para la sección Cómo Funciona */
+.how-it-works-section {
+    background-color: #f9f9f9;
+}
+
+.step-card {
+    background-color: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    height: 100%;
+    text-align: center;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.step-card:hover {
+    transform: translateY(-5px);
+}
+
+.step-number {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    background-color: #ec268f;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.step-card h4 {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* Estilos para el footer */
+.footer-section {
+    background-color: #f9f9f9;
+    border-top: 1px solid #eee;
+}
+
+.social-icons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: #666;
+    background-color: #f1f1f1;
+    transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+    background-color: #ec268f;
+    color: white;
+}
+
+/* Animaciones para el laberinto (definidas en el artifact laberinto-mejorado) */
 
 /* Estilos responsivos */
 @media (max-width: 768px) {
@@ -156,18 +352,23 @@
 {% endblock %}
 
 {% block extra_scripts %}
+<!-- Font Awesome para iconos -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const mazeContainer = document.querySelector('.maze-container');
     const mazePoint = document.querySelector('.maze-point');
     
+    // Evento para interacción opcional con el mouse (adicional a la animación automática)
     mazeContainer.addEventListener('mousemove', function(event) {
         const rect = this.getBoundingClientRect();
         const x = ((event.clientX - rect.left) / rect.width) * 400;
         const y = ((event.clientY - rect.top) / rect.height) * 400;
         
-        mazePoint.setAttribute('cx', x);
-        mazePoint.setAttribute('cy', y);
+        // Se mantiene comentado para no interferir con la animación automática
+        // Descomentar si se quiere habilitar control manual con el mouse
+        // mazePoint.setAttribute('cx', x);
+        // mazePoint.setAttribute('cy', y);
     });
 });
 </script>
