@@ -3,8 +3,6 @@
 {% block title %}StrateKaz - Gestión Empresarial{% endblock %}
 
 {% block content %}
-<!-- Sección Hero -->
-<!-- Hero Section -->
 <!-- Hero Section simplificada -->
 <section class="hero-section py-5">
     <div class="container">
@@ -59,7 +57,6 @@
     </div>
 </section>
 
-<!-- Sección de marcas/certificaciones -->
 <!-- Sección de normativas -->
 <section class="normativas-section py-5">
     <div class="container">
@@ -207,60 +204,363 @@
     <div class="container">
         <div class="row g-4">
             <div class="col-lg-4 col-md-6">
-                <div class="footer-brand mb-4">
-                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" style="height: 40px;">
-                </div>
-                <p class="footer-description">
-                    Plataforma integral para la gestión de normativas empresariales, sistemas integrados de gestión y cumplimiento regulatorio.
-                </p>
-                <div class="social-icons mt-3">
-                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <div class="footer-about">
+                    <div class="footer-logo mb-4">
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" class="img-fluid" style="max-height: 45px;">
+                    </div>
+                    <p class="footer-description">
+                        Estrategias y capacitacion de la A a la Z, es un desarrollo exclusivo de @Kmylosky, potenciado con "CLAUDE IA" Que busca la automatizacion de los sistemas de gestión, la optimización de los procesos y mejorar la productividad de los colaboradores disminuyendo su carga laboral.
+                    </p>
+                    <div class="social-icons mt-3">
+                        <a href="#" class="social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/573112345678" class="social-icon" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    </div>
                 </div>
             </div>
             
             <div class="col-lg-2 col-md-6">
-                <h5 class="footer-heading">Enlaces</h5>
-                <ul class="footer-links">
-                    <li><a href="{{ url_for('main.index') }}">Inicio</a></li>
-                    <li><a href="#caracteristicas">Características</a></li>
-                    <li><a href="#como-funciona">Cómo Funciona</a></li>
-                    <li><a href="{{ url_for('auth.login') }}">Iniciar Sesión</a></li>
-                    <li><a href="{{ url_for('auth.registro') }}">Registrarse</a></li>
-                </ul>
+                <div class="footer-links-section">
+                    <h5 class="footer-heading">Enlaces</h5>
+                    <div class="footer-separator"></div>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('main.index') }}">Inicio</a></li>
+                        <li><a href="#caracteristicas" data-scroll>Características</a></li>
+                        <li><a href="#como-funciona" data-scroll>Cómo Funciona</a></li>
+                        <li><a href="{{ url_for('auth.login') }}">Iniciar Sesión</a></li>
+                        <li><a href="{{ url_for('auth.registro') }}">Registrarse</a></li>
+                    </ul>
+                </div>
             </div>
             
-            <div class="col-lg-2 col-md-6">
-                <h5 class="footer-heading">Normativas</h5>
-                <ul class="footer-links">
-                    <li><a href="#">ISO 9001</a></li>
-                    <li><a href="#">ISO 45001</a></li>
-                    <li><a href="#">ISO 14001</a></li>
-                    <li><a href="#">ISO-IEC 17020</a></li>
-                    <li><a href="#">SG-SST</a></li>
-                    <li><a href="#">PESV</a></li>
-                </ul>
+            <div class="col-lg-3 col-md-6">
+                <div class="footer-links-section">
+                    <h5 class="footer-heading">Normativas</h5>
+                    <div class="footer-separator"></div>
+                    <ul class="footer-links">
+                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#iso9001Modal">ISO 9001</a></li>
+                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#iso45001Modal">ISO 45001</a></li>
+                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#iso14001Modal">ISO 14001</a></li>
+                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#sgisoiecModal">ISO-IEC 17020</a></li>
+                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#sgsstModal">SG-SST</a></li>
+                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#pesvModal">PESV</a></li>
+                    </ul>
+                </div>
             </div>
             
-            <div class="col-lg-4 col-md-6">
-                <h5 class="footer-heading">Contacto</h5>
-                <ul class="footer-contact">
-                    <li><i class="fas fa-envelope"></i> info@stratekaz.com</li>
-                    <li><i class="fas fa-phone"></i> +57 (311) 535-1944</li>
-                    <li><i class="fas fa-map-marker-alt"></i> Cúcuta, Colombia</li>
-                </ul>
+            <div class="col-lg-3 col-md-6">
+                <div class="footer-contact-section">
+                    <h5 class="footer-heading">Contacto</h5>
+                    <div class="footer-separator"></div>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>info@stratekaz.com</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone-alt"></i>
+                            <span>+57 (311) 535-1944</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Cúcuta, Colombia</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
         
-        <hr class="footer-divider">
+        <hr class="footer-divider my-4">
         
         <div class="footer-bottom">
-            <p class="copyright">© 2025 StrateKaz. Marca @Kmylosky. Todos los derechos reservados.</p>
-            <div class="footer-policies">
-                <a href="#">Términos y Condiciones</a>
-                <a href="#">Política de Privacidad</a>
+            <div class="d-md-flex justify-content-between align-items-center text-center text-md-start">
+                <p class="copyright mb-2 mb-md-0">© 2025 StrateKaz. Marca @Kmylosky. Todos los derechos reservados.</p>
+                
+                <div class="footer-policies">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#terminosModal">Términos y Condiciones</a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#privacidadModal">Política de Privacidad</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modales para Normativas -->
+
+    <!-- Modal ISO 9001 -->
+    <div class="modal fade" id="iso9001Modal" tabindex="-1" aria-labelledby="iso9001ModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="iso9001ModalLabel">ISO 9001: Gestión de Calidad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="normativa-modal-content">
+                        <div class="normativa-icon iso-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <h4>Sistema de Gestión de Calidad</h4>
+                        <p>La norma ISO 9001 es un estándar internacional que establece los requisitos para un sistema de gestión de calidad. Esta norma ayuda a las organizaciones a:</p>
+                        <ul>
+                            <li>Mejorar la satisfacción del cliente</li>
+                            <li>Optimizar procesos internos</li>
+                            <li>Aumentar la eficiencia operativa</li>
+                            <li>Reducir errores y aumentar la consistencia</li>
+                        </ul>
+                        <p>Con StrateKaz, implementar y mantener ISO 9001 es más sencillo gracias a nuestras herramientas especializadas y sistemas de seguimiento automático.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="{{ url_for('auth.registro') }}" class="btn btn-primary">Implementar Ahora</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal ISO 45001 -->
+    <div class="modal fade" id="iso45001Modal" tabindex="-1" aria-labelledby="iso45001ModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="iso45001ModalLabel">ISO 45001: Seguridad y Salud en el Trabajo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="normativa-modal-content">
+                        <div class="normativa-icon">
+                            <i class="fas fa-hard-hat"></i>
+                        </div>
+                        <h4>Sistema de Gestión de Seguridad y Salud en el Trabajo</h4>
+                        <p>La norma ISO 45001 es el estándar internacional para sistemas de gestión de seguridad y salud ocupacional. Esta normativa:</p>
+                        <ul>
+                            <li>Promueve entornos de trabajo seguros y saludables</li>
+                            <li>Previene lesiones y deterioro de la salud</li>
+                            <li>Mejora proactivamente el desempeño en SST</li>
+                            <li>Cumple con requisitos legales y otros requisitos</li>
+                        </ul>
+                        <p>StrateKaz facilita la gestión de ISO 45001 con herramientas especializadas para identificación de peligros, evaluación de riesgos y determinación de controles.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="{{ url_for('auth.registro') }}" class="btn btn-primary">Implementar Ahora</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal ISO 14001 -->
+    <div class="modal fade" id="iso14001Modal" tabindex="-1" aria-labelledby="iso14001ModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="iso14001ModalLabel">ISO 14001: Gestión Ambiental</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="normativa-modal-content">
+                        <div class="normativa-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h4>Sistema de Gestión Ambiental</h4>
+                        <p>La norma ISO 14001 es un estándar internacionalmente reconocido que establece los requisitos para un sistema de gestión ambiental efectivo. Esta norma permite:</p>
+                        <ul>
+                            <li>Mejorar el desempeño ambiental</li>
+                            <li>Cumplir con obligaciones legales</li>
+                            <li>Lograr objetivos ambientales</li>
+                            <li>Reducir el impacto ambiental de operaciones</li>
+                        </ul>
+                        <p>Con StrateKaz, la gestión ambiental se vuelve más eficiente gracias a nuestras herramientas de seguimiento de aspectos e impactos ambientales, gestión documental y más.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="{{ url_for('auth.registro') }}" class="btn btn-primary">Implementar Ahora</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal ISO-IEC 17020 -->
+    <div class="modal fade" id="sgisoiecModal" tabindex="-1" aria-labelledby="sgisoiecModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sgisoiecModalLabel">ISO/IEC 17020: Evaluación de la Conformidad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="normativa-modal-content">
+                        <div class="normativa-icon">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <h4>Requisitos para el funcionamiento de Organismos de Inspección</h4>
+                        <p>La norma ISO/IEC 17020 especifica los requisitos para la competencia de los organismos que realizan inspecciones y para la imparcialidad y consistencia de sus actividades. Esta norma:</p>
+                        <ul>
+                            <li>Establece criterios para organismos de inspección</li>
+                            <li>Garantiza la independencia e imparcialidad</li>
+                            <li>Asegura métodos y procedimientos adecuados</li>
+                            <li>Promueve la confianza en los servicios de inspección</li>
+                        </ul>
+                        <p>StrateKaz ofrece herramientas especializadas para la gestión de ISO/IEC 17020, facilitando la documentación, control de procesos y gestión de competencias del personal.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="{{ url_for('auth.registro') }}" class="btn btn-primary">Implementar Ahora</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal SG-SST -->
+    <div class="modal fade" id="sgsstModal" tabindex="-1" aria-labelledby="sgsstModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sgsstModalLabel">SG-SST: Sistema de Gestión de Seguridad y Salud en el Trabajo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="normativa-modal-content">
+                        <div class="normativa-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h4>Sistema obligatorio para empresas en Colombia</h4>
+                        <p>El Sistema de Gestión de Seguridad y Salud en el Trabajo (SG-SST) es obligatorio para todas las empresas en Colombia según el Decreto 1072 de 2015. Este sistema:</p>
+                        <ul>
+                            <li>Previene accidentes y enfermedades laborales</li>
+                            <li>Promueve la salud y el bienestar de los trabajadores</li>
+                            <li>Identifica, evalúa y controla los riesgos laborales</li>
+                            <li>Establece planes de emergencia y contingencia</li>
+                        </ul>
+                        <p>Con StrateKaz, implementar y mantener el SG-SST es más sencillo, cumpliendo con todos los estándares mínimos establecidos en la Resolución 0312 de 2019.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="{{ url_for('auth.registro') }}" class="btn btn-primary">Implementar Ahora</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal PESV -->
+    <div class="modal fade" id="pesvModal" tabindex="-1" aria-labelledby="pesvModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pesvModalLabel">PESV: Plan Estratégico de Seguridad Vial</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="normativa-modal-content">
+                        <div class="normativa-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <h4>Plan obligatorio para empresas con flota vehicular</h4>
+                        <p>El Plan Estratégico de Seguridad Vial (PESV) es de obligatorio cumplimiento para las organizaciones que posean, fabriquen, ensamblen, comercialicen, contraten o administren flotas de vehículos automotores o no automotores. Este plan:</p>
+                        <ul>
+                            <li>Reduce la accidentalidad vial</li>
+                            <li>Disminuye los efectos de los accidentes de tránsito</li>
+                            <li>Define lineamientos de seguridad vial</li>
+                            <li>Implementa acciones y mecanismos de prevención</li>
+                        </ul>
+                        <p>StrateKaz facilita la implementación del PESV conforme a la Resolución 1565 de 2014, con herramientas para la gestión documental, capacitaciones y seguimiento de indicadores.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="{{ url_for('auth.registro') }}" class="btn btn-primary">Implementar Ahora</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Términos y Condiciones -->
+    <div class="modal fade" id="terminosModal" tabindex="-1" aria-labelledby="terminosModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="terminosModalLabel">Términos y Condiciones</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="terms-content">
+                        <h4>1. Aceptación de los Términos</h4>
+                        <p>Al registrarse y utilizar StrateKaz, usted acepta estar sujeto a estos términos y condiciones. Si no está de acuerdo con alguna parte de estos términos, no podrá usar nuestros servicios.</p>
+                    
+                        <h4>2. Uso del Servicio</h4>
+                        <p>El servicio debe utilizarse de acuerdo con todas las leyes aplicables y de manera ética. Está prohibido usar el servicio para actividades ilegales o no autorizadas.</p>
+                    
+                        <h4>3. Cuenta de Usuario</h4>
+                        <p>Usted es responsable de mantener la confidencialidad de su cuenta y contraseña. Debe notificar inmediatamente cualquier uso no autorizado de su cuenta.</p>
+                    
+                        <h4>4. Privacidad y Datos</h4>
+                        <p>La información proporcionada será tratada según nuestra política de privacidad. Nos comprometemos a proteger su información personal.</p>
+                    
+                        <h4>5. Propiedad Intelectual</h4>
+                        <p>Todo el contenido y materiales disponibles en StrateKaz están protegidos por derechos de autor y otras leyes de propiedad intelectual.</p>
+                    
+                        <h4>6. Limitación de Responsabilidad</h4>
+                        <p>StrateKaz no será responsable por daños indirectos, incidentales o consecuentes que surjan del uso del servicio.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Política de Privacidad -->
+    <div class="modal fade" id="privacidadModal" tabindex="-1" aria-labelledby="privacidadModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="privacidadModalLabel">Política de Privacidad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="privacy-content">
+                        <h4>1. Información que Recopilamos</h4>
+                        <p>Recopilamos información personal que usted nos proporciona directamente, incluyendo nombre, correo electrónico, y datos profesionales o empresariales.</p>
+                    
+                        <h4>2. Uso de la Información</h4>
+                        <p>Utilizamos su información para:
+                            <ul>
+                                <li>Proporcionar y mantener nuestros servicios</li>
+                                <li>Personalizar su experiencia</li>
+                                <li>Enviar comunicaciones importantes</li>
+                                <li>Mejorar nuestros servicios</li>
+                            </ul>
+                        </p>
+                    
+                        <h4>3. Protección de Datos</h4>
+                        <p>Implementamos medidas de seguridad técnicas y organizativas para proteger su información personal contra acceso no autorizado o pérdida.</p>
+                    
+                        <h4>4. Compartir Información</h4>
+                        <p>No vendemos ni compartimos su información personal con terceros, excepto cuando sea necesario para proporcionar nuestros servicios o cuando lo exija la ley.</p>
+                    
+                        <h4>5. Sus Derechos</h4>
+                        <p>Tiene derecho a:
+                            <ul>
+                                <li>Acceder a su información personal</li>
+                                <li>Corregir datos inexactos</li>
+                                <li>Solicitar la eliminación de sus datos</li>
+                                <li>Oponerse al procesamiento de sus datos</li>
+                            </ul>
+                        </p>
+                    
+                        <h4>6. Cambios en la Política</h4>
+                        <p>Podemos actualizar esta política ocasionalmente. Le notificaremos cualquier cambio material en el procesamiento de información personal.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
             </div>
         </div>
     </div>

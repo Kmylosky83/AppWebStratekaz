@@ -761,3 +761,329 @@
 .mobile-menu-item i {
     color: #ec268f;
 }
+
+/* Estilos para el footer mejorado */
+.footer-section {
+    background-color: #f8f9fa;
+    padding: 4rem 0 2rem;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Logo y descripción */
+.footer-logo {
+    margin-bottom: 1.5rem;
+}
+
+.footer-description {
+    color: #6c757d;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Iconos sociales */
+.social-icons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #ec268f;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 10px rgba(236, 38, 143, 0.2);
+    background-color: #d11f7d;
+}
+
+.social-icon:nth-child(2) {
+    background-color: #1DA1F2;
+}
+.social-icon:nth-child(2):hover {
+    background-color: #0d8bd9;
+}
+
+.social-icon:nth-child(3) {
+    background-color: #0077B5;
+}
+.social-icon:nth-child(3):hover {
+    background-color: #005e8f;
+}
+
+.social-icon:nth-child(4) {
+    background-color: #C13584;
+}
+.social-icon:nth-child(4):hover {
+    background-color: #a02e6f;
+}
+
+.social-icon:nth-child(5) {
+    background-color: #25D366;
+}
+.social-icon:nth-child(5):hover {
+    background-color: #1eab54;
+}
+
+/* Encabezados y separadores */
+.footer-heading {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.75rem;
+}
+
+.footer-separator {
+    width: 40px;
+    height: 3px;
+    background-color: #ec268f;
+    margin-bottom: 1.25rem;
+}
+
+/* Enlaces */
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links li {
+    margin-bottom: 0.75rem;
+}
+
+.footer-links a {
+    color: #6c757d;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+    padding-left: 0;
+    font-size: 1rem;
+}
+
+.footer-links a:hover {
+    color: #ec268f;
+    padding-left: 5px;
+}
+
+.footer-links a::before {
+    content: "›";
+    position: absolute;
+    left: -8px;
+    top: 0;
+    opacity: 0;
+    transition: all 0.2s ease;
+    color: #ec268f;
+}
+
+.footer-links a:hover::before {
+    opacity: 1;
+    left: -3px;
+}
+
+/* Contacto */
+.footer-contact {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-contact li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    color: #6c757d;
+}
+
+.footer-contact li i {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(236, 38, 143, 0.1);
+    color: #ec268f;
+    border-radius: 50%;
+    margin-right: 1rem;
+    font-size: 0.875rem;
+}
+
+.footer-contact li span {
+    font-size: 1rem;
+}
+
+/* Divisor y parte inferior */
+.footer-divider {
+    border-color: rgba(0,0,0,0.05);
+    margin: 2rem 0;
+}
+
+.copyright {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.footer-policies {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.footer-policies a {
+    color: #6c757d;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-policies a:hover {
+    color: #ec268f;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+    .footer-section {
+        text-align: center;
+    }
+    
+    .footer-separator {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .social-icons {
+        justify-content: center;
+    }
+    
+    .footer-contact li {
+        justify-content: center;
+    }
+    
+    .footer-policies {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}
+
+/* Estilos para modales de normativas */
+.normativa-modal-content {
+    text-align: center;
+    padding: 1rem;
+}
+
+.normativa-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #ec268f;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2.5rem;
+}
+
+.normativa-modal-content h4 {
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.normativa-modal-content p {
+    color: #666;
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.normativa-modal-content ul {
+    text-align: left;
+    margin-bottom: 1.5rem;
+}
+
+.normativa-modal-content ul li {
+    margin-bottom: 0.5rem;
+    color: #666;
+}
+
+.modal-content {
+    border: none;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.modal-header .modal-title {
+    font-weight: 700;
+    color: #333;
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.modal-footer .btn-primary {
+    background-color: #ec268f;
+    border-color: #ec268f;
+}
+
+.modal-footer .btn-primary:hover {
+    background-color: #d11f7d;
+    border-color: #d11f7d;
+}
+
+.modal-footer .btn-secondary {
+    background-color: #f1f1f1;
+    border-color: #e0e0e0;
+    color: #333;
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: #e5e5e5;
+    border-color: #d5d5d5;
+}
+
+/* Estilos para modales de términos y privacidad */
+.terms-content, .privacy-content {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 1rem;
+}
+
+.terms-content h4, .privacy-content h4 {
+    color: #333;
+    font-weight: 700;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.terms-content p, .privacy-content p {
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.privacy-content ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.privacy-content ul li {
+    margin-bottom: 0.5rem;
+    color: #666;
+}
