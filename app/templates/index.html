@@ -3,166 +3,264 @@
 {% block title %}StrateKaz - Gestión Empresarial{% endblock %}
 
 {% block content %}
-<!-- Navegación Superior con Logo y Botones -->
-<nav class="navbar">
-    <div class="container">
-        <a href="/" class="navbar-brand">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" class="logo-img">
-        </a>
-        <div class="nav-buttons">
-            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">Iniciar Sesión</a>
-            <a href="{{ url_for('auth.registro') }}" class="btn btn-primary">Registrarse</a>
-        </div>
-    </div>
-</nav>
-
-<!-- Hero Section Mejorada -->
-<div class="hero-section">
+<!-- Sección Hero -->
+<!-- Hero Section -->
+<!-- Hero Section simplificada -->
+<section class="hero-section py-5">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-md-6">
-                <h1 class="hero-title">Gestión Empresarial Inteligente</h1>
-                <p class="hero-text">Optimiza tus procesos y alcanza tus objetivos empresariales con nuestra plataforma integral de gestión.</p>
-                <div class="hero-buttons">
-                    <a href="{{ url_for('auth.registro') }}" class="btn btn-primary btn-lg">Empezar Ahora</a>
-                    <a href="#beneficios" class="btn btn-link btn-lg">Conocer más</a>
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h1 class="hero-title">Innovación en la Gestión Empresarial</h1>
+                <p class="hero-text">Diseña, implementa y audita, Sistemas Integrados de Gestión, Seguridad y Salud en el Trabajo  y mucho mas. "Desde cualquier lugar del mundo".</p>
+                
+                <div class="hero-buttons mb-5">
+                    <a href="{{ url_for('auth.registro') }}" class="btn btn-primary btn-lg me-sm-3 mb-3 mb-sm-0">Comenzar Ahora</a>
+                    <a href="#como-funciona" class="btn btn-outline-secondary btn-lg">Ver Demostración</a>
                 </div>
                 
-                <!-- Tarjetas de beneficios -->
-                <div class="benefit-cards mt-5">
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <div class="benefit-card">
-                                <i class="fas fa-shield-alt"></i>
-                                <h5>Gestión Normativa</h5>
-                                <p>Cumple y gestiona todas tus normas en un solo lugar</p>
+                <!-- Estadísticas de impacto -->
+                <div class="stats-row">
+                    <div class="row g-4">
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <h3 class="stat-number">40%</h3>
+                                <p class="stat-text">Menos tiempo de implementación</p>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="benefit-card">
-                                <i class="fas fa-chart-line"></i>
-                                <h5>Informes en Tiempo Real</h5>
-                                <p>Visualiza el avance de tus sistemas de gestión</p>
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <h3 class="stat-number">95%</h3>
+                                <p class="stat-text">Reducción de errores</p>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="benefit-card">
-                                <i class="fas fa-tasks"></i>
-                                <h5>Procesos Optimizados</h5>
-                                <p>Automatiza tareas repetitivas y mejora la eficiencia</p>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="benefit-card">
-                                <i class="fas fa-users"></i>
-                                <h5>Trabajo Colaborativo</h5>
-                                <p>Asigna roles y responsabilidades de forma eficiente</p>
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <h3 class="stat-number">100%</h3>
+                                <p class="stat-text">Cumplimiento normativo</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- Laberinto Animado Mejorado (a la derecha) -->
-            <div class="col-md-6">
-                <!-- Aquí va el código del laberinto mejorado -->
-                <div class="maze-container">
-                    <svg viewBox="0 0 400 400" class="maze-svg">
-                        <defs>
-                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#EC4899"/>
-                                <stop offset="100%" stop-color="#D946EF"/>
-                            </linearGradient>
-                            <!-- Patrón de puntos para efecto de animación de fondo -->
-                            <pattern id="maze-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
-                                <circle cx="10" cy="10" r="1" fill="#f472b6" opacity="0.3"/>
-                            </pattern>
-                            <!-- Filtro para efecto de brillo -->
-                            <filter id="glow">
-                                <feGaussianBlur stdDeviation="2.5" result="blur"/>
-                                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-                            </filter>
-                        </defs>
-                        
-                        <!-- Fondo con patrón de puntos -->
-                        <rect width="400" height="400" fill="url(#maze-pattern)" opacity="0.5"/>
-                        
-                        <!-- Laberinto Base con diseño más complejo -->
-                        <path class="maze-base"
-                              d="M50,50 H350 V350 H50 V50 M100,100 H300 V300 H100 V100 
-                                 M100,150 H250 V250 H150 V200 H200 V150
-                                 M250,100 V150
-                                 M300,200 H250
-                                 M200,250 V300
-                                 M150,300 V250"
-                              stroke="#f3f4f6"
-                              stroke-width="4"
-                              fill="none"/>
-                        
-                        <!-- Camino Animado -->
-                        <path class="maze-path"
-                              d="M50,50 H350 V350 H50 V50 M100,100 H300 V300 H100 V100
-                                 M100,150 H250 V250 H150 V200 H200 V150
-                                 M250,100 V150
-                                 M300,200 H250
-                                 M200,250 V300
-                                 M150,300 V250"
-                              stroke="url(#gradient)"
-                              stroke-width="4"
-                              fill="none"
-                              filter="url(#glow)"/>
-                        
-                        <!-- Punto Animado que recorre el laberinto -->
-                        <circle class="maze-point" cx="50" cy="50" r="8" fill="url(#gradient)" filter="url(#glow)"/>
-                    </svg>
-                </div>                
+            
+            <div class="col-lg-6">
+                <div class="dashboard-showcase clean">
+                    <!-- Dashboard principal simplificado -->
+                    <div class="dashboard-main">
+                        <img src="{{ url_for('static', filename='images/dashboard-mockup.png') }}" alt="StrateKaz Dashboard" class="img-fluid dashboard-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x600/ffffff/ec268f?text=Dashboard+StrateKaz'">
+                    </div>
+                    
+                    <!-- Solo dos elementos flotantes simplificados -->
+                    <div class="feature-badge badge-implementation">Implementación Global</div>
+                    <div class="feature-badge badge-systems">Sistemas de Gestión Integral SGI</div>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<!-- Sección "Cómo Funciona" -->
-<div class="how-it-works-section py-5" id="beneficios">
+<!-- Sección de marcas/certificaciones -->
+<!-- Sección de normativas -->
+<section class="normativas-section py-5">
     <div class="container">
-        <h2 class="text-center mb-5">¿Cómo funciona StrateKaz?</h2>
+        <h3 class="text-center mb-4">Platarforma de soluciones integrales</h3>
+        <div class="row justify-content-center g-4">
+            <div class="col-6 col-md-3">
+                <div class="normativa-card">
+                    <div class="normativa-icon iso-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <div class="normativa-name">ISO</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="normativa-card">
+                    <div class="normativa-icon sgsst-icon">
+                        <i class="fas fa-hard-hat"></i>
+                    </div>
+                    <div class="normativa-name">SG-SST</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="normativa-card">
+                    <div class="normativa-icon pesv-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="normativa-name">PESV</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="normativa-card">
+                    <div class="normativa-icon isoiec-icon">
+                        <i class="fas fa-plug"></i>
+                    </div>
+                    <div class="normativa-name">ISO-IEC</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección "Cómo funciona" -->
+<section class="como-funciona-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-3">¿Cómo funciona StrateKaz?</h2>
+        <p class="text-center mb-5">Funciona como un ecosistema digital enfocado en el cumplimiento de los Objetivos Organizacionales</p>
+        
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="step-card">
-                    <div class="step-number">1</div>
+                <div class="paso-card">
+                    <div class="paso-number">1</div>
+                    <div class="paso-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
                     <h4>Regístrate</h4>
-                    <p>Crea tu cuenta como profesional independiente o empresa en menos de 2 minutos.</p>
+                    <p>Crea tu cuenta como consultor independiente, empresa directa o empresa de consultoría en menos de 2 minutos.</p>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="step-card">
-                    <div class="step-number">2</div>
-                    <h4>Configura tu perfil</h4>
-                    <p>Selecciona los módulos que necesitas según tus requerimientos empresariales.</p>
+                <div class="paso-card">
+                    <div class="paso-number">2</div>
+                    <div class="paso-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h4>Configura</h4>
+                    <p>Registra tus empresas, seleciona los roles de tu equipo o selecciona los módulos que vayas a trabajar en tu actividad empresarial.</p>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="step-card">
-                    <div class="step-number">3</div>
-                    <h4>Comienza a gestionar</h4>
-                    <p>Implementa tus sistemas de gestión con nuestra interfaz intuitiva y herramientas especializadas.</p>
+                <div class="paso-card">
+                    <div class="paso-number">3</div>
+                    <div class="paso-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4>Gestiona</h4>
+                    <p>Diseña y delega actividades para el cumplimiento de tus sistemas de gestión con nuestra interfaz intuitiva y herramientas especializadas.</p>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<!-- Footer Simple -->
-<footer class="footer-section py-4 mt-4">
+<!-- Sección de características principales -->
+<section class="caracteristicas-section py-5">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" style="height: 30px;">
-                <span class="ms-2 text-muted">© 2025 StrateKaz. Todos los derechos reservados.</span>
+        <div class="text-center mb-5">
+            <h2 class="section-title">Características Principales</h2>
+            <p class="section-subtitle">Todo lo que necesitas para alograr un verdadero cambio en tu Organización</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="caracteristica-card">
+                    <div class="caracteristica-icon">
+                        <i class="fas fa-sitemap"></i>
+                    </div>
+                    <h4>Sistemas Integrados</h4>
+                    <p>Gestiona múltiples normativas en una única plataforma, evitando duplicidades.</p>
+                </div>
             </div>
-            <div class="social-icons">
-                <a href="#" class="me-2"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="me-2"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="me-2"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
+            <div class="col-md-6 col-lg-3">
+                <div class="caracteristica-card">
+                    <div class="caracteristica-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h4>Trazabilidad</h4>
+                    <p>Mantén el control de toda la información de tus sistemas de gestión.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="caracteristica-card">
+                    <div class="caracteristica-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h4>Automatización</h4>
+                    <p>Reduce el trabajo manual con formularios y reportes automáticos.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="caracteristica-card">
+                    <div class="caracteristica-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h4>Análisis en tiempo real</h4>
+                    <p>Toma decisiones basadas en datos y verifica el avance de tus  sistemas de gestión a un click de distancia.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección CTA final -->
+<section class="cta-section py-5">
+    <div class="container">
+        <div class="cta-content">
+            <h2 class="cta-title">¿Estás listo para el siguiente nivel?</h2>
+            <p class="cta-text">"No diseñamos sistemas de gestión. Desatamos el potencial de tu empresa. Únete a StrateKaz."</p>
+            <a href="{{ url_for('auth.registro') }}" class="btn btn-cta">Comenzar Ahora</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer Mejorado -->
+<footer class="footer-section py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="footer-brand mb-4">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" style="height: 40px;">
+                </div>
+                <p class="footer-description">
+                    Plataforma integral para la gestión de normativas empresariales, sistemas integrados de gestión y cumplimiento regulatorio.
+                </p>
+                <div class="social-icons mt-3">
+                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            
+            <div class="col-lg-2 col-md-6">
+                <h5 class="footer-heading">Enlaces</h5>
+                <ul class="footer-links">
+                    <li><a href="{{ url_for('main.index') }}">Inicio</a></li>
+                    <li><a href="#caracteristicas">Características</a></li>
+                    <li><a href="#como-funciona">Cómo Funciona</a></li>
+                    <li><a href="{{ url_for('auth.login') }}">Iniciar Sesión</a></li>
+                    <li><a href="{{ url_for('auth.registro') }}">Registrarse</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-lg-2 col-md-6">
+                <h5 class="footer-heading">Normativas</h5>
+                <ul class="footer-links">
+                    <li><a href="#">ISO 9001</a></li>
+                    <li><a href="#">ISO 45001</a></li>
+                    <li><a href="#">ISO 14001</a></li>
+                    <li><a href="#">ISO-IEC 17020</a></li>
+                    <li><a href="#">SG-SST</a></li>
+                    <li><a href="#">PESV</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <h5 class="footer-heading">Contacto</h5>
+                <ul class="footer-contact">
+                    <li><i class="fas fa-envelope"></i> info@stratekaz.com</li>
+                    <li><i class="fas fa-phone"></i> +57 (311) 535-1944</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Cúcuta, Colombia</li>
+                </ul>
+            </div>
+        </div>
+        
+        <hr class="footer-divider">
+        
+        <div class="footer-bottom">
+            <p class="copyright">© 2025 StrateKaz. Marca @Kmylosky. Todos los derechos reservados.</p>
+            <div class="footer-policies">
+                <a href="#">Términos y Condiciones</a>
+                <a href="#">Política de Privacidad</a>
             </div>
         </div>
     </div>
@@ -171,118 +269,239 @@
 
 {% block styles %}
 <style>
-/* Estilos de la página principal */
-.navbar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 1.5rem 0;
-    z-index: 10;
-    background: transparent;
+/* Estilos generales del home */
+:root {
+    --primary-color: #ec268f;
+    --primary-dark: #d11f7d;
+    --accent-color: #f4ec25;
+    --white: #ffffff;
+    --black: #000000;
+    --secondary-color: #6c757d;
+    --light-bg: #f8f9fa;
+    --dark-text: #212529;
+    --card-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
 }
 
-.logo-img {
-    height: 45px;
-    width: auto;
-}
-
-.nav-buttons {
-    display: flex;
-    gap: 1rem;
-}
-
+/* Hero Section */
 .hero-section {
-    min-height: 100vh;
-    padding-top: 100px;
-    background: linear-gradient(135deg, #fff 0%, #fff8fa 100%);
-    display: flex;
-    align-items: center;
+    padding-top: 60px;
+    padding-bottom: 40px;
+    position: relative;
+    overflow: hidden;
 }
 
 .hero-title {
-    font-size: 3.5rem;
-    font-weight: bold;
-    color: #1a1a1a;
+    font-size: 2.75rem;
+    font-weight: 700;
+    color: var(--dark-text);
     margin-bottom: 1.5rem;
+    line-height: 1.2;
 }
 
 .hero-text {
-    font-size: 1.25rem;
-    color: #666;
+    font-size: 1.15rem;
+    color: var(--secondary-color);
     margin-bottom: 2rem;
 }
 
-.hero-buttons {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.btn-link {
-    color: #ec268f;
-    text-decoration: none;
-}
-
-.btn-link:hover {
-    color: #d11f7d;
-    text-decoration: underline;
-}
-
-/* Estilos para tarjetas de beneficios */
-.benefit-card {
-    background-color: white;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    height: 100%;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.benefit-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 24px rgba(236, 38, 143, 0.1);
-}
-
-.benefit-card i {
-    font-size: 2rem;
-    color: #ec268f;
-    margin-bottom: 1rem;
-}
-
-.benefit-card h5 {
+.hero-btns .btn {
+    padding: 0.75rem 1.5rem;
     font-weight: 600;
+    border-radius: 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-outline-secondary {
+    color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+/* Estadísticas */
+.stats-section {
+    margin-top: 3rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
     margin-bottom: 0.5rem;
 }
 
-.benefit-card p {
-    color: #666;
-    font-size: 0.9rem;
+.stat-text {
+    font-size: 0.875rem;
+    color: var(--secondary-color);
     margin-bottom: 0;
 }
 
-/* Estilos para la sección Cómo Funciona */
-.how-it-works-section {
-    background-color: #f9f9f9;
+/* Dashboard visual */
+.dashboard-container {
+    position: relative;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: white;
+}
+
+.dashboard-img {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+}
+
+.feature-badge {
+    position: absolute;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: white;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.badge-iso9001 {
+    background-color: #4361ee;
+    top: 20px;
+    right: 30px;
+}
+
+.badge-iso45001 {
+    background-color: #f72585;
+    bottom: 60px;
+    left: 40px;
+}
+
+.badge-iso14001 {
+    background-color: #4cc9f0;
+    bottom: 100px;
+    right: 50px;
+}
+
+/* Sección de marcas */
+.brands-section {
+    padding: 2rem 0;
+    background-color: var(--light-bg);
+}
+
+.brand-item {
+    font-weight: 700;
+    color: var(--dark-text);
+    opacity: 0.7;
+    font-size: 1.25rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.brand-item {
+    padding: 1.5rem;
+    border-radius: 1rem;
+    background-color: white;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.brand-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    background-color: #f4ec25;
+    color: #000000;
+}
+
+.brand-item span {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #ec268f;
+}
+
+/* Estilos específicos para cada marca */
+.brand-item:nth-child(1) .brand-icon {
+    background-color: #ec268f;
+    color: white;
+}
+
+.brand-item:nth-child(2) .brand-icon {
+    background-color: #f4ec25;
+    color: #000000;
+}
+
+.brand-item:nth-child(3) .brand-icon {
+    background-color: #000000;
+    color: white;
+}
+
+.brand-item:nth-child(4) .brand-icon {
+    background-color: #7a1b74;
+    color: white;
+}
+
+/* Sección Cómo funciona */
+.how-section {
+    padding: 4rem 0;
+}
+
+.section-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin-bottom: 1rem;
+}
+
+.section-subtitle {
+    font-size: 1.125rem;
+    color: var(--secondary-color);
+    max-width: 700px;
+    margin: 0 auto 3rem;
 }
 
 .step-card {
-    background-color: white;
     border-radius: 1rem;
-    padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    height: 100%;
+    padding: 3rem 2rem 2rem;
+    background-color: white;
+    box-shadow: var(--card-shadow);
     text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
     position: relative;
-    transition: transform 0.3s ease;
 }
 
 .step-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 1rem 2rem rgba(236, 38, 143, 0.15);
 }
 
 .step-number {
@@ -300,18 +519,139 @@
     justify-content: center;
     font-weight: bold;
     font-size: 1.25rem;
+    z-index: 1;
+}
+
+.step-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #f4ec25;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2.5rem;
+    color: #000000;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.step-icon i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.step-card:nth-child(1) .step-icon {
+    background-color: #ec268f;
+    color: white;
+}
+
+.step-card:nth-child(2) .step-icon {
+    background-color: #f4ec25;
+    color: #000000;
+}
+
+.step-card:nth-child(3) .step-icon {
+    background-color: #000000;
+    color: white;
 }
 
 .step-card h4 {
-    margin-top: 0.5rem;
+    font-weight: 700;
     margin-bottom: 1rem;
-    font-weight: 600;
+    font-size: 1.5rem;
 }
 
-/* Estilos para el footer */
+.step-card p {
+    color: var(--secondary-color);
+    margin-bottom: 0;
+}
+
+.step-card h4 {
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.step-card p {
+    color: var(--secondary-color);
+    margin-bottom: 0;
+}
+
+/* Sección de características */
+.features-section {
+    padding: 4rem 0;
+    background-color: var(--light-bg);
+}
+
+.feature-card {
+    border-radius: 1rem;
+    padding: 2rem;
+    background-color: white;
+    box-shadow: var(--card-shadow);
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: rgba(236, 38, 143, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+}
+
+.feature-icon i {
+    font-size: 1.25rem;
+    color: var(--primary-color);
+}
+
+.feature-card h5 {
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.feature-card p {
+    color: var(--secondary-color);
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+/* CTA final */
+.cta-section {
+    padding: 4rem 0;
+}
+
+.cta-card {
+    border-radius: 1rem;
+    padding: 3rem;
+    background-color: white;
+    box-shadow: var(--card-shadow);
+    background-color: var(--light-bg);
+}
+
+.cta-card h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.cta-card p {
+    font-size: 1.125rem;
+    color: var(--secondary-color);
+    margin-bottom: 2rem;
+}
+
+/* Footer */
 .footer-section {
-    background-color: #f9f9f9;
-    border-top: 1px solid #eee;
+    border-top: 1px solid #efefef;
 }
 
 .social-icons a {
@@ -321,55 +661,65 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    color: #666;
+    color: var(--secondary-color);
     background-color: #f1f1f1;
     transition: all 0.3s ease;
+    margin-left: 0.5rem;
 }
 
 .social-icons a:hover {
-    background-color: #ec268f;
+    background-color: var(--primary-color);
     color: white;
 }
 
-/* Animaciones para el laberinto (definidas en el artifact laberinto-mejorado) */
-
 /* Estilos responsivos */
-@media (max-width: 768px) {
+@media (max-width: 991.98px) {
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2.25rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .cta-card {
+        padding: 2rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .hero-title {
+        font-size: 1.75rem;
     }
     
     .hero-text {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
     
-    .maze-container {
-        height: 300px;
-        margin-top: 2rem;
+    .stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .stat-text {
+        font-size: 0.75rem;
+    }
+    
+    .section-title {
+        font-size: 1.75rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1rem;
+    }
+    
+    .cta-card h2 {
+        font-size: 1.5rem;
+    }
+    
+    .cta-card p {
+        font-size: 1rem;
     }
 }
 </style>
 {% endblock %}
 
-{% block extra_scripts %}
-<!-- Font Awesome para iconos -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const mazeContainer = document.querySelector('.maze-container');
-    const mazePoint = document.querySelector('.maze-point');
-    
-    // Evento para interacción opcional con el mouse (adicional a la animación automática)
-    mazeContainer.addEventListener('mousemove', function(event) {
-        const rect = this.getBoundingClientRect();
-        const x = ((event.clientX - rect.left) / rect.width) * 400;
-        const y = ((event.clientY - rect.top) / rect.height) * 400;
-        
-        // Se mantiene comentado para no interferir con la animación automática
-        // Descomentar si se quiere habilitar control manual con el mouse
-        // mazePoint.setAttribute('cx', x);
-        // mazePoint.setAttribute('cy', y);
-    });
-});
-</script>
-{% endblock %}
