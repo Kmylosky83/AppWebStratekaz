@@ -3,37 +3,69 @@
 {% block title %}Login - StrateKaz{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center align-items-center min-vh-100">
-    <div class="col-md-4">
-        <div class="card static-card">
-            <div class="card-body">
+<div class="row justify-content-center align-items-center login-container">
+    <div class="col-md-5 col-lg-4 col-sm-10">
+        <div class="auth-card">
+            <div class="card-body p-4">
+                <!-- Título centrado -->
                 <div class="text-center mb-4">
-                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" class="img-fluid mb-3" style="max-height: 65px;">
+                    <h4 class="auth-title">Iniciar Sesión</h4>
+                    <p class="auth-subtitle">Accede a tu cuenta para gestionar tus sistemas</p>
                 </div>
                 
+                <!-- Formulario -->
                 <form method="POST" class="needs-validation" novalidate>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email:</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                    <div class="mb-4 form-group">
+                        <label for="email" class="form-label">Correo electrónico</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="tucorreo@ejemplo.com" required>
+                        </div>
+                        <div class="invalid-feedback">
+                            Por favor ingresa un correo electrónico válido
+                        </div>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Contraseña:</label>
+                    <div class="mb-4 form-group">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label for="password" class="form-label">Contraseña</label>
+                            <a href="#" class="text-decoration-none forgot-link">¿Olvidaste tu contraseña?</a>
+                        </div>
                         <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
                             <input type="password" class="form-control" id="password" name="password" required>
                             <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password')">
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
+                        <div class="invalid-feedback">
+                            Por favor ingresa tu contraseña
+                        </div>
                     </div>
                     
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe" name="remember">
+                        <label class="form-check-label" for="rememberMe">Recordar mis datos</label>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mb-4">
+                        <button type="submit" class="btn btn-primary btn-login">
+                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                        </button>
                     </div>
                 </form>
                 
-                <div class="text-center mt-3">
-                    <small>¿No tienes una cuenta? <a href="{{ url_for('auth.registro') }}" style="color: #ec268f; text-decoration: none;">Regístrate</a></small>
+                <!-- Separador -->
+                <div class="separator my-4">
+                    <span>o</span>
+                </div>
+                
+                <!-- Enlace a registro -->
+                <div class="text-center">
+                    <p class="mb-2">¿No tienes una cuenta?</p>
+                    <a href="{{ url_for('auth.registro') }}" class="btn btn-outline-primary btn-register">
+                        <i class="fas fa-user-plus me-2"></i>Crear cuenta
+                    </a>
                 </div>
             </div>
         </div>
@@ -54,5 +86,193 @@ function togglePassword(inputId) {
         icon.className = 'fas fa-eye';
     }
 }
+
+// Inicializar validación de formulario
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.needs-validation');
+    
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        
+        form.classList.add('was-validated');
+    }, false);
+});
 </script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .login-container {
+        min-height: calc(100vh - 140px);
+        padding: 2rem 1rem;
+    }
+    
+    .auth-card {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(236, 38, 143, 0.1);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
+    
+    .auth-card:hover {
+        box-shadow: 0 15px 35px rgba(236, 38, 143, 0.15);
+        transform: translateY(-5px);
+    }
+    
+    .auth-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    
+    .auth-subtitle {
+        color: #666;
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        color: #555;
+    }
+    
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #e5e7eb;
+        color: #ec268f;
+    }
+    
+    .form-control {
+        border-color: #e5e7eb;
+        padding: 0.6rem 0.75rem;
+        border-radius: 0.5rem;
+    }
+    
+    .form-control:focus {
+        border-color: #ec268f;
+        box-shadow: 0 0 0 0.25rem rgba(236, 38, 143, 0.15);
+    }
+    
+    .form-check-input:checked {
+        background-color: #ec268f;
+        border-color: #ec268f;
+    }
+    
+    .forgot-link {
+        font-size: 0.85rem;
+        color: #ec268f;
+        transition: all 0.2s ease;
+    }
+    
+    .forgot-link:hover {
+        color: #d11f7d;
+        text-decoration: underline !important;
+    }
+    
+    .btn-login {
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        background-color: #ec268f;
+        border-color: #ec268f;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-login:hover {
+        background-color: #d11f7d;
+        border-color: #d11f7d;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(236, 38, 143, 0.2);
+    }
+    
+    .separator {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: #999;
+    }
+    
+    .separator::before,
+    .separator::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .separator span {
+        padding: 0 1rem;
+    }
+    
+    .btn-register {
+        color: #ec268f;
+        border-color: #ec268f;
+        margin-top: 0.5rem;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-register:hover {
+        background-color: rgba(236, 38, 143, 0.05);
+        color: #d11f7d;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(236, 38, 143, 0.1);
+    }
+    
+    .btn-outline-secondary {
+        border-color: #e5e7eb;
+        color: #666;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #f8f9fa;
+        color: #333;
+        border-color: #e5e7eb;
+    }
+    
+    /* Mejoras responsivas */
+    @media (max-width: 576px) {
+        .auth-card {
+            border-radius: 10px;
+        }
+        
+        .auth-title {
+            font-size: 1.3rem;
+        }
+        
+        .auth-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .form-group label {
+            font-size: 0.85rem;
+        }
+        
+        .forgot-link {
+            font-size: 0.8rem;
+        }
+        
+        .btn-login, .btn-register {
+            font-size: 0.95rem;
+            padding: 0.6rem 0.75rem;
+        }
+        
+        .input-group-text {
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .form-control {
+            padding: 0.5rem 0.75rem;
+        }
+    }
+</style>
 {% endblock %}

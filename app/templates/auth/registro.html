@@ -8,17 +8,18 @@
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center align-items-center py-4">
-    <div class="col-md-8">
-        <div class="card static-card">
+<div class="row justify-content-center align-items-center register-container">
+    <div class="col-lg-6 col-md-8 col-sm-11">
+        <div class="auth-card">
             <div class="card-body p-4">
-                <!-- Logo -->
+                <!-- Título sin logo redundante -->
                 <div class="text-center mb-4">
-                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" class="img-fluid mb-3" style="max-height: 65px;">
+                    <h4 class="auth-title">Crear una cuenta</h4>
+                    <p class="auth-subtitle">Únete a StrateKaz y gestiona tus sistemas de forma eficiente</p>
                 </div>
 
                 <!-- Progress bar -->
-                <div class="progress mb-4" style="height: 3px;">
+                <div class="progress mb-4" style="height: 4px;">
                     <div class="progress-bar" role="progressbar" style="width: 0%" id="progress-bar"></div>
                 </div>
 
@@ -53,15 +54,22 @@
                 <!-- Step 3: Formulario adicional -->
                 <div class="step d-none" id="step3"></div>
 
-                
                 <!-- Navigation buttons -->
-                <div class="d-flex justify-content-between mt-4">
-                    <button class="btn btn-secondary d-none" id="prevBtn" onclick="prevStep()">
+                <div class="nav-buttons d-flex justify-content-between mt-4">
+                    <button class="btn btn-outline-secondary d-none" id="prevBtn" onclick="prevStep()">
                         <i class="fas fa-arrow-left me-2"></i>Anterior
                     </button>
-                    <button class="btn btn-primary disabled" id="nextBtn" onclick="nextStep()">
+                    <button class="btn btn-primary btn-lg disabled" id="nextBtn" onclick="nextStep()">
                         Siguiente<i class="fas fa-arrow-right ms-2"></i>
                     </button>
+                </div>
+                
+                <!-- Enlace a login -->
+                <div class="text-center mt-4">
+                    <p class="mb-0">¿Ya tienes una cuenta?</p>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                    </a>
                 </div>
             </div>
         </div>
@@ -140,78 +148,252 @@
 
 {% block styles %}
 <style>
-    /* Estilos para las tarjetas de selección */
+    .register-container {
+        padding: 2rem 1rem;
+    }
+    
+    .auth-card {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(236, 38, 143, 0.1);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
+    
+    .auth-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    
+    .auth-subtitle {
+        color: #666;
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Progress bar */
+    .progress {
+        background-color: #f3f4f6;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        background-color: #ec268f;
+        transition: width 0.8s ease;
+    }
+    
+    /* Tarjetas de selección con efecto 3D mejorado */
     .step .user-type-card,
     .step .company-type-card {
         border: 2px solid transparent;
         cursor: pointer;
         transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
         background: white;
-        border-radius: 0.5rem;
+        border-radius: 15px;
+        overflow: hidden;
     }
 
-    /* Hover efecto SOLO para tarjetas de selección */
     .step .user-type-card:hover,
     .step .company-type-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 15px rgba(236, 38, 143, 0.1);
+        transform: translateY(-7px);
+        box-shadow: 0 15px 30px rgba(236, 38, 143, 0.15);
     }
     
-    /* Tarjetas seleccionadas */
     .user-type-card.selected, 
     .company-type-card.selected {
         border-color: #ec268f;
-        box-shadow: 0 4px 15px rgba(236, 38, 143, 0.2);
+        box-shadow: 0 15px 30px rgba(236, 38, 143, 0.2);
     }
     
-    /* Controles de formulario */
-    .form-select {
-        width: 100%;
-        max-width: 100%;
-        overflow: hidden;
-    }
-    
-    .form-control:focus, 
-    .form-select:focus {
-        border-color: #ec268f;
-        box-shadow: 0 0 0 0.2rem rgba(236, 38, 143, 0.25);
-    }
-    
-    /* Barra de progreso */
-    .progress {
-        background-color: #f8f9fa;
-    }
-
-    .progress-bar {
-        background-color: #ec268f;
-        transition: width 0.3s ease;
-    }
-    
-    /* Botones */
-    .btn-primary {
-        background-color: #ec268f;
-        border-color: #ec268f;
-    }
-    
-    .btn-primary:hover {
-        background-color: #d11f7d;
-        border-color: #d11f7d;
-    }
-
-    /* Estilos para íconos en las tarjetas */
     .user-type-card i,
     .company-type-card i {
         color: #ec268f;
+        transition: transform 0.3s ease;
+    }
+    
+    .user-type-card:hover i,
+    .company-type-card:hover i {
+        transform: scale(1.1);
+    }
+    
+    .user-type-card h6,
+    .company-type-card h6 {
+        font-weight: 700;
+        margin: 0.5rem 0;
+        color: #333;
+    }
+    
+    /* Botones de navegación */
+    .nav-buttons .btn {
+        transition: all 0.3s ease;
+    }
+    
+    .nav-buttons .btn-primary {
+        background-color: #ec268f;
+        border-color: #ec268f;
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .nav-buttons .btn-primary:hover:not(.disabled) {
+        background-color: #d11f7d;
+        border-color: #d11f7d;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(236, 38, 143, 0.2);
+    }
+    
+    .nav-buttons .btn-outline-secondary {
+        border-color: #ddd;
+        color: #666;
+    }
+    
+    .nav-buttons .btn-outline-secondary:hover {
+        background-color: #f8f9fa;
+        color: #333;
+        transform: translateY(-2px);
+    }
+    
+    /* Formularios con estilos mejorados */
+    .form-label {
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+        border-radius: 10px;
+        padding: 0.7rem 1rem;
+        border-color: #e5e7eb;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #ec268f;
+        box-shadow: 0 0 0 0.25rem rgba(236, 38, 143, 0.15);
+    }
+    
+    .form-select {
+        border-radius: 10px;
+        border-color: #e5e7eb;
+        padding: 0.7rem 1rem;
+    }
+    
+    .form-select:focus {
+        border-color: #ec268f;
+        box-shadow: 0 0 0 0.25rem rgba(236, 38, 143, 0.15);
+    }
+    
+    /* Efectos adicionales */
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(236, 38, 143, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 15px rgba(236, 38, 143, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(236, 38, 143, 0);
+        }
+    }
+    
+    .pulse {
+        animation: pulse 1.5s infinite;
     }
 
-    /* Modales */
+    /* Modales mejorados */
     .modal-content {
         border: none;
-        border-radius: 0.5rem;
+        border-radius: 15px;
+        overflow: hidden;
     }
-
+    
     .modal-header {
-        border-bottom: 1px solid #f1f1f1;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid rgba(236, 38, 143, 0.1);
+    }
+    
+    .modal-header .modal-title {
+        font-weight: 700;
+        color: #333;
+    }
+    
+    /* Mejoras responsivas */
+    @media (max-width: 768px) {
+        .auth-title {
+            font-size: 1.3rem;
+        }
+        
+        .auth-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .step h5 {
+            font-size: 1.1rem;
+        }
+        
+        .user-type-card i,
+        .company-type-card i {
+            font-size: 2.5rem;
+        }
+        
+        .user-type-card h6,
+        .company-type-card h6 {
+            font-size: 1rem;
+        }
+        
+        .nav-buttons .btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.95rem;
+        }
+        
+        .btn-lg {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .step .user-type-card,
+        .step .company-type-card {
+            margin-bottom: 1rem;
+        }
+        
+        .step .row {
+            margin: 0 -8px;
+        }
+        
+        .step .col-md-6 {
+            padding: 0 8px;
+        }
+        
+        .user-type-card i,
+        .company-type-card i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .user-type-card h6,
+        .company-type-card h6 {
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .user-type-card p,
+        .company-type-card p {
+            font-size: 0.8rem;
+        }
+        
+        .nav-buttons {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .nav-buttons .btn {
+            width: 100%;
+        }
     }
 </style>
 {% endblock %}
