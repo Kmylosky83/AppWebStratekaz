@@ -59,8 +59,9 @@
 
 <!-- Sección de normativas -->
 <section class="normativas-section py-5">
-    <div class="container">
-        <h3 class="text-center mb-4">Platarforma de soluciones integrales</h3>
+    <div class="text-center mb-5">
+        <h2 class="section-title">Soluciones Integrales</h2>
+        <p class="text-center mb-5">Plataforma tecnologica diseñada para gestionar diferentes normativas nacionales e internacionales</p>
         <div class="row justify-content-center g-4">
             <div class="col-6 col-md-3">
                 <div class="normativa-card">
@@ -99,9 +100,9 @@
 </section>
 
 <!-- Sección "Cómo funciona" -->
-<section class="como-funciona-section py-5">
-    <div class="container">
-        <h2 class="text-center mb-3">¿Cómo funciona StrateKaz?</h2>
+<section id="como-funciona" class="como-funciona-section py-5">
+    <div class="text-center mb-5">
+        <h2 class="section-title">¿Cómo funciona StrateKaz?</h2>
         <p class="text-center mb-5">Funciona como un ecosistema digital enfocado en el cumplimiento de los Objetivos Organizacionales</p>
         
         <div class="row g-4">
@@ -140,7 +141,7 @@
 </section>
 
 <!-- Sección de características principales -->
-<section class="caracteristicas-section py-5">
+<section id="caracteristicas" class="caracteristicas-section py-5">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="section-title">Características Principales</h2>
@@ -202,89 +203,97 @@
 <!-- Footer Mejorado -->
 <footer class="footer-section py-5">
     <div class="container">
-        <div class="row g-4">
-            <div class="col-lg-4 col-md-6">
-                <div class="footer-about">
-                    <div class="footer-logo mb-4">
-                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" class="img-fluid" style="max-height: 45px;">
-                    </div>
-                    <p class="footer-description">
-                        Estrategias y capacitacion de la A a la Z, es un desarrollo exclusivo de @Kmylosky, potenciado con "CLAUDE IA" Que busca la automatizacion de los sistemas de gestión, la optimización de los procesos y mejorar la productividad de los colaboradores disminuyendo su carga laboral.
-                    </p>
-                    <div class="social-icons mt-3">
-                        <a href="#" class="social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-icon" title="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-icon" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="https://wa.me/573112345678" class="social-icon" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                    </div>
+        <div class="row mx-0">
+            <!-- Columna StrateKaz (Logo y descripción) -->
+            <div class="col-md-3">
+                <div class="footer-logo mb-3">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" class="img-fluid" style="max-height: 45px;">
+                </div>
+                <p class="footer-description" style="text-align: left; font-size: 0.9rem;">
+                    Es un desarrollo de @Kmylosky, potenciado con "CLAUDE IA" Que busca la automatizacion de los sistemas de gestión y aporta valor a las organizaciones.
+                </p>
+                <div class="social-icons mt-3 d-flex justify-content-start">
+                    <a href="https://www.facebook.com/Kmylosky" class="social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/Kmylosky" class="social-icon" title="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/Stratekaz" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/Kmylosky" class="social-icon" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://wa.me/573115351944" class="social-icon" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
             
-            <div class="col-lg-2 col-md-6">
-                <div class="footer-links-section">
-                    <h5 class="footer-heading">Enlaces</h5>
-                    <div class="footer-separator"></div>
-                    <ul class="footer-links">
-                        <li><a href="{{ url_for('main.index') }}">Inicio</a></li>
-                        <li><a href="#caracteristicas" data-scroll>Características</a></li>
-                        <li><a href="#como-funciona" data-scroll>Cómo Funciona</a></li>
-                        <li><a href="{{ url_for('auth.login') }}">Iniciar Sesión</a></li>
-                        <li><a href="{{ url_for('auth.registro') }}">Registrarse</a></li>
-                    </ul>
-                </div>
+            <!-- Línea vertical -->
+            <div class="col-auto d-flex align-items-center px-0">
+                <div class="footer-divider-vertical"></div>
             </div>
             
-            <div class="col-lg-3 col-md-6">
-                <div class="footer-links-section">
-                    <h5 class="footer-heading">Normativas</h5>
-                    <div class="footer-separator"></div>
-                    <ul class="footer-links">
-                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#iso9001Modal">ISO 9001</a></li>
-                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#iso45001Modal">ISO 45001</a></li>
-                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#iso14001Modal">ISO 14001</a></li>
-                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#sgisoiecModal">ISO-IEC 17020</a></li>
-                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#sgsstModal">SG-SST</a></li>
-                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#pesvModal">PESV</a></li>
-                    </ul>
-                </div>
+            <!-- Columna Enlaces -->
+            <div class="col">
+                <h5 class="footer-heading">Enlaces</h5>
+                <ul class="footer-links text-left">
+                    <li><a href="{{ url_for('main.index') }}">Inicio</a></li>
+                    <li><a href="{{ url_for('main.index') }}#caracteristicas">Características</a></li>
+                    <li><a href="{{ url_for('main.index') }}#como-funciona">Cómo Funciona</a></li>
+                    <li><a href="{{ url_for('auth.login') }}">Iniciar Sesión</a></li>
+                    <li><a href="{{ url_for('auth.registro') }}">Registrarse</a></li>
+                </ul>
             </div>
             
-            <div class="col-lg-3 col-md-6">
-                <div class="footer-contact-section">
-                    <h5 class="footer-heading">Contacto</h5>
-                    <div class="footer-separator"></div>
-                    <ul class="footer-contact">
-                        <li>
-                            <i class="fas fa-envelope"></i>
-                            <span>info@stratekaz.com</span>
-                        </li>
-                        <li>
-                            <i class="fas fa-phone-alt"></i>
-                            <span>+57 (311) 535-1944</span>
-                        </li>
-                        <li>
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Cúcuta, Colombia</span>
-                        </li>
-                    </ul>
-                </div>
+            <!-- Línea vertical -->
+            <div class="col-auto d-flex align-items-center px-0">
+                <div class="footer-divider-vertical"></div>
+            </div>
+            
+            <!-- Columna Normativas -->
+            <div class="col">
+                <h5 class="footer-heading">Normativas</h5>
+                <ul class="footer-links text-left">
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#iso9001Modal">ISO 9001</a></li>
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#iso45001Modal">ISO 45001</a></li>
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#iso14001Modal">ISO 14001</a></li>
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#sgisoiecModal">ISO-IEC 17020</a></li>
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#sgsstModal">SG-SST</a></li>
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#pesvModal">PESV</a></li>
+                </ul>
+            </div>
+            
+            <!-- Línea vertical -->
+            <div class="col-auto d-flex align-items-center px-0">
+                <div class="footer-divider-vertical"></div>
+            </div>
+            
+            <!-- Columna Contacto -->
+            <div class="col">
+                <h5 class="footer-heading">Contacto</h5>
+                <ul class="footer-contact text-left">
+                    <li>
+                        <i class="fas fa-envelope"></i>
+                        <span>info@stratekaz.com</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-phone-alt"></i>
+                        <span>+57 (311) 535-1944</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Cúcuta, Colombia</span>
+                    </li>
+                </ul>
             </div>
         </div>
         
         <hr class="footer-divider my-4">
         
-        <div class="footer-bottom">
-            <div class="d-md-flex justify-content-between align-items-center text-center text-md-start">
-                <p class="copyright mb-2 mb-md-0">© 2025 StrateKaz. Marca @Kmylosky. Todos los derechos reservados.</p>
-                
-                <div class="footer-policies">
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#terminosModal">Términos y Condiciones</a>
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#privacidadModal">Política de Privacidad</a>
-                </div>
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <p class="copyright mb-0">© 2025 StrateKaz. Marca @Kmylosky. Todos los derechos reservados.</p>
+            </div>
+            <div class="footer-policies">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#terminosModal">Términos y Condiciones</a>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#privacidadModal" class="ms-3">Política de Privacidad</a>
             </div>
         </div>
     </div>
+    
     <!-- Modales para Normativas -->
 
     <!-- Modal ISO 9001 -->
@@ -1018,6 +1027,50 @@
     
     .cta-card p {
         font-size: 1rem;
+    }
+}
+
+/* Estilos específicos para el nuevo footer con separadores verticales */
+.footer-divider-vertical {
+    width: 1px;
+    height: 180px;
+    background-color: rgba(0,0,0,0.08);
+    margin: 0 auto;
+}
+
+/* Iconos de redes sociales de un solo color */
+.social-icons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #ec268f;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 10px rgba(236, 38, 143, 0.2);
+    background-color: #d11f7d;
+}
+
+/* Ajustes responsivos para el footer */
+@media (max-width: 767px) {
+    .footer-divider-vertical {
+        height: 2px;
+        width: 50%;
+        margin: 20px auto;
     }
 }
 </style>

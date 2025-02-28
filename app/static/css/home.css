@@ -1087,3 +1087,142 @@
     margin-bottom: 0.5rem;
     color: #666;
 }
+
+/* Estilos mejorados para el footer según la imagen */
+.footer-section {
+    padding: 3rem 0 2rem;
+    background-color: #f8f9fa;
+}
+
+/* Separador vertical */
+.footer-divider-vertical {
+    width: 1px;
+    height: 180px;
+    background-color: rgba(0,0,0,0.1);
+    margin: 0;
+}
+
+/* Encabezados de columnas */
+.footer-heading {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1.25rem;
+    text-align: left;
+}
+
+/* Enlaces */
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.footer-links li {
+    margin-bottom: 0.75rem;
+}
+
+.footer-links a {
+    color: #6c757d;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.footer-links a:hover {
+    color: #ec268f;
+}
+
+/* Contacto */
+.footer-contact {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.footer-contact li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    color: #6c757d;
+}
+
+.footer-contact li i {
+    color: #ec268f;
+    margin-right: 0.75rem;
+    font-size: 0.9rem;
+}
+
+/* Iconos de redes sociales */
+.social-icons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #ec268f;
+    color: white;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: translateY(-3px);
+    background-color: #d11f7d;
+}
+
+/* Términos y políticas */
+.footer-policies a {
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.footer-policies a:hover {
+    color: #ec268f;
+}
+
+/* Divisor horizontal */
+.footer-divider {
+    border-color: rgba(0,0,0,0.08);
+}
+
+/* Copyright */
+.copyright {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 767px) {
+    .footer-divider-vertical {
+        display: none;
+    }
+    
+    .footer-section .row {
+        flex-direction: column;
+    }
+    
+    .footer-section .col, 
+    .footer-section .col-md-3 {
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .copyright, .footer-policies {
+        margin-bottom: 1rem;
+    }
+}

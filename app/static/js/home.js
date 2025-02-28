@@ -25,3 +25,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Scroll suave para enlaces internos y para enlaces desde otras páginas
+document.addEventListener('DOMContentLoaded', function() {
+    // Manejar hash en URL cuando se carga la página
+    if (window.location.hash) {
+        setTimeout(function() {
+            const targetId = window.location.hash.substring(1);
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            }
+        }, 100);
+    }
+});
+
