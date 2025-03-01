@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}Módulos - StrateKaz{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="dashboard-title">Módulos Disponibles</h2>
+            <p class="dashboard-subtitle">Selecciona el módulo que deseas implementar o gestionar</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Módulos disponibles -->
+    <div class="row">
+        {% for modulo in modulos %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="module-card {% if not modulo.available %}disabled{% endif %}">
+                <div class="module-card-content">
+                    <div class="module-card-icon">
+                        <i class="fas fa-{{ modulo.icon }}"></i>
+                    </div>
+                    <h4 class="module-card-title">{{ modulo.name }}</h4>
+                    <p class="module-card-description">{{ modulo.description }}</p>
+                    
+                    <div class="module-card-features">
+                        <h6>Características:</h6>
+                        <ul>
+                            {% if modulo.id == 'sg' %}
+                                <li>Configuración personalizada</li>
+                                <li>Múltiples normativas</li>
+                                <li>Reportes avanzados</li>
+                                <li>Integraciones</li>
+                            {% elif modulo.id == 'sgsst' %}
+                                <li>Cumplimiento Decreto 1072</li>
+                                <li>Matriz de riesgos</li>
+                                <li>Indicadores por estándar</li>
+                                <li>Gestor documental</li>
+                            {% elif modulo.id == 'pesv' %}
+                                <li>Cumplimiento Res. 40595</li>
+                                <li>Plan de acción automático</li>
+                                <li>Gestión de conductores</li>
+                                <li>Inspección de vehículos</li>
+                            {% elif modulo.id == 'ambiental' %}
+                                <li>ISO 14001</li>
+                                <li>Matriz de aspectos e impactos</li>
+                                <li>Cumplimiento legal</li>
+                                <li>Indicadores ambientales</li>
+                            {% else %}
+                                <li>Características personalizables</li>
+                                <li>Reportes avanzados</li>
+                                <li>Integraciones</li>
+                                <li>Gestor documental</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="module-card-footer">
+                    {% if modulo.available %}
+                        <a href="{{ url_for('dashboard.index') }}" class="btn btn-primary btn-module">
+                            <i class="fas fa-play me-2"></i>Acceder
+                        </a>
+                    {% else %}
+                        <div class="coming-soon-badge">
+                            <i class="fas fa-clock me-1"></i>Próximamente
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Planes y precios -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Planes y Módulos Adicionales</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Característica</th>
+                                    <th class="text-center">Plan Básico</th>
+                                    <th class="text-center">Plan Premium</th>
+                                    <th class="text-center">Plan Enterprise</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Módulos activos</td>
+                                    <td class="text-center">1</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center">Ilimitados</td>
+                                </tr>
+                                <tr>
+                                    <td>Usuarios</td>
+                                    <td class="text-center">5</td>
+                                    <td class="text-center">20</td>
+                                    <td class="text-center">Ilimitados</td>
+                                </tr>
+                                <tr>
+                                    <td>Almacenamiento</td>
+                                    <td class="text-center">5 GB</td>
+                                    <td class="text-center">50 GB</td>
+                                    <td class="text-center">500 GB</td>
+                                </tr>
+                                <tr>
+                                    <td>Soporte</td>
+                                    <td class="text-center">Email</td>
+                                    <td class="text-center">Email + Chat</td>
+                                    <td class="text-center">Email + Chat + Teléfono</td>
+                                </tr>
+                                <tr>
+                                    <td>Asistente IA</td>
+                                    <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Integraciones</td>
+                                    <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Modo sin conexión</td>
+                                    <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                                    <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                                    <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                                </tr>
+                                <tr>
+                                    <td class="border-0"></td>
+                                    <td class="text-center">
+                                        <a href="#" class="btn btn-outline-primary">
+                                            Tu plan actual
+                                        </a>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="#" class="btn btn-primary">
+                                            Actualizar
+                                        </a>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="#" class="btn btn-primary">
+                                            Actualizar
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Estilos para las tarjetas de módulos */
+    .module-card {
+        background-color: white;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--box-shadow-sm);
+        height: 100%;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .module-card:hover:not(.disabled) {
+        transform: translateY(-10px);
+        box-shadow: var(--box-shadow-md);
+    }
+
+    .module-card.disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    .module-card-content {
+        padding: 2rem 1.5rem;
+        flex: 1;
+    }
+
+    .module-card-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 20px;
+        background-color: rgba(236, 38, 143, 0.1);
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        font-size: 2rem;
+    }
+
+    .module-card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        color: var(--text-dark);
+    }
+
+    .module-card-description {
+        color: var(--text-medium);
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .module-card-features {
+        margin-bottom: 1rem;
+    }
+
+    .module-card-features h6 {
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        color: var(--text-dark);
+    }
+
+    .module-card-features ul {
+        padding-left: 1.25rem;
+        margin-bottom: 0;
+    }
+
+    .module-card-features li {
+        color: var(--text-medium);
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .module-card-footer {
+        padding: 1.25rem;
+        background-color: rgba(0, 0, 0, 0.02);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+
+    .btn-module {
+        padding: 0.6rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-module:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(236, 38, 143, 0.2);
+    }
+
+    .coming-soon-badge {
+        display: inline-block;
+        padding: 0.6rem 1.5rem;
+        border-radius: 50px;
+        background-color: rgba(0, 0, 0, 0.05);
+        color: var(--text-medium);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    /* Estilos para tabla de planes */
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table th {
+        background-color: rgba(0, 0, 0, 0.02);
+        font-weight: 600;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    /* Responsive */
+    @media (max-width: 767px) {
+        .module-card-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.75rem;
+            margin-bottom: 1.25rem;
+        }
+        
+        .module-card-title {
+            font-size: 1.3rem;
+        }
+        
+        .module-card-content {
+            padding: 1.5rem 1.25rem;
+        }
+        
+        .module-card-footer {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}

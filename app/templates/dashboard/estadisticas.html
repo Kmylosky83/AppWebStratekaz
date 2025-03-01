@@ -1,0 +1,521 @@
+{% extends "base.html" %}
+
+{% block title %}Estadísticas - StrateKaz{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="dashboard-title">Estadísticas y Análisis</h2>
+            <p class="dashboard-subtitle">Visualiza el progreso y desempeño de tus sistemas de gestión</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="btn-group">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-calendar-alt me-2"></i>Este mes
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Hoy</a></li>
+                    <li><a class="dropdown-item" href="#">Esta semana</a></li>
+                    <li><a class="dropdown-item active" href="#">Este mes</a></li>
+                    <li><a class="dropdown-item" href="#">Este trimestre</a></li>
+                    <li><a class="dropdown-item" href="#">Este año</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">Personalizado</a></li>
+                </ul>
+                <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjetas de resumen -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-4 mb-md-0">
+            <div class="stats-card">
+                <div class="stats-card-body">
+                    <div class="stats-card-icon bg-primary">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="stats-card-content">
+                        <h5 class="stats-card-title">{{ stats.pending_tasks }}</h5>
+                        <p class="stats-card-text">Tareas Pendientes</p>
+                    </div>
+                </div>
+                <div class="stats-card-footer">
+                    <span class="text-success">
+                        <i class="fas fa-arrow-up me-1"></i>5%
+                    </span>
+                    <span class="text-muted">vs mes anterior</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-4 mb-md-0">
+            <div class="stats-card">
+                <div class="stats-card-body">
+                    <div class="stats-card-icon bg-success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stats-card-content">
+                        <h5 class="stats-card-title">65%</h5>
+                        <p class="stats-card-text">Cumplimiento</p>
+                    </div>
+                </div>
+                <div class="stats-card-footer">
+                    <span class="text-success">
+                        <i class="fas fa-arrow-up me-1"></i>12%
+                    </span>
+                    <span class="text-muted">vs mes anterior</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-4 mb-md-0">
+            <div class="stats-card">
+                <div class="stats-card-body">
+                    <div class="stats-card-icon bg-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stats-card-content">
+                        <h5 class="stats-card-title">4</h5>
+                        <p class="stats-card-text">Riesgos Críticos</p>
+                    </div>
+                </div>
+                <div class="stats-card-footer">
+                    <span class="text-danger">
+                        <i class="fas fa-arrow-up me-1"></i>2
+                    </span>
+                    <span class="text-muted">vs mes anterior</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stats-card">
+                <div class="stats-card-body">
+                    <div class="stats-card-icon bg-info">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stats-card-content">
+                        <h5 class="stats-card-title">12</h5>
+                        <p class="stats-card-text">Documentos</p>
+                    </div>
+                </div>
+                <div class="stats-card-footer">
+                    <span class="text-success">
+                        <i class="fas fa-arrow-up me-1"></i>3
+                    </span>
+                    <span class="text-muted">vs mes anterior</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <!-- Gráfico principal -->
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Progreso de Cumplimiento</h5>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary active">Mensual</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Trimestral</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Anual</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="complianceChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Distribución de tareas -->
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Distribución de Tareas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="tasksChart" height="260"></canvas>
+                    </div>
+                    <div class="task-distribution-legend mt-3">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="legend-item">
+                                    <span class="legend-dot bg-success"></span>
+                                    <span>Completadas</span>
+                                    <span class="fw-bold">12</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="legend-item">
+                                    <span class="legend-dot bg-warning"></span>
+                                    <span>En progreso</span>
+                                    <span class="fw-bold">8</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="legend-item">
+                                    <span class="legend-dot bg-danger"></span>
+                                    <span>Pendientes</span>
+                                    <span class="fw-bold">5</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="legend-item">
+                                    <span class="legend-dot bg-info"></span>
+                                    <span>Retrasadas</span>
+                                    <span class="fw-bold">3</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Comparativa de módulos -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Comparativa de Módulos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="modulesChart" height="260"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indicadores clave -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Indicadores Clave</h5>
+                </div>
+                <div class="card-body">
+                    <div class="indicator-item mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Tasa de cumplimiento general</span>
+                            <span class="fw-bold">65%</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="indicator-item mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Tasa de resolución de riesgos</span>
+                            <span class="fw-bold">48%</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 48%;" aria-valuenow="48" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="indicator-item mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Documentación completada</span>
+                            <span class="fw-bold">72%</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 72%;" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="indicator-item mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Implementación de controles</span>
+                            <span class="fw-bold">54%</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 54%;" aria-valuenow="54" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="indicator-item">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Capacitación del personal</span>
+                            <span class="fw-bold">80%</span>
+                        </div>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gráfico de progreso de cumplimiento
+        const complianceCtx = document.getElementById('complianceChart').getContext('2d');
+        const complianceChart = new Chart(complianceCtx, {
+            type: 'line',
+            data: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                datasets: [{
+                    label: 'SG-SST',
+                    data: [45, 48, 52, 57, 59, 63, 65, 68, 72, 75, 78, 80],
+                    borderColor: '#ec268f',
+                    backgroundColor: 'rgba(236, 38, 143, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }, {
+                    label: 'PESV',
+                    data: [30, 33, 38, 40, 42, 45, 48, 52, 55, 58, 60, 62],
+                    borderColor: '#4361ee',
+                    backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Gráfico de distribución de tareas
+        const tasksCtx = document.getElementById('tasksChart').getContext('2d');
+        const tasksChart = new Chart(tasksCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completadas', 'En progreso', 'Pendientes', 'Retrasadas'],
+                datasets: [{
+                    data: [12, 8, 5, 3],
+                    backgroundColor: [
+                        '#28a745',
+                        '#ffc107',
+                        '#dc3545',
+                        '#17a2b8'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                cutout: '65%'
+            }
+        });
+        
+        // Gráfico de comparativa de módulos
+        const modulesCtx = document.getElementById('modulesChart').getContext('2d');
+        const modulesChart = new Chart(modulesCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Planificación', 'Implementación', 'Verificación', 'Mejora', 'Documentación'],
+                datasets: [{
+                    label: 'SG-SST',
+                    data: [80, 65, 70, 60, 85],
+                    backgroundColor: 'rgba(236, 38, 143, 0.2)',
+                    borderColor: '#ec268f',
+                    pointBackgroundColor: '#ec268f',
+                    pointBorderColor: '#fff'
+                }, {
+                    label: 'PESV',
+                    data: [60, 50, 45, 40, 70],
+                    backgroundColor: 'rgba(67, 97, 238, 0.2)',
+                    borderColor: '#4361ee',
+                    pointBackgroundColor: '#4361ee',
+                    pointBorderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        min: 0,
+                        max: 100,
+                        ticks: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Estilos para estadísticas */
+    .stats-card {
+        background-color: white;
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--box-shadow-sm);
+        height: 100%;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--box-shadow-md);
+    }
+
+    .stats-card-body {
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .stats-card-footer {
+        padding: 0.75rem 1.25rem;
+        background-color: rgba(0, 0, 0, 0.02);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        font-size: 0.85rem;
+    }
+
+    .stats-card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        color: white;
+        font-size: 1.25rem;
+    }
+
+    .stats-card-icon.bg-primary {
+        background-color: var(--primary-color);
+    }
+
+    .stats-card-content {
+        flex: 1;
+    }
+
+    .stats-card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+        color: var(--text-dark);
+    }
+
+    .stats-card-text {
+        color: var(--text-medium);
+        margin-bottom: 0;
+        font-size: 0.9rem;
+    }
+
+    /* Chart containers */
+    .chart-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Leyenda personalizada */
+    .task-distribution-legend {
+        padding-top: 0.5rem;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+
+    .legend-item span:nth-child(2) {
+        flex: 1;
+        font-size: 0.875rem;
+        color: var(--text-medium);
+    }
+
+    .legend-item span:last-child {
+        font-size: 0.875rem;
+    }
+
+    /* Indicadores */
+    .indicator-item {
+        padding-bottom: 0.75rem;
+    }
+
+    .indicator-item:not(:last-child) {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        margin-bottom: 0.75rem;
+    }
+
+    .indicator-item .progress {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Card header personalizado para gráficos */
+    .card-header .btn-group .btn-outline-secondary {
+        border-color: #e4e4e4;
+        color: var(--text-medium);
+        font-size: 0.875rem;
+        padding: 0.25rem 0.75rem;
+    }
+    
+    .card-header .btn-group .btn-outline-secondary.active {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+    
+    .card-header .btn-group .btn-outline-secondary:hover:not(.active) {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    /* Responsive */
+    @media (max-width: 767px) {
+        .stats-card-body {
+            padding: 1rem;
+        }
+        
+        .stats-card-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+        
+        .stats-card-title {
+            font-size: 1.25rem;
+        }
+        
+        .chart-container {
+            min-height: 250px;
+        }
+    }
+</style>
+{% endblock %}

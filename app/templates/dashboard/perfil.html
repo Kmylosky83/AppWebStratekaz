@@ -1,0 +1,455 @@
+{% extends "base.html" %}
+
+{% block title %}Mi Perfil - StrateKaz{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="dashboard-title">Mi Perfil</h2>
+            <p class="dashboard-subtitle">Gestiona tu información personal y preferencias</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información del perfil -->
+        <div class="col-lg-4 mb-4">
+            <div class="card profile-card">
+                <div class="card-body text-center">
+                    <div class="profile-avatar">
+                        {{ current_user.username[0] }}
+                    </div>
+                    <h5 class="profile-name mt-3">{{ current_user.username }}</h5>
+                    <p class="profile-email">{{ current_user.email }}</p>
+                    <div class="profile-type-badge mt-2">
+                        {% if current_user.user_type == 'professional' %}
+                            <span>Profesional Independiente</span>
+                        {% elif current_user.company_type == 'direct' %}
+                            <span>Empresa Directa</span>
+                        {% else %}
+                            <span>Consultora</span>
+                        {% endif %}
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="profile-stats">
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <h6>0</h6>
+                                    <small>Documentos</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <h6>{{ stats.pending_tasks }}</h6>
+                                    <small>Tareas</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <h6>0</h6>
+                                    <small>Proyectos</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de edición -->
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="profileTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-tab-pane" type="button" role="tab" aria-controls="info-tab-pane" aria-selected="true">Información Personal</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password-tab-pane" type="button" role="tab" aria-controls="password-tab-pane" aria-selected="false">Cambiar Contraseña</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings-tab-pane" type="button" role="tab" aria-controls="settings-tab-pane" aria-selected="false">Preferencias</button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="profileTabsContent">
+                        <!-- Información personal -->
+                        <div class="tab-pane fade show active" id="info-tab-pane" role="tabpanel" aria-labelledby="info-tab" tabindex="0">
+                            <form class="profile-form">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="username" class="form-label">Nombre de Usuario</label>
+                                        <input type="text" class="form-control" id="username" value="{{ current_user.username }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Correo Electrónico</label>
+                                        <input type="email" class="form-control" id="email" value="{{ current_user.email }}" readonly>
+                                    </div>
+                                    
+                                    {% if current_user.user_type == 'professional' %}
+                                    <div class="col-md-6">
+                                        <label for="first_name" class="form-label">Nombres</label>
+                                        <input type="text" class="form-control" id="first_name">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="last_name" class="form-label">Apellidos</label>
+                                        <input type="text" class="form-control" id="last_name">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="profession" class="form-label">Profesión</label>
+                                        <input type="text" class="form-control" id="profession">
+                                    </div>
+                                    {% else %}
+                                    <div class="col-md-6">
+                                        <label for="company_name" class="form-label">Nombre de la Empresa</label>
+                                        <input type="text" class="form-control" id="company_name">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="nit" class="form-label">NIT</label>
+                                        <input type="text" class="form-control" id="nit">
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label">Teléfono</label>
+                                        <input type="text" class="form-control" id="phone">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="city" class="form-label">Ciudad</label>
+                                        <input type="text" class="form-control" id="city">
+                                    </div>
+                                    
+                                    <div class="col-12 mt-4">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-2"></i>Guardar Cambios
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Cambiar contraseña -->
+                        <div class="tab-pane fade" id="password-tab-pane" role="tabpanel" aria-labelledby="password-tab" tabindex="0">
+                            <form class="profile-form">
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label for="current_password" class="form-label">Contraseña Actual</label>
+                                        <input type="password" class="form-control" id="current_password">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="new_password" class="form-label">Nueva Contraseña</label>
+                                        <input type="password" class="form-control" id="new_password">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="confirm_password" class="form-label">Confirmar Contraseña</label>
+                                        <input type="password" class="form-control" id="confirm_password">
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <div class="password-requirements mt-2">
+                                            <p class="small text-muted mb-2">La contraseña debe contener:</p>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <span class="badge bg-light text-dark" data-requirement="8+">
+                                                    <i class="fas fa-circle me-1"></i>8+ caracteres
+                                                </span>
+                                                <span class="badge bg-light text-dark" data-requirement="ABC">
+                                                    <i class="fas fa-circle me-1"></i>Mayúsculas
+                                                </span>
+                                                <span class="badge bg-light text-dark" data-requirement="abc">
+                                                    <i class="fas fa-circle me-1"></i>Minúsculas
+                                                </span>
+                                                <span class="badge bg-light text-dark" data-requirement="123">
+                                                    <i class="fas fa-circle me-1"></i>Números
+                                                </span>
+                                                <span class="badge bg-light text-dark" data-requirement="@#$">
+                                                    <i class="fas fa-circle me-1"></i>Símbolos
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12 mt-4">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-key me-2"></i>Cambiar Contraseña
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Preferencias -->
+                        <div class="tab-pane fade" id="settings-tab-pane" role="tabpanel" aria-labelledby="settings-tab" tabindex="0">
+                            <form class="profile-form">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <h6>Notificaciones</h6>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                                            <label class="form-check-label" for="emailNotifications">Recibir notificaciones por correo electrónico</label>
+                                        </div>
+                                        <div class="form-check form-switch mt-2">
+                                            <input class="form-check-input" type="checkbox" id="taskNotifications" checked>
+                                            <label class="form-check-label" for="taskNotifications">Notificaciones de tareas pendientes</label>
+                                        </div>
+                                        <div class="form-check form-switch mt-2">
+                                            <input class="form-check-input" type="checkbox" id="updateNotifications" checked>
+                                            <label class="form-check-label" for="updateNotifications">Notificaciones de actualizaciones del sistema</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12 mt-3">
+                                        <h6>Privacidad</h6>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="dataSharing">
+                                            <label class="form-check-label" for="dataSharing">Compartir datos anónimos para mejora del servicio</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12 mt-4">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-2"></i>Guardar Preferencias
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Función para validar contraseña
+        const newPasswordInput = document.getElementById('new_password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        
+        if (newPasswordInput && confirmPasswordInput) {
+            newPasswordInput.addEventListener('input', validatePassword);
+            confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+        }
+        
+        function validatePassword() {
+            const password = newPasswordInput.value;
+            const requirements = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /\d/.test(password),
+                special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+            
+            // Actualizar indicadores
+            document.querySelectorAll('[data-requirement]').forEach(indicator => {
+                const requirement = indicator.getAttribute('data-requirement');
+                let isValid = false;
+                
+                switch (requirement) {
+                    case '8+': isValid = requirements.length; break;
+                    case 'ABC': isValid = requirements.uppercase; break;
+                    case 'abc': isValid = requirements.lowercase; break;
+                    case '123': isValid = requirements.number; break;
+                    case '@#$': isValid = requirements.special; break;
+                }
+                
+                if (isValid) {
+                    indicator.classList.add('bg-success');
+                    indicator.classList.add('text-white');
+                    indicator.classList.remove('bg-light');
+                    indicator.classList.remove('text-dark');
+                    const icon = indicator.querySelector('i');
+                    if (icon) icon.className = 'fas fa-check-circle me-1';
+                } else {
+                    indicator.classList.remove('bg-success');
+                    indicator.classList.remove('text-white');
+                    indicator.classList.add('bg-light');
+                    indicator.classList.add('text-dark');
+                    const icon = indicator.querySelector('i');
+                    if (icon) icon.className = 'fas fa-circle me-1';
+                }
+            });
+        }
+        
+        function validatePasswordMatch() {
+            if (newPasswordInput.value === confirmPasswordInput.value) {
+                confirmPasswordInput.classList.add('is-valid');
+                confirmPasswordInput.classList.remove('is-invalid');
+            } else {
+                confirmPasswordInput.classList.add('is-invalid');
+                confirmPasswordInput.classList.remove('is-valid');
+            }
+        }
+    });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Estilos para el perfil */
+    .profile-card {
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--box-shadow-md);
+    }
+    
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        font-size: 2.5rem;
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(236, 38, 143, 0.3);
+    }
+    
+    .profile-name {
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.25rem;
+    }
+    
+    .profile-email {
+        color: var(--text-medium);
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .profile-type-badge {
+        display: inline-block;
+        padding: 0.35rem 1rem;
+        background-color: rgba(236, 38, 143, 0.1);
+        color: var(--primary-color);
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .profile-stats {
+        margin-top: 1rem;
+    }
+    
+    .profile-stats .stat-item {
+        text-align: center;
+    }
+    
+    .profile-stats .stat-item h6 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+        color: var(--text-dark);
+    }
+    
+    .profile-stats .stat-item small {
+        color: var(--text-medium);
+        font-size: 0.8rem;
+    }
+    
+    /* Estilos para las pestañas */
+    .nav-tabs .nav-link {
+        color: var(--text-medium);
+        font-weight: 600;
+        border: none;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s ease;
+    }
+    
+    .nav-tabs .nav-link:hover {
+        color: var(--primary-color);
+        background-color: rgba(236, 38, 143, 0.05);
+    }
+    
+    .nav-tabs .nav-link.active {
+        color: var(--primary-color);
+        border-bottom: 2px solid var(--primary-color);
+        background-color: transparent;
+    }
+    
+    /* Estilos para formularios */
+    .profile-form .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+    
+    .profile-form .form-control {
+        border-radius: var(--border-radius-md);
+        padding: 0.6rem 1rem;
+        border-color: var(--border-color);
+        transition: all 0.3s ease;
+    }
+    
+    .profile-form .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(236, 38, 143, 0.15);
+    }
+    
+    .profile-form .form-control:disabled,
+    .profile-form .form-control[readonly] {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+    
+    /* Estilos para checkbox de switch */
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    /* Requisitos de contraseña */
+    .password-requirements .badge {
+        padding: 0.5rem 0.75rem;
+        margin-right: 0.25rem;
+        margin-bottom: 0.25rem;
+        transition: all 0.3s ease;
+    }
+    
+    .password-requirements .badge.bg-success {
+        background-color: rgba(40, 167, 69, 0.1) !important;
+        color: #28a745 !important;
+    }
+    
+    /* Responsive */
+    @media (max-width: 767px) {
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+        }
+        
+        .profile-name {
+            font-size: 1.25rem;
+        }
+        
+        .profile-stats .stat-item h6 {
+            font-size: 1.1rem;
+        }
+        
+        .nav-tabs .nav-link {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}
