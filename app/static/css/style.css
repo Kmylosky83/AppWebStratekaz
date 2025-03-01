@@ -1,35 +1,40 @@
-/* Variables globales */
-:root {
-    /* Colores principales */
-    --primary-color: #ec268f;
-    --primary-dark: #d11f7d;
-    --primary-light: #f15ba5;
-    --accent-color: #f4ec25;
-    --accent-dark: #e6dc0d;
-    
-    /* Colores neutros */
-    --text-dark: #333333;
-    --text-medium: #666666;
-    --text-light: #999999;
-    --background-light: #f8f9fa;
-    --border-color: #e5e7eb;
-    
-    /* Espaciados */
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    
-    /* Bordes y sombras */
-    --border-radius-sm: 0.5rem;
-    --border-radius-md: 0.75rem;
-    --border-radius-lg: 1rem;
-    --box-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-    --box-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --box-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+/* Estilos generales del cuerpo */
+body {
+    font-family: var(--font-family);
+    color: var(--text-dark);
+    background-color: #fff;
 }
 
+/* Estilos para menú móvil */
+.mobile-menu {
+    display: none;
+    background-color: white;
+    box-shadow: var(--box-shadow-md);
+    border-top: 1px solid var(--border-color);
+    position: absolute;
+    width: 100%;
+    z-index: 99;
+    left: 0;
+    top: 100%;
+}
+
+.mobile-menu.show {
+    display: block;
+}
+
+.mobile-menu-item {
+    display: block;
+    padding: var(--spacing-md);
+    color: var(--text-dark);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color var(--transition-fast);
+}
+
+.mobile-menu-item:hover {
+    background-color: var(--background-light);
+    color: var(--primary-color);
+}
 /* Estilos base para tarjetas */
 .card {
     border: none;
@@ -299,4 +304,64 @@ hr {
     50% { border-color: var(--border-color); }
     75% { border-color: var(--primary-color); border-width: 2px; }
     100% { border-color: var(--border-color); }
+}
+
+/* Mejoras para alertas */
+.alert {
+    border-radius: var(--border-radius-md);
+    border: none;
+    box-shadow: var(--box-shadow-sm);
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.alert-success {
+    background-color: #d4f5e2;
+    color: #0d6832;
+}
+
+.alert-danger {
+    background-color: #fddddd;
+    color: #932738;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.alert-info {
+    background-color: #d9edf7;
+    color: #31708f;
+}
+
+/* Mejoras a la navegación */
+.site-header {
+    background-color: white;
+    box-shadow: var(--box-shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: all var(--transition-normal);
+}
+
+.site-header.scrolled {
+    box-shadow: var(--box-shadow-md);
+}
+
+.header-logo {
+    display: block;
+    transition: all var(--transition-normal);
+}
+
+.responsive-logo {
+    height: auto;
+    max-height: 45px;
+    transition: max-height var(--transition-normal);
+}
+
+@media (max-width: 767px) {
+    .responsive-logo {
+        max-height: 40px;
+    }
 }

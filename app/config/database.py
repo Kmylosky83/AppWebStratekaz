@@ -5,10 +5,22 @@ from flask_login import LoginManager
 db = SQLAlchemy()
 login_manager = LoginManager()
 
+import os
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv()
+
 def init_db(app):
     try:
+        # Obtener configuración de la base de datos desde variables de entorno
+        username = os.getenv('DB_USERNAME')
+        password = os.getenv('DB_PASSWORD')
+        host = os.getenv('DB_HOST')
+        database = os.getenv('DB_NAME')
+        
         # Configurar la base de datos
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://appwebuser:AppWeb2024@localhost/appwebstratekaz'
+        app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{username}:{password}@{host}/{database}'
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         
         # Inicializar extensiones

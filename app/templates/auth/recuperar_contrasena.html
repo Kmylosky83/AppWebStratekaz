@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Recuperar Contraseña - StrateKaz{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center login-container">
+    <div class="col-md-5 col-lg-4 col-sm-10">
+        <div class="auth-card">
+            <div class="card-body p-4">
+                <!-- Título centrado -->
+                <div class="text-center mb-4">
+                    <h4 class="auth-title">Recuperar Contraseña</h4>
+                    <p class="auth-subtitle">Ingresa tu correo electrónico para recibir un enlace de recuperación</p>
+                </div>
+                
+                <!-- Formulario -->
+                <form method="POST" class="needs-validation" novalidate>
+                    {{ form.csrf_token if form else '' }}
+                    
+                    <div class="mb-4 form-group">
+                        <label for="email" class="form-label">Correo electrónico</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="tucorreo@ejemplo.com" required>
+                        </div>
+                        <div class="invalid-feedback">
+                            Por favor ingresa un correo electrónico válido
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mb-4">
+                        <button type="submit" class="btn btn-primary btn-login">
+                            <i class="fas fa-paper-plane me-2"></i>Enviar Enlace
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Enlace a login -->
+                <div class="text-center mt-4">
+                    <p class="mb-2">¿Recordaste tu contraseña?</p>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Volver a Iniciar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

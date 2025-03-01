@@ -1,72 +1,63 @@
 from datetime import datetime, timedelta
 from app.models.empresa import Empresa
+from app.models.user import User
 
 class DashboardService:
-    """Servicio para proporcionar datos al dashboard."""
-    
     @staticmethod
-    def get_user_stats(user_id):
-        """Obtiene estadísticas para el dashboard del usuario."""
-        return {
-            'pending_tasks': DashboardService.get_pending_tasks_count(user_id),
-            'upcoming_events': DashboardService.get_upcoming_events(user_id),
-            'recent_activity': DashboardService.get_recent_activity(user_id)
+    def get_stats_for_user(user_id):
+        """Obtiene estadísticas para el dashboard de un usuario específico"""
+        stats = {
+            'total_empresas': 0,
+            'total_documentos': 0,
+            'pending_tasks': 3,  # Por ahora, valor fijo
+            'upcoming_events': [],
+            'recent_activity': []
         }
-    
-    @staticmethod
-    def get_pending_tasks_count(user_id):
-        """Obtiene el número de tareas pendientes."""
-        # En una versión futura, esto consultaría un modelo de tareas real
-        # Por ahora, devolvemos valores simulados
-        return 3
-    
-    @staticmethod
-    def get_upcoming_events(user_id):
-        """Obtiene eventos próximos para el usuario."""
-        # Simulamos eventos próximos hasta que tengamos un modelo real
-        today = datetime.now()
         
-        events = [
+        # Obtener empresas del usuario
+        empresas = Empresa.get_by_user(user_id)
+        stats['total_empresas'] = len(empresas)
+        
+        # Eventos próximos (ejemplo)
+        today = datetime.now()
+        stats['upcoming_events'] = [
             {
-                'title': 'Actualización de Matriz de Riesgos',
-                'date': today + timedelta(days=2, hours=3, minutes=30)
+                'title': 'Revisión SG-SST',
+                'date': today + timedelta(days=2),
+                'description': 'Revisión trimestral del Sistema de Gestión'
             },
             {
-                'title': 'Reunión de Seguimiento',
-                'date': today + timedelta(days=5, hours=1)
+                'title': 'Auditoría Interna',
+                'date': today + timedelta(days=5),
+                'description': 'Preparación para auditoría de certificación'
+            },
+            {
+                'title': 'Capacitación ISO 45001',
+                'date': today + timedelta(days=10),
+                'description': 'Capacitación para el personal operativo'
             }
         ]
         
-        return events
-    
-    @staticmethod
-    def get_recent_activity(user_id):
-        """Obtiene la actividad reciente del usuario."""
-        # Simulamos actividad reciente
-        now = datetime.now()
-        
-        activities = [
-            {
-                'icon': 'fas fa-user-edit',
-                'text': 'Actualizaste tu perfil',
-                'time': '5 minutos atrás'
-            },
-            {
-                'icon': 'fas fa-sign-in-alt',
-                'text': 'Iniciaste sesión desde un nuevo dispositivo',
-                'time': '2 horas atrás'
-            },
+        # Actividad reciente (ejemplo)
+        stats['recent_activity'] = [
             {
                 'icon': 'fas fa-file-alt',
-                'text': 'Creaste un nuevo documento',
-                'time': '1 día atrás'
+                'text': 'Se creó nuevo documento "Procedimiento de Compras"',
+                'time': 'Hace 2 horas',
+                'user': 'Tú'
+            },
+            {
+                'icon': 'fas fa-tasks',
+                'text': 'Se completó la tarea "Actualizar matriz de riesgos"',
+                'time': 'Ayer',
+                'user': 'Ana Gómez'
+            },
+            {
+                'icon': 'fas fa-user-plus',
+                'text': 'Se agregó nuevo usuario a la empresa "Consultores ABC"',
+                'time': 'Hace 2 días',
+                'user': 'Tú'
             }
         ]
         
-        return activities
-    
-    @staticmethod
-    def get_company_info(user_id):
-        """Obtiene información de empresas asociadas al usuario."""
-        companies = Empresa.get_by_user(user_id)
-        return companies
+        return stats
