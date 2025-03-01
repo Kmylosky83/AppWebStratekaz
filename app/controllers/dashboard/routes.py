@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
 from app.models.empresa import Empresa
+from app.services.dashboard_service import DashboardService
 
 dashboard_bp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
@@ -42,4 +43,44 @@ def perfil():
 @dashboard_bp.route('/estadisticas')
 @login_required
 def estadisticas():
-    return render_template('dashboard/estadisticas.html')
+    """Vista para mostrar estadísticas y análisis."""
+    stats = DashboardService.get_user_stats(current_user.id)
+    return render_template('dashboard/estadisticas.html', stats=stats)
+
+@dashboard_bp.route('/modulos')
+@login_required
+def modulos():
+    """Vista para mostrar los módulos disponibles."""
+    modulos = [
+        {
+            'id': 'sg',
+            'name': 'Sistema de Gestión',
+            'icon': 'clipboard-check',
+            'description': 'Diseñe e implemente cualquier sistema de gestión',
+            'available': True
+        },
+        {
+            'id': 'sgsst',
+            'name': 'SG-SST',
+            'icon': 'hard-hat',
+            'description': 'Gestione la seguridad y salud en el trabajo',
+            'available': True
+        },
+        {
+            'id': 'pesv',
+            'name': 'PESV',
+            'icon': 'car',
+            'description': 'Plan estratégico de seguridad vial',
+            'available': True
+        },
+        {
+            'id': 'ambiental',
+            'name': 'Gestión Ambiental',
+            'icon': 'leaf',
+            'description': 'Sistema de gestión ambiental',
+            'available': False
+        }
+    ]
+    
+    return render_template('dashboard/modulos.html', modulos=modulos)
+

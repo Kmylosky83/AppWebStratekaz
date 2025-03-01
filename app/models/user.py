@@ -14,6 +14,11 @@ class User(UserMixin, db.Model):
     login_attempts = db.Column(db.Integer, default=0)
     last_attempt_time = db.Column(db.DateTime, nullable=True)
     is_locked = db.Column(db.Boolean, default=False)
+    
+    user_type = db.Column(db.String(20), nullable=True)  # 'professional' o 'company'
+    company_type = db.Column(db.String(20), nullable=True)  # 'direct' o 'consultant'
+    account_verified = db.Column(db.Boolean, default=False)
+    last_login = db.Column(db.DateTime, nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

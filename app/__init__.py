@@ -18,17 +18,20 @@ def create_app():
     from app.controllers.dashboard.routes import dashboard_bp
     from app.controllers.empresas.routes import empresas_bp
     from app.controllers.main.routes import main_bp
+    from app.controllers.tareas.routes import tareas_bp
     
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
     app.register_blueprint(empresas_bp, url_prefix='/empresas')
     app.register_blueprint(main_bp)
+    app.register_blueprint(tareas_bp, url_prefix='/tareas')
     
     # Configurar login_manager
     @login_manager.user_loader
     def load_user(user_id):
         from app.models.user import User
         return User.query.get(int(user_id))
+        
     
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Por favor inicia sesión para acceder a esta página.'
@@ -56,3 +59,5 @@ def create_app():
 # Importar los modelos
 from app.models.user import User
 from app.models.empresa import Empresa
+from app.models.tarea import Tarea        
+        
