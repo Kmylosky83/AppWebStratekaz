@@ -1,0 +1,561 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Profesional - StrateKaz{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="dashboard-title">Bienvenido, {{ current_user.username }}</h2>
+            <p class="dashboard-subtitle">Aquí tienes un resumen de tu actividad reciente y tareas pendientes.</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{{ url_for('dashboard.perfil') }}" class="btn btn-outline-primary">
+                <i class="fas fa-user-cog me-2"></i>Mi Perfil
+            </a>
+        </div>
+    </div>
+
+    <!-- Tarjetas de estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-4 mb-md-0">
+            <div class="stats-card">
+                <div class="stats-card-body">
+                    <div class="stats-card-icon bg-primary">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="stats-card-content">
+                        <h5 class="stats-card-title">{{ stats.pending_tasks }}</h5>
+                        <p class="stats-card-text">Tareas Pendientes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-4 mb-md-0">
+            <div class="stats-card">
+                <div class="stats-card-body">
+                    <div class="stats-card-icon bg-success">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stats-card-content">
+                        <h5 class="stats-card-title">0</h5>
+                        <p class="stats-card-text">Documentos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-4 mb-md-0">
+            <div class="stats-card">
+                <div class="stats-card-body">
+                    <div class="stats-card-icon bg-warning">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stats-card-content">
+                        <h5 class="stats-card-title">0</h5>
+                        <p class="stats-card-text">Clientes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stats-card">
+                <div class="stats-card-body">
+                    <div class="stats-card-icon bg-info">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stats-card-content">
+                        <h5 class="stats-card-title">0</h5>
+                        <p class="stats-card-text">Proyectos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal del dashboard -->
+    <div class="row">
+        <!-- Módulos disponibles -->
+        <div class="col-md-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Módulos Disponibles</h5>
+                    <a href="#" class="btn btn-sm btn-outline-primary">Ver todos</a>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-4 col-sm-6">
+                            <div class="module-card">
+                                <div class="module-card-icon">
+                                    <i class="fas fa-clipboard-check"></i>
+                                </div>
+                                <h6>Sistema de Gestión</h6>
+                                <p>Diseñe e implemente cualquier sistema de gestión</p>
+                                <a href="#" class="module-card-link">Acceder</a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="module-card">
+                                <div class="module-card-icon">
+                                    <i class="fas fa-hard-hat"></i>
+                                </div>
+                                <h6>SG-SST</h6>
+                                <p>Gestione la seguridad y salud en el trabajo</p>
+                                <a href="#" class="module-card-link">Acceder</a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="module-card">
+                                <div class="module-card-icon">
+                                    <i class="fas fa-car"></i>
+                                </div>
+                                <h6>PESV</h6>
+                                <p>Plan estratégico de seguridad vial</p>
+                                <a href="#" class="module-card-link">Acceder</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Próximos eventos -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Próximos Eventos</h5>
+                </div>
+                <div class="card-body">
+                    {% if stats.upcoming_events %}
+                        <ul class="event-list">
+                            {% for event in stats.upcoming_events %}
+                            <li class="event-item">
+                                <div class="event-date">
+                                    <span class="event-day">{{ event.date.day }}</span>
+                                    <span class="event-month">{{ event.date.strftime('%b') }}</span>
+                                </div>
+                                <div class="event-details">
+                                    <h6 class="event-title">{{ event.title }}</h6>
+                                    <p class="event-time">
+                                        <i class="far fa-clock me-1"></i>
+                                        {{ event.date.strftime('%H:%M') }}
+                                    </p>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <img src="{{ url_for('static', filename='images/no-events.svg') }}" alt="No hay eventos" class="img-fluid mb-3" style="max-height: 120px;">
+                            <h6>No hay eventos próximos</h6>
+                            <p class="text-muted">Los eventos programados aparecerán aquí</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Actividad reciente -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Actividad Reciente</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if stats.recent_activity %}
+                        <ul class="activity-list">
+                            {% for activity in stats.recent_activity %}
+                            <li class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="{{ activity.icon }}"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="activity-text">{{ activity.text }}</p>
+                                    <span class="activity-time">{{ activity.time }}</span>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <img src="{{ url_for('static', filename='images/no-activity.svg') }}" alt="No hay actividad" class="img-fluid mb-3" style="max-height: 120px;">
+                            <h6>No hay actividad reciente</h6>
+                            <p class="text-muted">Tu actividad reciente aparecerá aquí</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Tareas pendientes -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Tareas Pendientes</h5>
+                    <a href="#" class="btn btn-sm btn-outline-primary">Ver todas</a>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="task-list">
+                        <li class="task-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="task1">
+                                <label class="form-check-label" for="task1">
+                                    Completar perfil profesional
+                                </label>
+                            </div>
+                            <span class="task-priority high">Alta</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="task2">
+                                <label class="form-check-label" for="task2">
+                                    Registrar primer cliente
+                                </label>
+                            </div>
+                            <span class="task-priority medium">Media</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="task3">
+                                <label class="form-check-label" for="task3">
+                                    Crear primer documento
+                                </label>
+                            </div>
+                            <span class="task-priority low">Baja</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Lógica para cambiar estado de tareas
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.task-item .form-check-input');
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const taskItem = this.closest('.task-item');
+                if (this.checked) {
+                    taskItem.classList.add('completed');
+                } else {
+                    taskItem.classList.remove('completed');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Estilos para el dashboard */
+    .dashboard-container {
+        padding: 1.5rem 0;
+    }
+
+    .dashboard-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .dashboard-subtitle {
+        color: var(--text-medium);
+        margin-bottom: 0;
+    }
+
+    /* Tarjetas de estadísticas */
+    .stats-card {
+        background-color: white;
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--box-shadow-sm);
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--box-shadow-md);
+    }
+
+    .stats-card-body {
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .stats-card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        color: white;
+        font-size: 1.25rem;
+    }
+
+    .stats-card-icon.bg-primary {
+        background-color: var(--primary-color);
+    }
+
+    .stats-card-content {
+        flex: 1;
+    }
+
+    .stats-card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+        color: var(--text-dark);
+    }
+
+    .stats-card-text {
+        color: var(--text-medium);
+        margin-bottom: 0;
+        font-size: 0.9rem;
+    }
+
+    /* Tarjetas de módulos */
+    .module-card {
+        background-color: white;
+        border-radius: var(--border-radius-md);
+        padding: 1.5rem;
+        text-align: center;
+        height: 100%;
+        box-shadow: var(--box-shadow-sm);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .module-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--box-shadow-md);
+    }
+
+    .module-card-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: rgba(236, 38, 143, 0.1);
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.5rem;
+    }
+
+    .module-card h6 {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+    }
+
+    .module-card p {
+        color: var(--text-medium);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .module-card-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: auto;
+        transition: all 0.2s ease;
+    }
+
+    .module-card-link:hover {
+        color: var(--primary-dark);
+    }
+
+    /* Lista de eventos */
+    .event-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .event-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #f1f1f1;
+    }
+
+    .event-item:last-child {
+        border-bottom: none;
+    }
+
+    .event-date {
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 8px;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+    }
+
+    .event-day {
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .event-month {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+
+    .event-details {
+        flex: 1;
+    }
+
+    .event-title {
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+    }
+
+    .event-time {
+        color: var(--text-medium);
+        font-size: 0.85rem;
+        margin-bottom: 0;
+    }
+
+    /* Lista de actividades */
+    .activity-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 1rem;
+        border-bottom: 1px solid #f1f1f1;
+    }
+
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .activity-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: rgba(236, 38, 143, 0.1);
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1rem;
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-text {
+        margin-bottom: 0.25rem;
+        font-size: 0.95rem;
+    }
+
+    .activity-time {
+        color: var(--text-light);
+        font-size: 0.8rem;
+    }
+
+    /* Lista de tareas */
+    .task-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .task-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #f1f1f1;
+        transition: background-color 0.2s ease;
+    }
+
+    .task-item:last-child {
+        border-bottom: none;
+    }
+
+    .task-item:hover {
+        background-color: rgba(0,0,0,0.01);
+    }
+
+    .task-item.completed .form-check-label {
+        text-decoration: line-through;
+        color: var(--text-light);
+    }
+
+    .task-priority {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+    }
+
+    .task-priority.high {
+        background-color: #ffeff3;
+        color: #e63757;
+    }
+
+    .task-priority.medium {
+        background-color: #fff4d9;
+        color: #f6c343;
+    }
+
+    .task-priority.low {
+        background-color: #e8f5e9;
+        color: #3dd47a;
+    }
+
+    @media (max-width: 767px) {
+        .stats-card-body {
+            padding: 1rem;
+        }
+        
+        .stats-card-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+        
+        .stats-card-title {
+            font-size: 1.25rem;
+        }
+        
+        .module-card {
+            padding: 1rem;
+        }
+        
+        .module-card-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.25rem;
+        }
+    }
+</style>
+{% endblock %}

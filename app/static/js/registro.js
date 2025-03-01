@@ -77,17 +77,6 @@ function validateCurrentStep() {
     switch(currentStep) {
         case 1:
             // Validar selección de tipo de usuario
-            if (!userType) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Selección requerida',
-                    text: 'Por favor, selecciona un tipo de usuario para continuar.'
-                });
-                return false;
-            }
-            return true;
-
-        case 2:
             if (userType === 'professional') {
                 const form = document.getElementById('professionalForm');
                 if (!form) return false;
@@ -98,35 +87,66 @@ function validateCurrentStep() {
                 const terms = form.querySelector('#terms_prof');
                 const privacy = form.querySelector('#privacy_prof');
             
-                // Validar email
+                // Validar email con animación suave
                 if (!validateEmailInRealTime(email)) {
-                    showValidationMessage(null, 'Por favor ingrese un correo electrónico válido');
+                    showValidationMessage(email, 'Por favor ingrese un correo electrónico válido', 'warning');
+                    email.focus();
                     return false;
                 }
             
-                // Validar contraseña
+                // Validar contraseña con mejor feedback
                 if (password && confirmPassword) {
                     const validation = validatePassword(password.value, confirmPassword.value, 'professional');
                     if (!validation.isValid) {
-                        showValidationMessage(null, 'La contraseña debe cumplir todos los requisitos');
+                        showValidationMessage(password, 'La contraseña debe cumplir todos los requisitos de seguridad', 'warning');
+                        password.focus();
                         return false;
                     }
                     if (password.value !== confirmPassword.value) {
-                        showValidationMessage(null, 'Las contraseñas no coinciden');
+                        showValidationMessage(confirmPassword, 'Las contraseñas no coinciden', 'warning');
+                        confirmPassword.focus();
                         return false;
                     }
                 }
-
-                // Validar términos y condiciones
+            
+                // Validar términos y condiciones con mejor UI
                 if (!terms.checked || !privacy.checked) {
-                    showValidationMessage(null, 'Debe aceptar los términos y condiciones y la política de privacidad');
+                    showValidationMessage(null, 'Debe aceptar los términos y condiciones y la política de privacidad', 'warning');
+                    
+                    // Destacar visualmente los checkboxes no marcados
+                    if (!terms.checked) {
+                        terms.parentElement.classList.add('checkbox-highlight');
+                        setTimeout(() => terms.parentElement.classList.remove('checkbox-highlight'), 1500);
+                    }
+                    if (!privacy.checked) {
+                        privacy.parentElement.classList.add('checkbox-highlight');
+                        setTimeout(() => privacy.parentElement.classList.remove('checkbox-highlight'), 1500);
+                    }
                     return false;
                 }
             
                 // Validar que todos los campos requeridos estén completos
-                if (!form.checkValidity()) {
-                    form.classList.add('was-validated');
-                    showValidationMessage(null, 'Por favor complete todos los campos requeridos');
+                const requiredFields = form.querySelectorAll('[required]');
+                let allValid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim() && field.type !== 'checkbox') {
+                        field.classList.add('is-invalid');
+                        allValid = false;
+                        
+                        // Animar suavemente el primer campo vacío
+                        if (allValid === false) {
+                            field.focus();
+                            field.classList.add('field-highlight');
+                            setTimeout(() => field.classList.remove('field-highlight'), 1500);
+                        }
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
+                });
+                
+                if (!allValid) {
+                    showValidationMessage(null, 'Por favor complete todos los campos requeridos', 'warning');
                     return false;
                 }
             
@@ -207,10 +227,15 @@ function validateCurrentStep() {
 
 
 function validateNIT(nit) {
-    // Verificar que tenga 9 dígitos
+    // Eliminar espacios y guiones
+    nit = nit.replace(/[\s-]/g, '');
+    
+    // Verificar que tenga exactamente 9 dígitos
     if (!/^\d{9}$/.test(nit)) return false;
     
-    // Aquí puedes agregar validaciones adicionales específicas para NITs colombianos
+    // Validar el dígito de verificación (simplificada para Colombia)
+    // En una implementación real, aquí iría el algoritmo completo de validación de NIT colombiano
+    
     return true;
 }
 
@@ -440,27 +465,9 @@ function validatePassword(password, confirmPassword = null, type = 'professional
 
     // Actualizar indicadores visuales
     const idPrefix = type === 'professional' ? '_prof' : '_company';
-    const strengthBar = document.getElementById(`password-strength${idPrefix}`);
     const requirements = document.querySelectorAll(`[data-requirement]`);
 
-    // Actualizar barra de progreso
-    if (strengthBar) {
-        const percentage = (validation.strength / 5) * 100;
-        strengthBar.style.width = `${percentage}%`;
-        strengthBar.setAttribute('aria-valuenow', percentage);
-
-         // Actualizar clase y color según fortaleza
-        strengthBar.className = 'progress-bar';        
-        if (validation.strength <= 2) {
-            strengthBar.classList.add('bg-danger');
-        } else if (validation.strength <= 4) {
-            strengthBar.classList.add('bg-warning');
-        } else {
-            strengthBar.classList.add('bg-success');
-        }
-    }
-
-    // Actualizar indicadores de requisitos
+    // Actualizar indicadores de requisitos con animación suave
     requirements.forEach(indicator => {
         const requirement = indicator.getAttribute('data-requirement');
         let isValid = false;
@@ -473,11 +480,22 @@ function validatePassword(password, confirmPassword = null, type = 'professional
             case '@#$': isValid = validation.requirements.special; break;
         }
 
-        indicator.classList.toggle('text-success', isValid);
-        indicator.classList.toggle('text-muted', !isValid);
+        // Transición suave entre estados
+        if (isValid) {
+            indicator.classList.add('text-success');
+            indicator.classList.remove('text-muted');
+        } else {
+            indicator.classList.remove('text-success');
+            indicator.classList.add('text-muted');
+        }
+        
         const icon = indicator.querySelector('i');
         if (icon) {
             icon.className = isValid ? 'fas fa-check-circle' : 'fas fa-circle';
+            if (isValid) {
+                icon.classList.add('animated-success');
+                setTimeout(() => icon.classList.remove('animated-success'), 500);
+            }
         }
     });
 
@@ -693,32 +711,70 @@ function togglePassword(inputId) {
 }
 
 function validateEmailInRealTime(input) {
+    if (!input) return false;
+    
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isValid = emailRegex.test(input.value);
-    const feedbackDiv = input.nextElementSibling;
     
-    if (isValid) {
-        input.classList.add('is-valid');
-        input.classList.remove('is-invalid');
-        return true;
-    } else {
-        input.classList.add('is-invalid');
-        input.classList.remove('is-valid');
-        return false;
-    }
+    // Añadir efecto de transición visual
+    setTimeout(() => {
+        if (isValid) {
+            input.classList.add('is-valid');
+            input.classList.remove('is-invalid');
+            // Añadir icono de verificación si no existe
+            let parent = input.parentElement;
+            if (parent.classList.contains('input-group') && !parent.querySelector('.valid-feedback')) {
+                let feedback = document.createElement('div');
+                feedback.className = 'valid-feedback';
+                feedback.textContent = 'Email válido';
+                parent.appendChild(feedback);
+            }
+        } else if (input.value.length > 0) {
+            input.classList.add('is-invalid');
+            input.classList.remove('is-valid');
+        }
+    }, 300);
+    
+    return isValid;
 }
 
 function showValidationMessage(input, message, type = 'error') {
+    // Determinar icono según tipo de mensaje
+    const icon = type === 'error' ? 'error' : 
+                 type === 'warning' ? 'warning' : 
+                 type === 'success' ? 'success' : 'info';
+    
+    // Mostrar mensaje con SweetAlert2 con mejor estilo
     Swal.fire({
-        icon: type === 'error' ? 'error' : 'warning',
-        title: type === 'error' ? 'Error de validación' : 'Atención',
+        icon: icon,
+        title: type === 'error' ? 'Error de validación' : 
+               type === 'warning' ? 'Atención' : 
+               type === 'success' ? '¡Correcto!' : 'Información',
         text: message,
         toast: true,
         position: 'top-end',
         showConfirmButton: false,
         timer: 3000,
-        timerProgressBar: true
+        timerProgressBar: true,
+        customClass: {
+            popup: 'validation-toast',
+            title: 'validation-toast-title',
+            content: 'validation-toast-content'
+        },
+        showClass: {
+            popup: 'animate__animated animate__fadeInRight'
+        },
+        hideClass: {
+            popup: 'animate__animated animate__fadeOutRight'
+        }
     });
+    
+    // Si se proporciona un input, añadir focus a ese campo
+    if (input) {
+        setTimeout(() => {
+            input.focus();
+        }, 300);
+    }
 }
 
 function handlePasswordInput(input) {
@@ -753,18 +809,60 @@ function finishRegistration() {
         buttons.style.display = 'none';
     }
 
+    // Mostrar animación de éxito con confeti
     Swal.fire({
         icon: 'success',
         title: '¡Registro exitoso!',
-        text: 'Tu cuenta ha sido creada correctamente.',
+        text: 'Tu cuenta ha sido creada correctamente. Serás redirigido al inicio de sesión.',
         showConfirmButton: false,
-        timer: 2000,
+        timer: 3000,
+        timerProgressBar: true,
         backdrop: 'rgba(255, 255, 255, 0.9)',
         customClass: {
-            popup: 'swal-custom-popup'
+            popup: 'swal-custom-popup',
+            title: 'swal-custom-title',
+            content: 'swal-custom-content'
+        },
+        showClass: {
+            popup: 'animate__animated animate__fadeInDown'
+        },
+        hideClass: {
+            popup: 'animate__animated animate__fadeOutUp'
+        },
+        didOpen: () => {
+            // Simular confeti con CSS (una alternativa a librerías externas)
+            createConfetti();
         },
         didClose: () => {
             window.location.href = '/auth/login';
         }
     });
+}
+
+// Función auxiliar para crear confeti con CSS
+function createConfetti() {
+    const confettiContainer = document.createElement('div');
+    confettiContainer.className = 'confetti-container';
+    document.body.appendChild(confettiContainer);
+    
+    // Crear 50 partículas de confeti
+    for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.animationDelay = Math.random() * 3 + 's';
+        confetti.style.backgroundColor = getRandomColor();
+        confettiContainer.appendChild(confetti);
+    }
+    
+    // Eliminar el confeti después de la animación
+    setTimeout(() => {
+        confettiContainer.remove();
+    }, 4000);
+}
+
+// Función auxiliar para color aleatorio
+function getRandomColor() {
+    const colors = ['#ec268f', '#f4ec25', '#4361ee', '#4cc9f0', '#7209b7'];
+    return colors[Math.floor(Math.random() * colors.length)];
 }

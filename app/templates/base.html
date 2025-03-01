@@ -21,9 +21,9 @@
             all: unset;
             display: block;
             background: white;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--box-shadow-sm);
             width: 100%;
         }
         
@@ -40,59 +40,59 @@
         
         /* Mantener estilos específicos del contenido */
         .static-card .card-body {
-            padding: 1rem;
+            padding: var(--spacing-md);
         }
-
+    
         /* Estilos globales */
         .btn-primary {
-            background-color: #ec268f;
-            border-color: #ec268f;
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
         }
         
         .btn-primary:hover {
-            background-color: #d11f7d;
-            border-color: #d11f7d;
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
         }
-
+    
         /* Prevenir efectos en tarjetas principales */
         .card.shadow-sm {
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+            box-shadow: var(--box-shadow-sm) !important;
         }
-
+    
         .card.shadow-sm:hover,
         .card.shadow-sm:focus,
         .card.shadow-sm:active {
             transform: none !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+            box-shadow: var(--box-shadow-sm) !important;
         }
-
+    
         /* Estilos para el encabezado y logo responsivo */
         .site-header {
             background-color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--box-shadow-sm);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
-
+    
         .header-logo {
             display: block;
         }
-
+    
         .responsive-logo {
             height: auto;
             width: auto;
             max-height: 40px;
             transition: max-height 0.3s ease;
         }
-
+    
         /* Media queries para ajustar tamaños en diferentes dispositivos */
         @media (min-width: 768px) {
             .responsive-logo {
                 max-height: 45px;
             }
         }
-
+    
         @media (max-width: 767px) {
             .hero-section {
                 padding-top: 60px; /* Espacio reducido en móvil */
@@ -106,20 +106,20 @@
                 max-height: 250px; /* Laberinto más pequeño en móvil */
             }
         }
-
+    
         /* Navegación móvil */
         .navbar-toggler {
             background: none;
             border: none;
-            color: #ec268f;
+            color: var(--primary-color);
             font-size: 1.5rem;
         }
-
+    
         /* Ajustes para que el contenido no quede debajo del header */
         body {
             padding-top: 10px;
         }
-
+    
         /* Botones de navegación más pequeños */
         .nav-buttons .btn {
             padding: 0.375rem 0.75rem;
