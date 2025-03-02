@@ -38,6 +38,14 @@ function selectUserType(type) {
     
     // Habilitar el botón siguiente
     document.getElementById('nextBtn').classList.remove('disabled');
+            
+    // Guardar selección en variable oculta
+    document.getElementById('hidden_user_type').value = type;
+}
+
+function updateProgressBar() {
+    const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+    document.getElementById('progress-bar').style.width = `${progress}%`;
 }
 
 function selectCompanyType(type) {
@@ -77,6 +85,13 @@ function validateCurrentStep() {
     switch(currentStep) {
         case 1:
             // Validar selección de tipo de usuario
+            if (!userType) {
+                showValidationMessage(null, 'Por favor seleccione un tipo de usuario');
+                return false;
+            }
+            return true;
+
+        case 2:
             if (userType === 'professional') {
                 const form = document.getElementById('professionalForm');
                 if (!form) return false;
@@ -155,12 +170,12 @@ function validateCurrentStep() {
                 // Validación para el tipo empresa
                 const companyTypeSelected = companyType !== null;
                 if (!companyTypeSelected) {
-                    showValidationMessage(null, 'Por favor seleccione un tipo de empresa');
+                    showValidationMessage(null, 'Por favor seleccione un tipo de empresa', 'warning');
                     return false;
                 }
                 return true;
             }
-            return true;
+            return false;
 
         case 3:
             if (userType === 'company') {
@@ -170,14 +185,14 @@ function validateCurrentStep() {
                 // Validar NIT
                 const nit = form.querySelector('input[name="nit"]');
                 if (nit && !validateNIT(nit.value)) {
-                    showValidationMessage(null, 'Por favor ingrese un NIT válido');
+                    showValidationMessage(null, 'Por favor ingrese un NIT válido', 'warning');
                     return false;
                 }
         
                 // Validar email corporativo
                 const email = form.querySelector('input[name="contact_email"]');
                 if (!validateEmailInRealTime(email)) {
-                    showValidationMessage(null, 'Por favor ingrese un correo electrónico válido');
+                    showValidationMessage(null, 'Por favor ingrese un correo electrónico válido', 'warning');
                     return false;
                 }
         
@@ -187,11 +202,11 @@ function validateCurrentStep() {
                 if (password && confirmPassword) {
                     const validation = validatePassword(password.value, confirmPassword.value, 'company');
                     if (!validation.isValid) {
-                        showValidationMessage(null, 'La contraseña debe cumplir todos los requisitos');
+                        showValidationMessage(null, 'La contraseña debe cumplir todos los requisitos', 'warning');
                         return false;
                     }
                     if (password.value !== confirmPassword.value) {
-                        showValidationMessage(null, 'Las contraseñas no coinciden');
+                        showValidationMessage(null, 'Las contraseñas no coinciden', 'warning');
                         return false;
                     }
                 }
@@ -200,18 +215,17 @@ function validateCurrentStep() {
                 const terms = form.querySelector('#terms_company');
                 const privacy = form.querySelector('#privacy_company');
                 if (!terms.checked || !privacy.checked) {
-                    showValidationMessage(null, 'Debe aceptar los términos y condiciones y la política de privacidad');
+                    showValidationMessage(null, 'Debe aceptar los términos y condiciones y la política de privacidad', 'warning');
                     return false;
                 }
         
                 // Validar formulario completo
                 if (!form.checkValidity()) {
                     form.classList.add('was-validated');
-                    showValidationMessage(null, 'Por favor complete todos los campos requeridos');
+                    showValidationMessage(null, 'Por favor complete todos los campos requeridos', 'warning');
                     return false;
                 }
             }
-            finishRegistration();
             return true;
 
         case 4:
@@ -865,4 +879,33 @@ function createConfetti() {
 function getRandomColor() {
     const colors = ['#ec268f', '#f4ec25', '#4361ee', '#4cc9f0', '#7209b7'];
     return colors[Math.floor(Math.random() * colors.length)];
+}
+
+// Asegurarse de que showValidationMessage esté definida
+if (typeof showValidationMessage !== 'function') {
+    function showValidationMessage(input, message, type = 'error') {
+        // Versión de respaldo por si SweetAlert no está disponible
+        if (typeof Swal === 'undefined') {
+            alert(message);
+            return;
+        }
+        
+        // Mostrar mensaje con SweetAlert2
+        Swal.fire({
+            icon: type === 'error' ? 'error' : type === 'warning' ? 'warning' : 'info',
+            title: type === 'error' ? 'Error' : type === 'warning' ? 'Atención' : 'Información',
+            text: message,
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+        
+        // Si se proporciona un input, añadir focus a ese campo
+        if (input) {
+            setTimeout(() => {
+                input.focus();
+            }, 300);
+        }
+    }
 }

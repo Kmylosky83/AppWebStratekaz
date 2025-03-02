@@ -11,9 +11,9 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256))
-    login_attempts = db.Column(db.Integer, default=0)
-    last_attempt_time = db.Column(db.DateTime, nullable=True)
-    is_locked = db.Column(db.Boolean, default=False)
+    #login_attempts = db.Column(db.Integer, default=0)
+    #last_attempt_time = db.Column(db.DateTime, nullable=True)
+    #is_locked = db.Column(db.Boolean, default=False)
     
     user_type = db.Column(db.String(20), nullable=True)  # 'professional' o 'company'
     company_type = db.Column(db.String(20), nullable=True)  # 'direct' o 'consultant'
@@ -31,28 +31,28 @@ class User(UserMixin, db.Model):
     
     def increment_login_attempts(self):
         """Incrementa los intentos de login y bloquea si es necesario"""
-        now = datetime.utcnow()
+        #now = datetime.utcnow()
         
         # Resetear intentos si han pasado más de 15 minutos
-        if (self.last_attempt_time and 
-            now - self.last_attempt_time > timedelta(minutes=15)):
-            self.login_attempts = 0
+        #if (self.last_attempt_time and 
+        #    now - self.last_attempt_time > timedelta(minutes=15)):
+        #    self.login_attempts = 0
         
-        self.login_attempts += 1
-        self.last_attempt_time = now
+        #self.login_attempts += 1
+        #self.last_attempt_time = now
         
         # Bloquear después de 5 intentos fallidos
-        if self.login_attempts >= 5:
-            self.is_locked = True
+        #if self.login_attempts >= 5:
+        #    self.is_locked = True
         
-        db.session.commit()
+        #db.session.commit()
 
     def reset_login_attempts(self):
         """Resetea los intentos de login"""
-        self.login_attempts = 0
-        self.is_locked = False
-        self.last_attempt_time = None
-        db.session.commit()
+        #self.login_attempts = 0
+        #self.is_locked = False
+        #self.last_attempt_time = None
+        #db.session.commit()
 
     @staticmethod
     def validate_password_strength(password):

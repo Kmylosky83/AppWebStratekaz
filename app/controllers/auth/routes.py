@@ -28,17 +28,17 @@ def login():
             return render_template('auth/login.html', error=error, email=email)
         
         # Verificar si el usuario está bloqueado
-        if user.is_locked:
-            if (user.last_attempt_time and 
-                datetime.utcnow() - user.last_attempt_time > timedelta(minutes=15)):
-                user.reset_login_attempts()
-            else:
-                error = 'Cuenta temporalmente bloqueada. Intenta de nuevo después de 15 minutos.'
-                return render_template('auth/login.html', error=error, email=email)
+        #if user.is_locked:
+        #    if (user.last_attempt_time and 
+        #        datetime.utcnow() - user.last_attempt_time > timedelta(minutes=15)):
+        #        user.reset_login_attempts()
+        #    else:
+        #        error = 'Cuenta temporalmente bloqueada. Intenta de nuevo después de 15 minutos.'
+        #        return render_template('auth/login.html', error=error, email=email)
         
         # Validar contraseña
         if user.check_password(password):
-            user.reset_login_attempts()
+            #user.reset_login_attempts()
             login_user(user, remember=remember)
             
             # Redireccionar a la página que intentaba visitar
@@ -123,16 +123,27 @@ def registro():
         return redirect(url_for('dashboard.index'))
         
     if request.method == 'POST':
-        username = request.form.get('username')
+        # Obtener datos del formulario
         email = request.form.get('email')
         password = request.form.get('password')
+        username = request.form.get('username')
+        user_type = request.form.get('user_type')
         
+        # Verificar si el email ya está registrado
         if User.query.filter_by(email=email).first():
             flash('El email ya está registrado.', 'danger')
             return render_template('auth/registro.html')
             
+        # Crear el nuevo usuario
         user = User(username=username, email=email)
         user.set_password(password)
+        
+        # Establecer tipo de usuario
+        user.user_type = user_type
+        
+        # Configuración específica según tipo
+        if user_type == 'company':
+            user.company_type = request.form.get('company_type')
         
         try:
             db.session.add(user)
@@ -141,8 +152,8 @@ def registro():
             return redirect(url_for('auth.login'))
         except Exception as e:
             db.session.rollback()
-            flash('Error en el registro.', 'danger')
-            print(f"Error: {str(e)}")
+            flash(f'Error en el registro: {str(e)}', 'danger')
+            print(f"Error en registro: {str(e)}")
     
     return render_template('auth/registro.html')
 

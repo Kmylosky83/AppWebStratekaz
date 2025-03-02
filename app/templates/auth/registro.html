@@ -23,6 +23,23 @@
                     <div class="progress-bar" role="progressbar" style="width: 0%" id="progress-bar"></div>
                 </div>
 
+                <!-- Formulario principal oculto que realmente se enviará -->
+                <form id="mainForm" method="POST" action="{{ url_for('auth.registro') }}" style="display: none;">
+                    <input type="hidden" name="username" id="hidden_username">
+                    <input type="hidden" name="email" id="hidden_email">
+                    <input type="hidden" name="password" id="hidden_password">
+                    <input type="hidden" name="user_type" id="hidden_user_type">
+                    <input type="hidden" name="company_type" id="hidden_company_type">
+                    <!-- Campos adicionales para profesional -->
+                    <input type="hidden" name="nombres" id="hidden_nombres">
+                    <input type="hidden" name="apellidos" id="hidden_apellidos">
+                    <input type="hidden" name="profesion" id="hidden_profesion">
+                    <!-- Campos adicionales para empresa -->
+                    <input type="hidden" name="company_name" id="hidden_company_name">
+                    <input type="hidden" name="nit" id="hidden_nit">
+                    <input type="hidden" name="industry" id="hidden_industry">
+                </form>
+
                 <!-- Step 1: Tipo de Usuario -->
                 <div class="step" id="step1">
                     <h5 class="text-center mb-4">¿Qué tipo de usuario eres?</h5>
@@ -403,4 +420,60 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 <!-- Custom JS -->
 <script src="{{ url_for('static', filename='js/registro.js') }}"></script>
+
+<script>
+// Agregamos función para completar el formulario principal y enviarlo
+function finishRegistration() {
+    // Rellenar el formulario principal con todos los datos recopilados
+    const mainForm = document.getElementById('mainForm');
+    
+    // Establecer el tipo de usuario
+    document.getElementById('hidden_user_type').value = userType;
+    
+    if (userType === 'professional') {
+        // Datos del profesional
+        const professionalForm = document.getElementById('professionalForm');
+        if (professionalForm) {
+            document.getElementById('hidden_username').value = professionalForm.querySelector('input[name="email"]').value.split('@')[0];
+            document.getElementById('hidden_email').value = professionalForm.querySelector('input[name="email"]').value;
+            document.getElementById('hidden_password').value = professionalForm.querySelector('#password_prof').value;
+            document.getElementById('hidden_nombres').value = professionalForm.querySelector('input[name="nombres"]').value;
+            document.getElementById('hidden_apellidos').value = professionalForm.querySelector('input[name="apellidos"]').value;
+            document.getElementById('hidden_profesion').value = professionalForm.querySelector('input[name="profesion"]').value;
+        }
+    } else if (userType === 'company') {
+        // Tipo de empresa
+        document.getElementById('hidden_company_type').value = companyType;
+        
+        // Datos de la empresa
+        const companyForm = document.getElementById('companyForm');
+        if (companyForm) {
+            document.getElementById('hidden_username').value = companyForm.querySelector('input[name="contact_email"]').value.split('@')[0];
+            document.getElementById('hidden_email').value = companyForm.querySelector('input[name="contact_email"]').value;
+            document.getElementById('hidden_password').value = companyForm.querySelector('#password_company').value;
+            document.getElementById('hidden_company_name').value = companyForm.querySelector('input[name="company_name"]').value;
+            document.getElementById('hidden_nit').value = companyForm.querySelector('input[name="nit"]').value;
+            document.getElementById('hidden_industry').value = companyForm.querySelector('select[name="industry"]').value;
+        }
+    }
+    
+    // Mostrar animación de éxito con confeti
+    Swal.fire({
+        icon: 'success',
+        title: '¡Registro exitoso!',
+        text: 'Tu cuenta será creada. Serás redirigido en breve...',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        backdrop: 'rgba(255, 255, 255, 0.9)',
+        didOpen: () => {
+            createConfetti();
+        },
+        didClose: () => {
+            // Enviar el formulario cuando se cierre el mensaje
+            mainForm.submit();
+        }
+    });
+}
+</script>
 {% endblock %}
