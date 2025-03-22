@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Asistencia - {{ ficha.titulo }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-white py-3 text-center">
+                    <h3 class="mb-1">Lista de Asistencia</h3>
+                    <h5 class="text-muted">{{ ficha.titulo }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Complete el formulario para registrar su asistencia a esta actividad.
+                    </div>
+                    
+                    <div class="ficha-info mb-4">
+                        <h6 class="border-bottom pb-2 mb-3">Información de la Actividad</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Fecha:</strong> {{ ficha.fecha.strftime('%d/%m/%Y %H:%M') }}</p>
+                                <p class="mb-1"><strong>Lugar:</strong> {{ ficha.lugar or 'No especificado' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Responsable:</strong> {{ ficha.responsable }}</p>
+                                <p class="mb-1"><strong>Duración:</strong> {{ ficha.duracion or 'No especificada' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form id="asistenciaForm">
+                        <input type="hidden" name="lista_id" value="{{ lista.id }}">
+                        
+                        <h6 class="border-bottom pb-2 mb-3">Datos del Asistente</h6>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre Completo *</label>
+                                <input type="text" class="form-control" name="nombre" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Correo Electrónico *</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Documento de Identidad</label>
+                                <input type="text" class="form-control" name="documento">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Cargo o Rol</label>
+                                <input type="text" class="form-control" name="cargo">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Teléfono de Contacto</label>
+                                <input type="text" class="form-control" name="telefono">
+                            </div>
+                        </div>
+                        
+                        {% if preguntas %}
+                        <h6 class="border-bottom pb-2 mb-3">Preguntas</h6>
+                        
+                        <div class="mb-4">
+                            {% for pregunta in preguntas %}
+                            <div class="mb-3">
+                                <label class="form-label">{{ pregunta.texto }}</label>
+                                
+                                {% if pregunta.tipo == 'texto' %}
+                                <textarea class="form-control" name="pregunta_{{ pregunta.id }}" rows="2"></textarea>
+                                
+                                {% elif pregunta.tipo == 'si_no' %}
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="pregunta_{{ pregunta.id }}" id="pregunta_{{ pregunta.id }}_si" value="Sí">
+                                        <label class="form-check-label" for="pregunta_{{ pregunta.id }}_si">Sí</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="pregunta_{{ pregunta.id }}" id="pregunta_{{ pregunta.id }}_no" value="No">
+                                        <label class="form-check-label" for="pregunta_{{ pregunta.id }}_no">No</label>
+                                    </div>
+                                </div>
+                                
+                                {% elif pregunta.tipo == 'opcion_multiple' %}
+                                <select class="form-select" name="pregunta_{{ pregunta.id }}">
+                                    <option value="">Seleccionar...</option>
+                                    {% for opcion in pregunta.opciones|from_json %}
+                                    <option value="{{ opcion }}">{{ opcion }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <h6 class="border-bottom pb-2 mb-3">Firma</h6>
+                        
+                        <div class="mb-4">
+                            <p class="text-muted small mb-2">Dibuje su firma en el recuadro a continuación:</p>
+                            <div class="signature-pad-container mb-2">
+                                <canvas id="signature-pad" class="signature-pad" width="600" height="200"></canvas>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="clear-signature">
+                                    <i class="fas fa-eraser me-1"></i>Borrar Firma
+                                </button>
+                            </div>
+                            <input type="hidden" name="firma_data" id="firma_data">
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check me-2"></i>Registrar Asistencia
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación -->
+<div class="modal fade" id="confirmacionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">¡Registro Exitoso!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h4>¡Gracias por su asistencia!</h4>
+                <p class="mb-0">Su registro ha sido completado correctamente.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .signature-pad-container {
+        position: relative;
+        width: 100%;
+        border: 1px solid #ddd;
+        border-radius: 0.25rem;
+        background-color: #fff;
+    }
+    
+    .signature-pad {
+        width: 100%;
+        height: 200px;
+        border-radius: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar pad de firma
+    const canvas = document.getElementById('signature-pad');
+    const signaturePad = new SignaturePad(canvas, {
+        backgroundColor: 'rgb(255, 255, 255)',
+        penColor: 'rgb(0, 0, 0)'
+    });
+    
+    // Ajustar tamaño del canvas
+    function resizeCanvas() {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
+        signaturePad.clear(); // Limpia el canvas
+    }
+    
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+    
+    // Botón para limpiar firma
+    document.getElementById('clear-signature').addEventListener('click', function() {
+        signaturePad.clear();
+    });
+    
+    // Manejar envío del formulario
+    document.getElementById('asistenciaForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Verificar que hay firma
+        if (signaturePad.isEmpty()) {
+            alert('Por favor, firme antes de enviar el formulario.');
+            return false;
+        }
+        
+        // Guardar firma
+        document.getElementById('firma_data').value = signaturePad.toDataURL();
+        
+        // Enviar datos
+        const formData = new FormData(this);
+        
+        fetch("{{ url_for('formacion.registrar_asistente') }}", {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Mostrar modal de confirmación
+                const confirmacionModal = new bootstrap.Modal(document.getElementById('confirmacionModal'));
+                confirmacionModal.show();
+                
+                // Limpiar formulario
+                document.getElementById('asistenciaForm').reset();
+                signaturePad.clear();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error al enviar los datos: ' + error);
+        });
+    });
+});
+</script>
+{% endblock %}

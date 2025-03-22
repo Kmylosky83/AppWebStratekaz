@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Fichas de Formación - StrateKaz{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Fichas de Formación</h2>
+        <a href="{{ url_for('formacion.crear_ficha') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Nueva Ficha
+        </a>
+    </div>
+
+    {% if fichas %}
+        <div class="row">
+            {% for ficha in fichas %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm hover-effect">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ ficha.titulo }}</h5>
+                            <p class="card-text text-muted mb-2">
+                                <i class="far fa-calendar-alt me-2"></i>{{ ficha.fecha.strftime('%d/%m/%Y') }}
+                            </p>
+                            <p class="card-text small">{{ ficha.descripcion|truncate(100) }}</p>
+                            
+                            <div class="d-flex justify-content-between">
+                                <span class="badge bg-secondary">{{ ficha.codigo }}</span>
+                                <span class="text-muted small">
+                                    {% set lista = ficha.listas_asistencia[0] if ficha.listas_asistencia else None %}
+                                    {% if lista %}
+                                        {{ lista.asistentes|length }} asistentes
+                                    {% else %}
+                                        Sin asistentes
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <a href="{{ url_for('formacion.ver_ficha', ficha_id=ficha.id) }}" class="btn btn-sm btn-outline-primary w-100">
+                                <i class="fas fa-eye me-1"></i>Ver Detalles
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <img src="{{ url_for('static', filename='images/empty-data.svg') }}" alt="Sin fichas" class="img-fluid mb-3" style="max-height: 150px;">
+            <h5>No hay fichas de formación</h5>
+            <p class="text-muted">Comienza creando tu primera ficha de formación</p>
+            <a href="{{ url_for('formacion.crear_ficha') }}" class="btn btn-primary mt-2">
+                <i class="fas fa-plus me-2"></i>Crear Ficha
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

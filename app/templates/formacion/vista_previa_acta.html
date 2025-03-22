@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Acta de Formación - {{ ficha.titulo }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Acta de Formación</h3>
+                    <button class="btn btn-primary" id="descargar-pdf">
+                        <i class="fas fa-download me-2"></i>Descargar PDF
+                    </button>
+                </div>
+                <div class="card-body" id="acta-contenido">
+                    <!-- Cabecera del documento -->
+                    <div class="acta-header mb-4">
+                        <div class="row align-items-center mb-3">
+                            <div class="col-6">
+                                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" class="img-fluid" style="max-height: 50px;">
+                            </div>
+                            <div class="col-6 text-end">
+                                <p class="mb-0"><strong>Código:</strong> {{ ficha.codigo }}</p>
+                                <p class="mb-0"><strong>Fecha:</strong> {{ ficha.fecha.strftime('%d/%m/%Y') }}</p>
+                            </div>
+                        </div>
+                        <div class="acta-title text-center mb-3">
+                            <h4 class="mb-1">ACTA DE FORMACIÓN</h4>
+                            <h5>{{ ficha.titulo }}</h5>
+                        </div>
+                    </div>
+                    
+                    <!-- Información de la formación -->
+                    <div class="acta-info mb-4">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th style="width: 30%;">Responsable:</th>
+                                    <td>{{ ficha.responsable }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fecha y Hora:</th>
+                                    <td>{{ ficha.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Lugar:</th>
+                                    <td>{{ ficha.lugar or 'No especificado' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Duración:</th>
+                                    <td>{{ ficha.duracion or 'No especificada' }}</td>
+                                </tr>
+                                {% if ficha.empresa %}
+                                <tr>
+                                    <th>Empresa:</th>
+                                    <td>{{ ficha.empresa.nombre }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <th>Objetivos:</th>
+                                    <td>{{ ficha.objetivos or 'No especificados' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Lista de asistentes -->
+                    <div class="acta-asistentes mb-4">
+                        <h5 class="mb-3">Asistentes</h5>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nombre</th>
+                                    <th>Correo Electrónico</th>
+                                    <th>Cargo</th>
+                                    <th>Firma</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for asistente in lista.asistentes %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>{{ asistente.nombre }}</td>
+                                    <td>{{ asistente.email }}</td>
+                                    <td>{{ asistente.cargo or '-' }}</td>
+                                    <td>
+                                        {% if asistente.firma_data %}
+                                        <img src="{{ asistente.firma_data }}" alt="Firma" style="max-height: 50px;">
+                                        {% else %}
+                                        <span class="text-muted">Sin firma</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Observaciones y conclusiones -->
+                    <div class="acta-footer mb-4">
+                        <h5 class="mb-3">Observaciones y Conclusiones</h5>
+                        <div class="border p-3" style="min-height: 150px;">
+                            <p>{{ ficha.descripcion or 'Sin observaciones registradas.' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('descargar-pdf').addEventListener('click', function() {
+        // Configuración del PDF
+        const element = document.getElementById('acta-contenido');
+        const opt = {
+            margin: [10, 10, 10, 10],
+            filename: 'Acta_{{ ficha.codigo }}.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        
+        // Generar PDF
+        html2pdf().set(opt).from(element).save();
+    });
+});
+</script>
+{% endblock %}

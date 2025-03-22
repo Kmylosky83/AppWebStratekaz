@@ -79,7 +79,16 @@ def modulos():
             'icon': 'leaf',
             'description': 'Sistema de gestión ambiental',
             'available': False
+        },
+        {
+            'id': 'asistencia',
+            'name': 'Lista de Asistencia',
+            'icon': 'clipboard-list',
+            'description': 'Gestione la asistencia a capacitaciones y eventos',
+            'available': True,
+            'url': '/formacion'  # Ruta al módulo de formación
         }
+        
     ]
     
     return render_template('dashboard/modulos.html', modulos=modulos)

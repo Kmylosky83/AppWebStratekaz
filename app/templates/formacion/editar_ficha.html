@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Ficha - {{ ficha.titulo }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-white py-3">
+                    <h3 class="card-title mb-0">Editar Ficha de Formación</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('formacion.editar_ficha', ficha_id=ficha.id) }}">
+                        <div class="row g-3">
+                            <!-- Información básica -->
+                            <div class="col-md-12">
+                                <label for="titulo" class="form-label">Título de la Formación *</label>
+                                <input type="text" class="form-control" id="titulo" name="titulo" required value="{{ ficha.titulo }}">
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <label for="descripcion" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3">{{ ficha.descripcion }}</textarea>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="fecha" class="form-label">Fecha y Hora *</label>
+                                <input type="datetime-local" class="form-control" id="fecha" name="fecha" required 
+                                       value="{{ ficha.fecha.strftime('%Y-%m-%dT%H:%M') }}">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="lugar" class="form-label">Lugar</label>
+                                <input type="text" class="form-control" id="lugar" name="lugar" value="{{ ficha.lugar }}">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="duracion" class="form-label">Duración</label>
+                                <input type="text" class="form-control" id="duracion" name="duracion" 
+                                       placeholder="Ej: 2 horas" value="{{ ficha.duracion }}">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="responsable" class="form-label">Responsable *</label>
+                                <input type="text" class="form-control" id="responsable" name="responsable" 
+                                       required value="{{ ficha.responsable }}">
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <label for="objetivos" class="form-label">Objetivos</label>
+                                <textarea class="form-control" id="objetivos" name="objetivos" rows="3">{{ ficha.objetivos }}</textarea>
+                            </div>
+                            
+                            <div class="col-12 mt-4 d-flex justify-content-between">
+                                <a href="{{ url_for('formacion.ver_ficha', ficha_id=ficha.id) }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Guardar Cambios
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

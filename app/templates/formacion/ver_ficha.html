@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}{{ ficha.titulo }} - StrateKaz{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                    <h3 class="mb-0">{{ ficha.titulo }}</h3>
+                    <span class="badge bg-secondary">{{ ficha.codigo }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Fecha:</strong> {{ ficha.fecha.strftime('%d/%m/%Y %H:%M') }}</p>
+                            <p class="mb-1"><strong>Lugar:</strong> {{ ficha.lugar or 'No especificado' }}</p>
+                            <p class="mb-1"><strong>Duración:</strong> {{ ficha.duracion or 'No especificada' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Responsable:</strong> {{ ficha.responsable }}</p>
+                            {% if ficha.empresa_id %}
+                            <p class="mb-1"><strong>Empresa:</strong> {{ ficha.empresa.nombre }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Descripción</h5>
+                        <p>{{ ficha.descripcion or 'Sin descripción' }}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Objetivos</h5>
+                        <p>{{ ficha.objetivos or 'Sin objetivos definidos' }}</p>
+                    </div>
+                    
+                    {% if ficha.preguntas %}
+                    <div class="mb-4">
+                        <h5>Preguntas para Asistentes</h5>
+                        <div class="list-group">
+                            {% for pregunta in ficha.preguntas %}
+                            <div class="list-group-item">
+                                <h6 class="mb-1">{{ pregunta.texto }}</h6>
+                                <p class="mb-0 text-muted small">
+                                    Tipo: 
+                                    {% if pregunta.tipo == 'texto' %}
+                                        Texto libre
+                                    {% elif pregunta.tipo == 'si_no' %}
+                                        Sí/No
+                                    {% elif pregunta.tipo == 'opcion_multiple' %}
+                                        Opción múltiple
+                                    {% endif %}
+                                </p>
+                                
+                                {% if pregunta.tipo == 'opcion_multiple' %}
+                                <div class="mt-2">
+                                    <strong>Opciones:</strong>
+                                    <ul class="mb-0">
+                                        {% for opcion in pregunta.opciones|from_json %}
+                                        <li>{{ opcion }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-white d-flex justify-content-between">
+                    <a href="{{ url_for('formacion.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver
+                    </a>
+                    <div>
+                        <a href="{{ url_for('formacion.editar_ficha', ficha_id=ficha.id) }}" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-edit me-2"></i>Editar
+                        </a>
+                        {% if lista and lista.asistentes %}
+                        <a href="{{ url_for('formacion.generar_acta', ficha_id=ficha.id) }}" class="btn btn-primary">
+                            <i class="fas fa-file-pdf me-2"></i>Generar Acta
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">Lista de Asistencia</h5>
+                </div>
+                <div class="card-body">
+                    {% if lista %}
+                        <div class="d-grid gap-3 mb-4">
+                            <button class="btn btn-primary" data-clipboard-text="{{ url_for('formacion.lista_asistencia', enlace=lista.enlace_compartible, _external=True) }}" id="copiar-enlace">
+                                <i class="fas fa-link me-2"></i>Copiar Enlace
+                            </button>
+                            <a href="{{ url_for('formacion.lista_asistencia', enlace=lista.enlace_compartible) }}" target="_blank" class="btn btn-outline-primary">
+                                <i class="fas fa-external-link-alt me-2"></i>Abrir Formulario
+                            </a>
+                        </div>
+                        
+                        <h6>Asistentes Registrados</h6>
+                        
+                        {% if lista.asistentes %}
+                            <div class="list-group mt-3">
+                                {% for asistente in lista.asistentes %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">{{ asistente.nombre }}</h6>
+                                        <p class="mb-0 text-muted small">{{ asistente.email }}</p>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">
+                                        {{ asistente.fecha_registro.strftime('%d/%m/%Y') }}
+                                    </span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <img src="{{ url_for('static', filename='images/empty-data.svg') }}" alt="Sin asistentes" class="img-fluid mb-3" style="max-height: 100px;">
+                                <p class="text-muted mb-0">Aún no hay asistentes registrados</p>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p class="text-muted">No se ha creado una lista de asistencia para esta ficha</p>
+                            <button class="btn btn-primary mt-2">Crear Lista de Asistencia</button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar clipboard.js
+    const clipboard = new ClipboardJS('#copiar-enlace');
+    
+    clipboard.on('success', function(e) {
+        const button = e.trigger;
+        const originalText = button.innerHTML;
+        
+        button.innerHTML = '<i class="fas fa-check me-2"></i>¡Enlace Copiado!';
+        button.classList.remove('btn-primary');
+        button.classList.add('btn-success');
+        
+        setTimeout(function() {
+            button.innerHTML = originalText;
+            button.classList.remove('btn-success');
+            button.classList.add('btn-primary');
+        }, 2000);
+        
+        e.clearSelection();
+    });
+});
+</script>
+{% endblock %}

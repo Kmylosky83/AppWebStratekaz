@@ -63,7 +63,7 @@
                 
                 <div class="module-card-footer">
                     {% if modulo.available %}
-                        <a href="{{ url_for('dashboard.index') }}" class="btn btn-primary btn-module">
+                        <a href="{{ modulo.url if modulo.url else url_for('dashboard.index') }}" class="btn btn-primary btn-module">
                             <i class="fas fa-play me-2"></i>Acceder
                         </a>
                     {% else %}

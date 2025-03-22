@@ -19,12 +19,14 @@ def create_app():
     from app.controllers.empresas.routes import empresas_bp
     from app.controllers.main.routes import main_bp
     from app.controllers.tareas.routes import tareas_bp
+    from app.controllers.formacion.routes import formacion_bp
     
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
     app.register_blueprint(empresas_bp, url_prefix='/empresas')
     app.register_blueprint(main_bp)
     app.register_blueprint(tareas_bp, url_prefix='/tareas')
+    app.register_blueprint(formacion_bp, url_prefix='/formacion')
     
     # Configurar login_manager
     @login_manager.user_loader
@@ -54,10 +56,19 @@ def create_app():
             current_year=datetime.now().year
         )
         
+    @app.template_filter('from_json')
+    def parse_json(value):
+        import json
+        try:
+            return json.loads(value)
+        except:
+            return []
+        
     return app
 
 # Importar los modelos
 from app.models.user import User
 from app.models.empresa import Empresa
-from app.models.tarea import Tarea        
+from app.models.tarea import Tarea     
+from app.models.formacion import FichaFormacion, ListaAsistencia, Asistente, PreguntaFormacion, RespuestaFormacion   
         

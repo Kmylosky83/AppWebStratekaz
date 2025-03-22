@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Ficha de Formación - StrateKaz{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-white py-3">
+                    <h3 class="card-title mb-0">Nueva Ficha de Formación</h3>
+                </div>
+                <div class="card-body">
+                    <form id="fichaNuevaForm" method="POST" action="{{ url_for('formacion.crear_ficha') }}">
+                        <div class="row g-3">
+                            <!-- Información básica -->
+                            <div class="col-md-12">
+                                <label for="titulo" class="form-label">Título de la Formación *</label>
+                                <input type="text" class="form-control" id="titulo" name="titulo" required>
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <label for="descripcion" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="fecha" class="form-label">Fecha y Hora *</label>
+                                <input type="datetime-local" class="form-control" id="fecha" name="fecha" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="lugar" class="form-label">Lugar</label>
+                                <input type="text" class="form-control" id="lugar" name="lugar">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="duracion" class="form-label">Duración</label>
+                                <input type="text" class="form-control" id="duracion" name="duracion" placeholder="Ej: 2 horas">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="responsable" class="form-label">Responsable *</label>
+                                <input type="text" class="form-control" id="responsable" name="responsable" required>
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <label for="objetivos" class="form-label">Objetivos</label>
+                                <textarea class="form-control" id="objetivos" name="objetivos" rows="3"></textarea>
+                            </div>
+                            
+                            {% if empresas %}
+                            <div class="col-md-12">
+                                <label for="empresa_id" class="form-label">Empresa</label>
+                                <select class="form-select" id="empresa_id" name="empresa_id">
+                                    <option value="">Seleccionar empresa...</option>
+                                    {% for empresa in empresas %}
+                                    <option value="{{ empresa.id }}">{{ empresa.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Preguntas -->
+                            <div class="col-12 mt-4">
+                                <h5>Preguntas para Asistentes</h5>
+                                <p class="text-muted small">Agregue preguntas para los asistentes (opcionales)</p>
+                                
+                                <div id="preguntas-container">
+                                    <!-- Aquí se agregarán las preguntas dinámicamente -->
+                                </div>
+                                
+                                <input type="hidden" name="preguntas" id="preguntas-json" value="[]">
+                                
+                                <button type="button" class="btn btn-outline-primary mt-3" id="agregar-pregunta">
+                                    <i class="fas fa-plus me-2"></i>Agregar Pregunta
+                                </button>
+                            </div>
+                            
+                            <div class="col-12 mt-4 d-flex justify-content-between">
+                                <a href="{{ url_for('formacion.index') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Guardar Ficha
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Template para pregunta -->
+<template id="pregunta-template">
+    <div class="card mb-3 pregunta-item">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <h6 class="card-title">Pregunta <span class="numero-pregunta"></span></h6>
+                <button type="button" class="btn btn-sm btn-outline-danger eliminar-pregunta">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Texto de la pregunta</label>
+                <input type="text" class="form-control pregunta-texto">
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Tipo de respuesta</label>
+                <select class="form-select pregunta-tipo">
+                    <option value="texto">Texto libre</option>
+                    <option value="si_no">Sí/No</option>
+                    <option value="opcion_multiple">Opción múltiple</option>
+                </select>
+            </div>
+            
+            <div class="opciones-container d-none">
+                <label class="form-label">Opciones de respuesta</label>
+                <div class="opciones-lista">
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control opcion-texto" placeholder="Opción 1">
+                        <button class="btn btn-outline-danger eliminar-opcion" type="button">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary agregar-opcion mt-2">
+                    <i class="fas fa-plus me-1"></i>Agregar Opción
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const preguntasContainer = document.getElementById('preguntas-container');
+    const preguntasJson = document.getElementById('preguntas-json');
+    const agregarPreguntaBtn = document.getElementById('agregar-pregunta');
+    const preguntaTemplate = document.getElementById('pregunta-template');
+    
+    let preguntas = [];
+    
+    // Agregar pregunta
+    agregarPreguntaBtn.addEventListener('click', function() {
+        const nuevaPregunta = preguntaTemplate.content.cloneNode(true);
+        const preguntaItem = nuevaPregunta.querySelector('.pregunta-item');
+        const numeroPregunta = preguntas.length + 1;
+        
+        preguntaItem.dataset.index = preguntas.length;
+        nuevaPregunta.querySelector('.numero-pregunta').textContent = numeroPregunta;
+        
+        // Evento para cambiar tipo de pregunta
+        const tipoSelect = nuevaPregunta.querySelector('.pregunta-tipo');
+        const opcionesContainer = nuevaPregunta.querySelector('.opciones-container');
+        
+        tipoSelect.addEventListener('change', function() {
+            if (this.value === 'opcion_multiple') {
+                opcionesContainer.classList.remove('d-none');
+            } else {
+                opcionesContainer.classList.add('d-none');
+            }
+            actualizarPreguntas();
+        });
+        
+        // Evento para eliminar pregunta
+        nuevaPregunta.querySelector('.eliminar-pregunta').addEventListener('click', function() {
+            const index = parseInt(preguntaItem.dataset.index);
+            preguntas.splice(index, 1);
+            preguntaItem.remove();
+            actualizarNumerosPreguntas();
+            actualizarPreguntas();
+        });
+        
+        // Eventos para agregar/eliminar opciones
+        nuevaPregunta.querySelector('.agregar-opcion').addEventListener('click', function() {
+            const opcionesLista = this.parentElement.querySelector('.opciones-lista');
+            const nuevaOpcion = document.createElement('div');
+            nuevaOpcion.className = 'input-group mb-2';
+            nuevaOpcion.innerHTML = `
+                <input type="text" class="form-control opcion-texto" placeholder="Nueva opción">
+                <button class="btn btn-outline-danger eliminar-opcion" type="button">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            nuevaOpcion.querySelector('.eliminar-opcion').addEventListener('click', function() {
+                nuevaOpcion.remove();
+                actualizarPreguntas();
+            });
+            
+            opcionesLista.appendChild(nuevaOpcion);
+            actualizarPreguntas();
+        });
+        
+        // Eventos para inputs
+        nuevaPregunta.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('input', actualizarPreguntas);
+        });
+        
+        preguntasContainer.appendChild(nuevaPregunta);
+        
+        // Añadir pregunta al array
+        preguntas.push({
+            texto: '',
+            tipo: 'texto',
+            opciones: []
+        });
+        
+        actualizarPreguntas();
+    });
+    
+    // Actualizar números de preguntas
+    function actualizarNumerosPreguntas() {
+        document.querySelectorAll('.pregunta-item').forEach((item, index) => {
+            item.dataset.index = index;
+            item.querySelector('.numero-pregunta').textContent = index + 1;
+        });
+    }
+    
+    // Actualizar array de preguntas
+    function actualizarPreguntas() {
+        preguntas = [];
+        
+        document.querySelectorAll('.pregunta-item').forEach(item => {
+            const texto = item.querySelector('.pregunta-texto').value;
+            const tipo = item.querySelector('.pregunta-tipo').value;
+            const opciones = [];
+            
+            if (tipo === 'opcion_multiple') {
+                item.querySelectorAll('.opcion-texto').forEach(input => {
+                    if (input.value.trim()) {
+                        opciones.push(input.value.trim());
+                    }
+                });
+            }
+            
+            preguntas.push({ texto, tipo, opciones });
+        });
+        
+        // Actualizar input hidden
+        preguntasJson.value = JSON.stringify(preguntas);
+    }
+    
+    // Validación del formulario
+    document.getElementById('fichaNuevaForm').addEventListener('submit', function(event) {
+        const titulo = document.getElementById('titulo').value;
+        const fecha = document.getElementById('fecha').value;
+        const responsable = document.getElementById('responsable').value;
+        
+        if (!titulo || !fecha || !responsable) {
+            event.preventDefault();
+            alert('Por favor complete todos los campos requeridos.');
+            return false;
+        }
+        
+        // Validar preguntas
+        let preguntasValidas = true;
+        preguntas.forEach(pregunta => {
+            if (!pregunta.texto) {
+                preguntasValidas = false;
+            }
+            
+            if (pregunta.tipo === 'opcion_multiple' && pregunta.opciones.length < 2) {
+                preguntasValidas = false;
+            }
+        });
+        
+        if (!preguntasValidas && preguntas.length > 0) {
+            event.preventDefault();
+            alert('Por favor complete correctamente todas las preguntas.');
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}
