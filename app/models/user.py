@@ -68,3 +68,16 @@ class User(UserMixin, db.Model):
         if not any(char in "!@#$%^&*()_+-=[]{}|;:,.<>?" for char in password):
             return False
         return True
+    
+    @staticmethod
+    def generate_unique_username(base_username):
+        """Genera un nombre de usuario único basado en el email o nombre proporcionado"""
+        username = base_username
+        counter = 1
+        
+        # Verificar si existe y añadir un número hasta encontrar uno único
+        while User.query.filter_by(username=username).first():
+            username = f"{base_username}{counter}"
+            counter += 1
+            
+        return username

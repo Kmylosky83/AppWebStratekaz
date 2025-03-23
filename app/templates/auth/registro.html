@@ -618,6 +618,17 @@ function finishRegistration() {
             // Enviar el formulario cuando se cierre el mensaje
             mainForm.submit();
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si estamos en la página final de registro
+            const completarBtn = document.querySelector('.btn-primary[id="completar-registro"]');
+            if (completarBtn) {
+                completarBtn.addEventListener('click', function() {
+                    // Enviar el formulario principal
+                    document.getElementById('mainForm').submit();
+                });
+            }
+        });
     });
 }
 </script>

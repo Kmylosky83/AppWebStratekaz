@@ -84,42 +84,6 @@ function selectCompanyType(type, cardElement) {
     
     // Guardar selección en el hidden field (no en localStorage)
     document.getElementById('hidden_company_type').value = type;
-}function selectCompanyType(type, cardElement) {
-    companyType = type;
-    
-    // Remover selección previa
-    document.querySelectorAll('.company-type-card').forEach(card => {
-        card.classList.remove('selected');
-        card.style.borderColor = '';
-        
-        // Resetear efectos visuales
-        const icon = card.querySelector('i');
-        const title = card.querySelector('h6');
-        if (icon) icon.style.color = '';
-        if (title) title.style.color = '';
-    });
-    
-    // Aplicar selección actual
-    cardElement.classList.add('selected');
-    cardElement.style.borderColor = '#ec268f';
-    
-    // Efectos visuales adicionales
-    const icon = cardElement.querySelector('i');
-    const title = cardElement.querySelector('h6');
-    if (icon) icon.style.color = '#ec268f';
-    if (title) title.style.color = '#ec268f';
-    
-    // Habilitar botón y mostrar feedback visual
-    const nextBtn = document.getElementById('nextBtn');
-    nextBtn.classList.remove('disabled');
-    nextBtn.style.backgroundColor = '#ec268f';
-    nextBtn.style.borderColor = '#ec268f';
-    
-    // Actualizar la barra de progreso
-    updateProgressBar();
-    
-    // Guardar selección en el hidden field (no en localStorage)
-    document.getElementById('hidden_company_type').value = type;
 }
 
 function validateCurrentStep() {    
@@ -308,6 +272,13 @@ function updateBodyClass() {
 function nextStep() {
     if (!validateCurrentStep()) return;
     
+    // Si es una empresa y está en el paso 3 (último paso de información)
+    if (userType === 'company' && currentStep === 3 && validateCurrentStep()) {
+        // Enviar formulario directamente sin mostrar la pantalla adicional
+        finishRegistration();
+        return;
+    }
+    
     currentStep++;
     updateStepDisplay();
 }
@@ -384,9 +355,9 @@ function updateStepContent() {
             }
             break;
         case 4:
-            if (userType === 'company') {
-                finishRegistration();
-            }
+            // Siempre completar registro aquí, independientemente del tipo
+            finishRegistration();
+            
             break;
     }
     
@@ -885,25 +856,60 @@ function handlePasswordInput(input) {
 }
 
 function finishRegistration() {
-    // Ocultar toda la tarjeta del formulario
+    // Rellenar el formulario principal con todos los datos recopilados
+    const mainForm = document.getElementById('mainForm');
+    
+    // Establecer tipo de usuario y llenar datos según sea profesional o empresa
+    document.getElementById('hidden_user_type').value = userType;
+    
+    if (userType === 'professional') {
+        // Datos del profesional
+        const professionalForm = document.getElementById('professionalForm');
+        if (professionalForm) {
+            document.getElementById('hidden_username').value = professionalForm.querySelector('input[name="email"]').value.split('@')[0];
+            document.getElementById('hidden_email').value = professionalForm.querySelector('input[name="email"]').value;
+            document.getElementById('hidden_password').value = professionalForm.querySelector('#password_prof').value;
+            document.getElementById('hidden_nombres').value = professionalForm.querySelector('input[name="nombres"]').value;
+            document.getElementById('hidden_apellidos').value = professionalForm.querySelector('input[name="apellidos"]').value;
+            document.getElementById('hidden_profesion').value = professionalForm.querySelector('input[name="profesion"]').value;
+        }
+    } else if (userType === 'company') {
+        // Tipo de empresa
+        document.getElementById('hidden_company_type').value = companyType;
+        
+        // Datos de la empresa
+        const companyForm = document.getElementById('companyForm');
+        if (companyForm) {
+            document.getElementById('hidden_username').value = companyForm.querySelector('input[name="contact_email"]').value.split('@')[0];
+            document.getElementById('hidden_email').value = companyForm.querySelector('input[name="contact_email"]').value;
+            document.getElementById('hidden_password').value = companyForm.querySelector('#password_company').value;
+            document.getElementById('hidden_company_name').value = companyForm.querySelector('input[name="company_name"]').value;
+            document.getElementById('hidden_nit').value = companyForm.querySelector('input[name="nit"]').value;
+            document.getElementById('hidden_industry').value = companyForm.querySelector('select[name="industry"]').value;
+        }
+    }
+    
+    // Ocultar elementos visuales
     const card = document.querySelector('.card');
     if (card) {
         card.style.display = 'none';
     }
 
-    // Ocultar los botones de navegación
     const buttons = document.querySelector('.d-flex.justify-content-between');
     if (buttons) {
         buttons.style.display = 'none';
     }
 
+    // Enviar el formulario antes de mostrar el mensaje
+    mainForm.submit();
+    
     // Mostrar animación de éxito con confeti
     Swal.fire({
         icon: 'success',
         title: '¡Registro exitoso!',
         text: 'Tu cuenta ha sido creada correctamente. Serás redirigido al inicio de sesión.',
         showConfirmButton: false,
-        timer: 3000,
+        timer: 5000,  // Mismo tiempo para ambos flujos 
         timerProgressBar: true,
         backdrop: 'rgba(255, 255, 255, 0.9)',
         customClass: {
@@ -911,18 +917,11 @@ function finishRegistration() {
             title: 'swal-custom-title',
             content: 'swal-custom-content'
         },
-        showClass: {
-            popup: 'animate__animated animate__fadeInDown'
-        },
-        hideClass: {
-            popup: 'animate__animated animate__fadeOutUp'
-        },
         didOpen: () => {
-            // Simular confeti con CSS (una alternativa a librerías externas)
             createConfetti();
-        },
-        didClose: () => {
-            window.location.href = '/auth/login';
+            setTimeout(() => {
+                mainForm.submit();  // Enviar formulario después de mostrar la animación
+            }, 3000);
         }
     });
 }
