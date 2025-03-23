@@ -78,78 +78,6 @@
         </div>
     </div>
 
-    <!-- Empresas registradas -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">Empresas Registradas</h5>
-                    <a href="{{ url_for('empresas.nueva_empresa') }}" class="btn btn-sm btn-primary">
-                        <i class="fas fa-plus me-1"></i>Nueva Empresa
-                    </a>
-                </div>
-                <div class="card-body">
-                    {% if empresas %}
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>RUC/NIT</th>
-                                        <th>Fecha Registro</th>
-                                        <th>Cumplimiento</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for empresa in empresas %}
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="company-avatar">
-                                                    {{ empresa.nombre[0] }}
-                                                </div>
-                                                <span class="ms-2 fw-medium">{{ empresa.nombre }}</span>
-                                            </div>
-                                        </td>
-                                        <td>{{ empresa.ruc }}</td>
-                                        <td>{{ empresa.created_at.strftime('%d/%m/%Y') }}</td>
-                                        <td>
-                                            <div class="progress" style="height: 6px;">
-                                                <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                                            </div>
-                                            <span class="small">0%</span>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group">
-                                                <a href="#" class="btn btn-sm btn-outline-primary">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="#" class="btn btn-sm btn-outline-info">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <div class="text-center py-4">
-                            <img src="{{ url_for('static', filename='images/empty-company.svg') }}" alt="No hay empresas" class="img-fluid mb-3" style="max-height: 150px;" onerror="this.src='https://via.placeholder.com/150x150?text=No+Empresas'">
-                            <h5>No tienes empresas registradas</h5>
-                            <p class="text-muted mb-4">Registra tu primera empresa para comenzar</p>
-                            <a href="{{ url_for('empresas.nueva_empresa') }}" class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Registrar Empresa
-                            </a>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="row">
         <!-- Módulos disponibles -->
         <div class="col-md-8 mb-4">
@@ -165,8 +93,8 @@
                                 <div class="module-card-icon">
                                     <i class="fas fa-clipboard-check"></i>
                                 </div>
-                                <h6>Sistema de Gestión</h6>
-                                <p>Diseñe e implemente cualquier sistema de gestión</p>
+                                <h6>Sistemas de Gestión</h6>
+                                <p>Gestione su organización desde cualquier parte del mundo</p>
                                 <a href="#" class="module-card-link">Acceder</a>
                             </div>
                         </div>
@@ -176,7 +104,7 @@
                                     <i class="fas fa-hard-hat"></i>
                                 </div>
                                 <h6>SG-SST</h6>
-                                <p>Gestione la seguridad y salud en el trabajo</p>
+                                <p>Sistema de gestión de Seguridad y Salud en el Trabajo</p>
                                 <a href="#" class="module-card-link">Acceder</a>
                             </div>
                         </div>
@@ -195,11 +123,83 @@
                                 <div class="module-card-icon">
                                     <i class="fas fa-clipboard-list"></i>
                                 </div>
-                                <h6>Lista de Asistencia</h6>
-                                <p>Gestione la asistencia a capacitaciones y eventos</p>
+                                <h6>Caja de Herramientas</h6>
+                                <p>Utilice nuestras herramientas para la productividad</p>
                                 <a href="{{ url_for('formacion.index') }}" class="module-card-link">Acceder</a>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empresas registradas -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Empresas Registradas</h5>
+                        <a href="{{ url_for('empresas.nueva_empresa') }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus me-1"></i>Nueva Empresa
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        {% if empresas %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>RUC/NIT</th>
+                                            <th>Fecha Registro</th>
+                                            <th>Cumplimiento</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for empresa in empresas %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="company-avatar">
+                                                        {{ empresa.nombre[0] }}
+                                                    </div>
+                                                    <span class="ms-2 fw-medium">{{ empresa.nombre }}</span>
+                                                </div>
+                                            </td>
+                                            <td>{{ empresa.ruc }}</td>
+                                            <td>{{ empresa.created_at.strftime('%d/%m/%Y') }}</td>
+                                            <td>
+                                                <div class="progress" style="height: 6px;">
+                                                    <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                                <span class="small">0%</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a href="#" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-sm btn-outline-info">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <img src="{{ url_for('static', filename='images/empty-company.svg') }}" alt="No hay empresas" class="img-fluid mb-3" style="max-height: 150px;" onerror="this.src='https://via.placeholder.com/150x150?text=No+Empresas'">
+                                <h5>No tienes empresas registradas</h5>
+                                <p class="text-muted mb-4">Registra tu primera empresa para comenzar</p>
+                                <a href="{{ url_for('empresas.nueva_empresa') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Registrar Empresa
+                                </a>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
