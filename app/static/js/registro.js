@@ -48,37 +48,78 @@ function updateProgressBar() {
     document.getElementById('progress-bar').style.width = `${progress}%`;
 }
 
-function selectCompanyType(type) {
+function selectCompanyType(type, cardElement) {
     companyType = type;
     
     // Remover selección previa
     document.querySelectorAll('.company-type-card').forEach(card => {
         card.classList.remove('selected');
         card.style.borderColor = '';
-        // Remover efectos visuales adicionales
-        card.querySelector('i').style.color = '';
-        card.querySelector('h6').style.color = '';
+        
+        // Resetear efectos visuales
+        const icon = card.querySelector('i');
+        const title = card.querySelector('h6');
+        if (icon) icon.style.color = '';
+        if (title) title.style.color = '';
     });
     
     // Aplicar selección actual
-    const selectedCard = event.currentTarget;
-    selectedCard.classList.add('selected');
-    selectedCard.style.borderColor = '#ec268f';
+    cardElement.classList.add('selected');
+    cardElement.style.borderColor = '#ec268f';
     
     // Efectos visuales adicionales
-    selectedCard.querySelector('i').style.color = '#ec268f';
-    selectedCard.querySelector('h6').style.color = '#ec268f';
+    const icon = cardElement.querySelector('i');
+    const title = cardElement.querySelector('h6');
+    if (icon) icon.style.color = '#ec268f';
+    if (title) title.style.color = '#ec268f';
     
     // Habilitar botón y mostrar feedback visual
     const nextBtn = document.getElementById('nextBtn');
     nextBtn.classList.remove('disabled');
-    nextBtn.classList.add('pulse'); // Agregar efecto de pulso
+    nextBtn.style.backgroundColor = '#ec268f';
+    nextBtn.style.borderColor = '#ec268f';
     
     // Actualizar la barra de progreso
     updateProgressBar();
     
-    // Guardar selección
-    localStorage.setItem('companyType', type);
+    // Guardar selección en el hidden field (no en localStorage)
+    document.getElementById('hidden_company_type').value = type;
+}function selectCompanyType(type, cardElement) {
+    companyType = type;
+    
+    // Remover selección previa
+    document.querySelectorAll('.company-type-card').forEach(card => {
+        card.classList.remove('selected');
+        card.style.borderColor = '';
+        
+        // Resetear efectos visuales
+        const icon = card.querySelector('i');
+        const title = card.querySelector('h6');
+        if (icon) icon.style.color = '';
+        if (title) title.style.color = '';
+    });
+    
+    // Aplicar selección actual
+    cardElement.classList.add('selected');
+    cardElement.style.borderColor = '#ec268f';
+    
+    // Efectos visuales adicionales
+    const icon = cardElement.querySelector('i');
+    const title = cardElement.querySelector('h6');
+    if (icon) icon.style.color = '#ec268f';
+    if (title) title.style.color = '#ec268f';
+    
+    // Habilitar botón y mostrar feedback visual
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.classList.remove('disabled');
+    nextBtn.style.backgroundColor = '#ec268f';
+    nextBtn.style.borderColor = '#ec268f';
+    
+    // Actualizar la barra de progreso
+    updateProgressBar();
+    
+    // Guardar selección en el hidden field (no en localStorage)
+    document.getElementById('hidden_company_type').value = type;
 }
 
 function validateCurrentStep() {    
@@ -298,6 +339,13 @@ function updateStepDisplay() {
     // Si es el último paso, cambiar el texto del botón
     const nextBtn = document.getElementById('nextBtn');
     nextBtn.textContent = currentStep === totalSteps ? 'Completar Registro' : 'Siguiente';
+
+    // Deshabilitar el botón en el paso 2 para empresas
+    if (currentStep === 2 && userType === 'company') {
+        nextBtn.classList.add('disabled');
+        nextBtn.style.backgroundColor = ''; // Volver al color gris
+        nextBtn.style.borderColor = '';
+    }
     
     // Actualizar contenido según el paso
     updateStepContent();
@@ -311,6 +359,18 @@ function updateStepContent() {
         case 2:
             if (userType === 'company') {
                 stepDiv.innerHTML = getCompanyTypeHTML();
+                
+                // Agregar eventos de clic a las tarjetas después de actualizar el HTML
+                document.querySelectorAll('.company-type-card').forEach(card => {
+                    card.addEventListener('click', function() {
+                        const type = this.getAttribute('data-company-type');
+                        selectCompanyType(type, this);
+                    });
+                });
+                
+                // Asegurar que el botón esté deshabilitado inicialmente
+                const nextBtn = document.getElementById('nextBtn');
+                nextBtn.classList.add('disabled');
             } else {
                 stepDiv.innerHTML = getProfessionalFormHTML();
             }
@@ -555,7 +615,7 @@ function getCompanyTypeHTML() {
         <h5 class="text-center mb-4">¿Qué tipo de empresa eres?</h5>
         <div class="row g-4">
             <div class="col-md-6">
-                <div class="card h-100 company-type-card" onclick="selectCompanyType('direct')">
+                <div class="card h-100 company-type-card" data-company-type="direct">
                     <div class="card-body text-center p-4">
                         <i class="fas fa-building fa-3x mb-3"></i>
                         <h6>Empresa Directa</h6>
@@ -564,7 +624,7 @@ function getCompanyTypeHTML() {
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="card h-100 company-type-card" onclick="selectCompanyType('consultant')">
+                <div class="card h-100 company-type-card" data-company-type="consultant">
                     <div class="card-body text-center p-4">
                         <i class="fas fa-handshake fa-3x mb-3"></i>
                         <h6>Consultora</h6>
