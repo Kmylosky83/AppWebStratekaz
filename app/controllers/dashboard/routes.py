@@ -22,9 +22,9 @@ def index():
         empresas = Empresa.get_by_user(current_user.id)
         
     # Renderizar template según tipo de usuario
-    if current_user.user_type == 'professional':
+    if current_user.user_type == 'profesional':
         return render_template(
-            'dashboard/professional.html', 
+            'dashboard/profesional.html', 
             stats=stats
         )
     else:

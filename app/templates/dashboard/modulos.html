@@ -3,7 +3,7 @@
 {% block title %}Módulos - StrateKaz{% endblock %}
 
 {% block content %}
-<div class="dashboard-container">
+<div class="container-fluid dashboard-container">
     <div class="row mb-4">
         <div class="col-md-8">
             <h2 class="dashboard-title">Módulos Disponibles</h2>
@@ -19,7 +19,7 @@
     <!-- Módulos disponibles -->
     <div class="row">
         {% for modulo in modulos %}
-        <div class="col-lg-4 col-md-6 mb-4">
+        <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
             <div class="module-card {% if not modulo.available %}disabled{% endif %}">
                 <div class="module-card-content">
                     <div class="module-card-icon">
