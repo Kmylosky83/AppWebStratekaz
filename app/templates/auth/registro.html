@@ -10,7 +10,7 @@
 {% block content %}
 <div class="container-fluid register-container">
     <div class="row justify-content-center align-items-center">
-        <div class="col-lg-6 col-md-8 col-sm-11">
+        <div class="col-lg-10 col-md-10 col-sm-12">
             <div class="auth-card">
             <div class="card-body p-4">
                 <!-- Título sin logo redundante -->
@@ -161,11 +161,17 @@
 <style>
     .register-container {
         padding: var(--spacing-xl) var(--spacing-md);
-        min-height: calc(100vh - 80px);
+        min-height: 100vh;
         display: flex;
         align-items: center;
+        justify-content: center;
         width: 100%;
         margin: 0;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 1000;
+        background-color: #fff;
     }
     
     /* También añade esto */
@@ -175,15 +181,35 @@
         padding: 0;
         overflow-x: hidden;
     }
-    
-    .auth-card {
-        background-color: white;
-        border-radius: var(--border-radius-lg);
-        box-shadow: var(--box-shadow-lg);
-        overflow: hidden;
-        transition: all 0.3s ease;
-        margin-bottom: var(--spacing-xl);
+
+    /* Solo para la primera pantalla (step1) */
+    #step1 {
+        min-height: calc(100vh - 250px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
+
+    /* Para el contenedor general, ajustamos el padding */
+    .register-container {
+        padding: 20px;
+        margin-bottom: 0;
+    }
+
+    /* Ajuste de tamaño de la tarjeta */
+    .auth-card {
+        max-height: calc(100vh - 100px);
+        margin-bottom: 0;
+    }
+        
+        .auth-card {
+            background-color: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--box-shadow-lg);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin-bottom: var(--spacing-xl);
+        }
     
     .auth-title {
         font-size: 1.5rem;
@@ -219,6 +245,8 @@
         background: white;
         border-radius: var(--border-radius-lg);
         overflow: hidden;
+        height: auto;
+        margin-bottom: 10px;
     }
     
     .step .user-type-card:hover,
@@ -418,6 +446,116 @@
         .nav-buttons .btn {
             width: 100%;
         }
+    }
+
+    /* También agregar esto al final del CSS */
+    .row.g-4 {
+        margin-bottom: 20px;
+    }
+
+    /* Y reducir el padding del card-body */
+    .step .user-type-card .card-body,
+    .step .company-type-card .card-body {
+        padding: 1rem !important;
+    }
+
+    /* Ajustar contenedor principal para que sea más compacto */
+    .register-container {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    /* Reducir espacios entre elementos */
+    .auth-card .card-body {
+        padding: 1.5rem !important;
+    }
+
+    .text-center.mb-4 {
+        margin-bottom: 1rem !important;
+    }
+
+    .progress.mb-4 {
+        margin-bottom: 1rem !important;
+    }
+
+    /* Ajustar altura del contenedor principal */
+    .row.justify-content-center.align-items-center {
+        min-height: calc(100vh - 120px);
+    }
+
+    /* Hacer que todo el contenido se ajuste mejor */
+    body {
+        overflow-y: auto;
+        height: 100%;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Hacer que el formulario aproveche todo el ancho disponible */
+    .col-lg-6 {
+        width: 80%; /* Aumentamos el ancho del contenedor */
+        max-width: 1200px; /* Establecemos un máximo para pantallas muy grandes */
+    }
+
+    /* Mejor uso del espacio horizontal en campos del formulario */
+    .row.g-3 {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    /* Ajustar inputs para que sean más horizontales */
+    #professionalForm .col-md-6,
+    #companyForm .col-md-6 {
+        flex: 0 0 auto;
+        width: 50%; /* Asegurar que siempre sea 50% */
+        padding: 0 10px;
+    }
+
+    /* Responsive para móviles */
+    @media (max-width: 768px) {
+        #professionalForm .col-md-6,
+        #companyForm .col-md-6 {
+            width: 100%; /* En móviles ocupará todo el ancho */
+        }
+        
+        .col-lg-6 {
+            width: 95%;
+        }
+    }
+
+    /* Alineación correcta para los términos y condiciones */
+    .form-check {
+        text-align: left !important;
+        display: flex !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
+    }
+
+    .form-check-input {
+        margin-right: 10px !important;
+        margin-top: 5px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .form-check-label {
+        text-align: left !important;
+        width: 100% !important;
+    }
+
+    /* Ajustar ancho del contenedor */
+    .auth-card {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Corregir estructura del formulario */
+    #professionalForm .col-md-6, 
+    #companyForm .col-md-6 {
+        padding: 0 10px;
     }
 </style>
 {% endblock %}

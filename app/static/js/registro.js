@@ -253,6 +253,17 @@ function validateNIT(nit) {
     return true;
 }
 
+// En el archivo registro.js, añade esto
+function updateBodyClass() {
+    if (currentStep === 1) {
+        document.body.classList.add('no-scroll');
+    } else {
+        document.body.classList.remove('no-scroll');
+    }
+}
+
+// Llama a esta función en nextStep() y prevStep()
+
 function nextStep() {
     if (!validateCurrentStep()) return;
     
@@ -339,17 +350,18 @@ function initializeFormValidation() {
 function getProfessionalFormHTML() {
     return `
         <h5 class="text-center mb-4">Información Personal</h5>
-        <form id="professionalForm" class="needs-validation" novalidate>
-            <div class="row g-3">
-                <div class="col-md-6">
+        <form id="professionalForm" class="needs-validation" novalidate style="width: 100%;">
+            <div class="row g-3" style="margin: 0 -5px;">
+                <!-- Asegurar que TODOS los col-md-6 tengan este estilo -->
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Nombres</label>
                     <input type="text" class="form-control" name="nombres" required>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Apellidos</label>
                     <input type="text" class="form-control" name="apellidos" required>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Correo electrónico</label>
                     <input type="email" 
                            class="form-control" 
@@ -360,11 +372,11 @@ function getProfessionalFormHTML() {
                         Por favor ingrese un correo electrónico válido
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Profesión</label>
                     <input type="text" class="form-control" name="profesion" required>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Número de Contacto</label>
                     <input type="text" 
                            class="form-control" 
@@ -378,7 +390,7 @@ function getProfessionalFormHTML() {
                         Por favor ingrese un número de teléfono válido de 10 dígitos
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Ciudad</label>
                     <input type="text" class="form-control" name="ciudad" required>
                 </div>
@@ -389,7 +401,7 @@ function getProfessionalFormHTML() {
                         ${departamentos.map(dep => `<option value="${dep}">${dep}</option>`).join('')}
                     </select>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Contraseña</label>
                     <div class="input-group">
                         <input type="password" 
@@ -423,8 +435,8 @@ function getProfessionalFormHTML() {
                             </div>
                         </div>
                     </div>
-                </div>      
-                <div class="col-md-6">
+                </div>
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Confirmar Contraseña</label>
                     <div class="input-group">
                         <input type="password" 
@@ -438,22 +450,23 @@ function getProfessionalFormHTML() {
                         </button>
                     </div>
                     <div class="invalid-feedback">Las contraseñas no coinciden</div>
-                    <div class="col-12 mt-4">
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="terms_prof" required>
-                            <label class="form-check-label" for="terms_prof">
-                                He leído y acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Términos y Condiciones</a>
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="privacy_prof" required>
-                            <label class="form-check-label" for="privacy_prof">
-                                He leído y acepto la <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Política de Privacidad</a>
-                            </label>
-                        </div>
+                </div>
+                <!-- Mover los términos y condiciones fuera del div anterior -->
+                <div class="col-12 mt-4">
+                    <div class="form-check mb-2" style="display: flex; align-items: flex-start;">
+                        <input class="form-check-input" type="checkbox" id="terms_prof" required>
+                        <label class="form-check-label" for="terms_prof">
+                            He leído y acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Términos y Condiciones</a>
+                        </label>
+                    </div>
+                    <div class="form-check" style="display: flex; align-items: flex-start;">
+                        <input class="form-check-input" type="checkbox" id="privacy_prof" required>
+                        <label class="form-check-label" for="privacy_prof">
+                            He leído y acepto la <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Política de Privacidad</a>
+                        </label>
                     </div>
                 </div>
-            </div>
+             </div>
         </form>
     `;
 }
@@ -566,13 +579,14 @@ function getCompanyTypeHTML() {
 function getCompanyFormHTML() {
     return `
         <h5 class="text-center mb-4">Información de la Empresa</h5>
-        <form id="companyForm" class="needs-validation" novalidate>
-            <div class="row g-3">
-                <div class="col-12">
+        <form id="companyForm" class="needs-validation" novalidate style="width: 100%;">
+            <div class="row g-3" style="margin: 0 -5px;">
+                <!-- Asegurar que TODOS los col-md-6 tengan este estilo -->
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Nombre de la Empresa</label>
                     <input type="text" class="form-control" name="company_name" required>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">NIT (sin dígito de verificación)</label>
                     <input type="text" 
                            class="form-control" 
@@ -586,18 +600,18 @@ function getCompanyFormHTML() {
                         Por favor ingrese un NIT válido de 9 dígitos
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Industria o Sector</label>
                     <select class="form-select" name="industry" required>
                         <option value="">Seleccione...</option>
                         ${industrias.map(ind => `<option value="${ind}">${ind}</option>`).join('')}
                     </select>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Ciudad</label>
                     <input type="text" class="form-control" name="ciudad" required>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Departamento</label>
                     <select class="form-select" name="departamento" required>
                         <option value="">Seleccione...</option>
@@ -608,23 +622,23 @@ function getCompanyFormHTML() {
                 <div class="col-12">
                     <h6>Datos de Contacto</h6>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Nombres</label>
                     <input type="text" class="form-control" name="contact_first_name" required>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Apellidos</label>
                     <input type="text" class="form-control" name="contact_last_name" required>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Cargo o Rol</label>
                     <input type="text" class="form-control" name="contact_position" required>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Correo Electrónico</label>
                     <input type="email" class="form-control" name="contact_email" required>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Número de contacto</label>
                     <input type="text" 
                            class="form-control" 
@@ -642,7 +656,7 @@ function getCompanyFormHTML() {
                     <hr class="my-4">
                     <h6 class="mb-3">Seguridad de la cuenta</h6>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Contraseña</label>
                     <div class="input-group">
                         <input type="password" 
@@ -675,7 +689,7 @@ function getCompanyFormHTML() {
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" style="padding: 0 10px;">
                     <label class="form-label">Confirmar Contraseña</label>
                     <div class="input-group">
                         <input type="password" 
