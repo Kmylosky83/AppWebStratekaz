@@ -8,13 +8,14 @@
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center align-items-center register-container">
-    <div class="col-lg-6 col-md-8 col-sm-11">
-        <div class="auth-card">
+<div class="container-fluid register-container">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-lg-6 col-md-8 col-sm-11">
+            <div class="auth-card">
             <div class="card-body p-4">
                 <!-- Título sin logo redundante -->
                 <div class="text-center mb-4">
-                    <h4 class="auth-title">Crear una cuenta</h4>
+                    <h4 class="auth-title">Crea tu cuenta</h4>
                     <p class="auth-subtitle">Únete a StrateKaz y gestiona tus sistemas de forma eficiente</p>
                 </div>
 
@@ -79,15 +80,8 @@
                     <button class="btn btn-primary btn-lg disabled" id="nextBtn" onclick="nextStep()">
                         Siguiente<i class="fas fa-arrow-right ms-2"></i>
                     </button>
-                </div>
-                
-                <!-- Enlace a login -->
-                <div class="text-center mt-4">
-                    <p class="mb-0">¿Ya tienes una cuenta?</p>
-                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
-                        <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
-                    </a>
-                </div>
+                </div>         
+            </div>
             </div>
         </div>
     </div>
@@ -167,6 +161,19 @@
 <style>
     .register-container {
         padding: var(--spacing-xl) var(--spacing-md);
+        min-height: calc(100vh - 80px);
+        display: flex;
+        align-items: center;
+        width: 100%;
+        margin: 0;
+    }
+    
+    /* También añade esto */
+    body, html {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
     }
     
     .auth-card {

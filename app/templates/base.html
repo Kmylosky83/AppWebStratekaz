@@ -140,19 +140,30 @@
                 </a>
                 
                 <div class="nav-buttons d-none d-sm-flex">
-                    {% if request.endpoint != 'auth.login' and request.endpoint != 'auth.registro' %}
-                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary me-2">Iniciar Sesión</a>
-                        <a href="{{ url_for('auth.registro') }}" class="btn btn-primary">Registrarse</a>
-                    {% elif request.endpoint == 'auth.login' %}
-                        <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary me-2">
-                            <i class="fas fa-home"></i> Inicio
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                         </a>
-                        <a href="{{ url_for('auth.registro') }}" class="btn btn-primary">Registrarse</a>
-                    {% elif request.endpoint == 'auth.registro' %}
-                        <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary me-2">
-                            <i class="fas fa-home"></i> Inicio
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-primary">
+                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
                         </a>
-                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">Iniciar Sesión</a>
+                    {% else %}
+                        {% if request.endpoint == 'auth.registro' %}
+                            <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-home"></i> Inicio
+                            </a>
+                        {% elif request.endpoint == 'auth.login' %}
+                            <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-home"></i> Inicio
+                            </a>
+                        {% elif request.endpoint == 'main.index' %}
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary me-2">
+                                <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                            </a>
+                            <a href="{{ url_for('auth.registro') }}" class="btn btn-primary">
+                                <i class="fas fa-user-plus me-2"></i>Registrarse
+                            </a>
+                        {% endif %}
                     {% endif %}
                 </div>
                 
@@ -167,27 +178,20 @@
             <div class="container py-3">
                 <div class="d-flex flex-column">
                     {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('dashboard.index') }}" class="mobile-menu-item">
-                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
-                        </a>
-                        <a href="{{ url_for('auth.logout') }}" class="mobile-menu-item">
-                            <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
-                        </a>
+                        <!-- Botones para usuario autenticado (dashboard) -->
+                        <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
+                        <a href="{{ url_for('auth.logout') }}">Cerrar Sesión</a>
                     {% else %}
-                        {% if request.endpoint != 'auth.login' %}
-                            <a href="{{ url_for('auth.login') }}" class="mobile-menu-item">
-                                <i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión
-                            </a>
-                        {% endif %}
-                        {% if request.endpoint != 'auth.registro' %}
-                            <a href="{{ url_for('auth.registro') }}" class="mobile-menu-item">
-                                <i class="fas fa-user-plus me-2"></i> Registrarse
-                            </a>
-                        {% endif %}
-                        {% if request.endpoint != 'main.index' and (request.endpoint == 'auth.login' or request.endpoint == 'auth.registro') %}
-                            <a href="{{ url_for('main.index') }}" class="mobile-menu-item">
-                                <i class="fas fa-home me-2"></i> Inicio
-                            </a>
+                        {% if request.endpoint == 'auth.registro' %}
+                            <!-- Solo en página de registro -->
+                            <a href="{{ url_for('main.index') }}">Inicio</a>
+                        {% elif request.endpoint == 'auth.login' %}
+                            <!-- Solo en página de login -->
+                            <a href="{{ url_for('main.index') }}">Inicio</a>
+                        {% elif request.endpoint == 'main.index' %}
+                            <!-- Solo en página principal -->
+                            <a href="{{ url_for('auth.login') }}">Iniciar Sesión</a>
+                            <a href="{{ url_for('auth.registro') }}">Registrarse</a>
                         {% endif %}
                     {% endif %}
                 </div>
