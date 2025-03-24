@@ -160,402 +160,174 @@
 {% block styles %}
 <style>
     .register-container {
-        padding: var(--spacing-xl) var(--spacing-md);
         min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 100%;
-        margin: 0;
-        position: fixed;
-        left: 0;
-        top: 0;
-        z-index: 1000;
-        background-color: #fff;
-    }
-    
-    /* También añade esto */
-    body, html {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
+        background-color: var(--white);
+        padding: var(--spacing-xl) var(--spacing-md);
     }
 
-    /* Solo para la primera pantalla (step1) */
-    #step1 {
-        min-height: calc(100vh - 250px);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    /* Para el contenedor general, ajustamos el padding */
-    .register-container {
-        padding: 20px;
-        margin-bottom: 0;
-    }
-
-    /* Ajuste de tamaño de la tarjeta */
     .auth-card {
-        max-height: calc(100vh - 100px);
-        margin-bottom: 0;
+        max-width: 500px;
+        width: 100%;
+        background-color: var(--white);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--box-shadow-lg);
+        overflow: hidden;
+        transition: 
+            transform var(--transition-speed-normal) var(--transition-timing),
+            box-shadow var(--transition-speed-normal) var(--transition-timing);
     }
-        
-        .auth-card {
-            background-color: white;
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--box-shadow-lg);
-            overflow: hidden;
-            transition: all 0.3s ease;
-            margin-bottom: var(--spacing-xl);
-        }
-    
+
+    .auth-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(236, 38, 143, 0.15);
+    }
+
     .auth-title {
         font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text-dark);
+        font-weight: var(--font-weight-bold);
+        color: var(--gray-900);
         margin-bottom: var(--spacing-xs);
     }
-    
+
     .auth-subtitle {
-        color: var(--text-medium);
+        color: var(--gray-600);
         font-size: 0.95rem;
         margin-bottom: var(--spacing-lg);
     }
-    
-    /* Progress bar */
-    .progress {
-        background-color: var(--background-light);
-        border-radius: 10px;
-        overflow: hidden;
-    }
-    
-    .progress-bar {
-        background-color: var(--primary-color);
-        transition: width 0.8s ease;
-    }
-    
-    /* Tarjetas de selección con efecto 3D mejorado */
-    .step .user-type-card,
-    .step .company-type-card {
-        border: 2px solid transparent;
+
+    /* Tarjetas de selección con efectos mejorados */
+    .user-type-card,
+    .company-type-card {
+        border: 2px solid var(--gray-300);
         cursor: pointer;
-        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-        background: white;
+        transition: 
+            all var(--transition-speed-normal) var(--transition-timing);
+        background: var(--white);
         border-radius: var(--border-radius-lg);
         overflow: hidden;
-        height: auto;
-        margin-bottom: 10px;
+        height: 100%;
+        position: relative;
     }
-    
-    .step .user-type-card:hover,
-    .step .company-type-card:hover {
+
+    .user-type-card:hover,
+    .company-type-card:hover {
+        border-color: var(--primary-color);
         transform: translateY(-7px);
         box-shadow: 0 15px 30px rgba(236, 38, 143, 0.15);
     }
-    
+
+    .user-type-card:hover h6,
+    .company-type-card:hover h6,
+    .user-type-card.selected h6,
+    .company-type-card.selected h6 {
+        color: var(--primary-color);
+        transition: color var(--transition-speed-normal) var(--transition-timing);
+    }
+
     .user-type-card.selected, 
     .company-type-card.selected {
         border-color: var(--primary-color);
         box-shadow: 0 15px 30px rgba(236, 38, 143, 0.2);
     }
-    
+
+    /* Iconos en tarjetas */
     .user-type-card i,
     .company-type-card i {
-        color: var(--primary-color);
-        transition: transform 0.3s ease;
+        color: var(--gray-600);
+        transition: 
+            color var(--transition-speed-normal) var(--transition-timing),
+            transform var(--transition-speed-normal) var(--transition-timing);
     }
-    
+
     .user-type-card:hover i,
-    .company-type-card:hover i {
+    .company-type-card:hover i,
+    .user-type-card.selected i,
+    .company-type-card.selected i {
+        color: var(--primary-color);
         transform: scale(1.1);
     }
-    
-    .user-type-card h6,
-    .company-type-card h6 {
-        font-weight: 700;
-        margin: 0.5rem 0;
-        color: var(--text-dark);
+
+    /* Overlay sutil al pasar el mouse */
+    .user-type-card::before,
+    .company-type-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(236, 38, 143, 0.05);
+        opacity: 0;
+        transition: opacity var(--transition-speed-normal) var(--transition-timing);
+        pointer-events: none;
     }
-    
+
+    .user-type-card:hover::before,
+    .company-type-card:hover::before {
+        opacity: 1;
+    }
+
     /* Botones de navegación */
     .nav-buttons .btn {
-        transition: all 0.3s ease;
+        transition: 
+            all var(--transition-speed-normal) var(--transition-timing),
+            transform var(--transition-speed-normal) var(--transition-timing),
+            box-shadow var(--transition-speed-normal) var(--transition-timing);
     }
-    
+
     .nav-buttons .btn-primary {
         background-color: var(--primary-color);
         border-color: var(--primary-color);
         padding: 0.75rem 1.5rem;
     }
-    
+
     .nav-buttons .btn-primary:hover:not(.disabled) {
         background-color: var(--primary-dark);
         border-color: var(--primary-dark);
         transform: translateY(-3px);
         box-shadow: 0 10px 20px rgba(236, 38, 143, 0.2);
     }
-    
-    .nav-buttons .btn-outline-secondary {
-        border-color: #ddd;
-        color: var(--text-medium);
-    }
-    
-    .nav-buttons .btn-outline-secondary:hover {
-        background-color: var(--background-light);
-        color: var(--text-dark);
-        transform: translateY(-2px);
-    }
-    
-    /* Formularios con estilos mejorados */
+
+    /* Formularios */
     .form-label {
-        font-weight: 600;
-        color: var(--text-dark);
+        font-weight: var(--font-weight-bold);
+        color: var(--gray-900);
         margin-bottom: var(--spacing-xs);
     }
-    
+
     .form-control {
         border-radius: var(--border-radius-md);
         padding: 0.7rem 1rem;
-        border-color: var(--border-color);
-        transition: all 0.3s ease;
+        border-color: var(--gray-300);
+        transition: 
+            border-color var(--transition-speed-normal) var(--transition-timing),
+            box-shadow var(--transition-speed-normal) var(--transition-timing);
     }
-    
+
     .form-control:focus {
         border-color: var(--primary-color);
         box-shadow: 0 0 0 0.25rem rgba(236, 38, 143, 0.15);
     }
-    
-    .form-select {
-        border-radius: var(--border-radius-md);
-        border-color: var(--border-color);
-        padding: 0.7rem 1rem;
-    }
-    
-    .form-select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.25rem rgba(236, 38, 143, 0.15);
-    }
-    
-    /* Efectos adicionales */
+
+    /* Animaciones de requisitos de contraseña */
     @keyframes pulse {
-        0% {
-            box-shadow: 0 0 0 0 rgba(236, 38, 143, 0.7);
-        }
-        70% {
-            box-shadow: 0 0 0 15px rgba(236, 38, 143, 0);
-        }
-        100% {
-            box-shadow: 0 0 0 0 rgba(236, 38, 143, 0);
-        }
+        0% { box-shadow: 0 0 0 0 rgba(236, 38, 143, 0.7); }
+        70% { box-shadow: 0 0 0 15px rgba(236, 38, 143, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(236, 38, 143, 0); }
     }
-    
+
     .pulse {
         animation: pulse 1.5s infinite;
     }
-    
-    /* Modales mejorados */
-    .modal-content {
-        border: none;
-        border-radius: var(--border-radius-lg);
-        overflow: hidden;
-    }
-    
-    .modal-header {
-        background-color: var(--background-light);
-        border-bottom: 1px solid rgba(236, 38, 143, 0.1);
-    }
-    
-    .modal-header .modal-title {
-        font-weight: 700;
-        color: var(--text-dark);
-    }
-    
-    /* Mejoras responsivas */
+
+    /* Responsive */
     @media (max-width: 768px) {
-        .auth-title {
-            font-size: 1.3rem;
-        }
-        
-        .auth-subtitle {
-            font-size: 0.9rem;
-        }
-        
-        .step h5 {
-            font-size: 1.1rem;
-        }
-        
-        .user-type-card i,
-        .company-type-card i {
-            font-size: 2.5rem;
-        }
-        
-        .user-type-card h6,
-        .company-type-card h6 {
-            font-size: 1rem;
-        }
-        
-        .nav-buttons .btn {
-            padding: 0.6rem 1.2rem;
-            font-size: 0.95rem;
-        }
-        
-        .btn-lg {
-            font-size: 1rem;
-            padding: 0.5rem 1rem;
-        }
-    }
-    
-    @media (max-width: 576px) {
-        .step .user-type-card,
-        .step .company-type-card {
-            margin-bottom: var(--spacing-md);
-        }
-        
-        .step .row {
-            margin: 0 -8px;
-        }
-        
-        .step .col-md-6 {
-            padding: 0 8px;
-        }
-        
-        .user-type-card i,
-        .company-type-card i {
-            font-size: 2rem;
-            margin-bottom: var(--spacing-xs);
-        }
-        
-        .user-type-card h6,
-        .company-type-card h6 {
-            font-size: 0.9rem;
-            margin-bottom: var(--spacing-xs);
-        }
-        
-        .user-type-card p,
-        .company-type-card p {
-            font-size: 0.8rem;
-        }
-        
-        .nav-buttons {
-            flex-direction: column;
-            gap: var(--spacing-xs);
-        }
-        
-        .nav-buttons .btn {
-            width: 100%;
-        }
-    }
-
-    /* También agregar esto al final del CSS */
-    .row.g-4 {
-        margin-bottom: 20px;
-    }
-
-    /* Y reducir el padding del card-body */
-    .step .user-type-card .card-body,
-    .step .company-type-card .card-body {
-        padding: 1rem !important;
-    }
-
-    /* Ajustar contenedor principal para que sea más compacto */
-    .register-container {
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
-
-    /* Reducir espacios entre elementos */
-    .auth-card .card-body {
-        padding: 1.5rem !important;
-    }
-
-    .text-center.mb-4 {
-        margin-bottom: 1rem !important;
-    }
-
-    .progress.mb-4 {
-        margin-bottom: 1rem !important;
-    }
-
-    /* Ajustar altura del contenedor principal */
-    .row.justify-content-center.align-items-center {
-        min-height: calc(100vh - 120px);
-    }
-
-    /* Hacer que todo el contenido se ajuste mejor */
-    body {
-        overflow-y: auto;
-        height: 100%;
-    }
-
-    html, body {
-        margin: 0;
-        padding: 0;
-    }
-
-    /* Hacer que el formulario aproveche todo el ancho disponible */
-    .col-lg-6 {
-        width: 80%; /* Aumentamos el ancho del contenedor */
-        max-width: 1200px; /* Establecemos un máximo para pantallas muy grandes */
-    }
-
-    /* Mejor uso del espacio horizontal en campos del formulario */
-    .row.g-3 {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    /* Ajustar inputs para que sean más horizontales */
-    #professionalForm .col-md-6,
-    #companyForm .col-md-6 {
-        flex: 0 0 auto;
-        width: 50%; /* Asegurar que siempre sea 50% */
-        padding: 0 10px;
-    }
-
-    /* Responsive para móviles */
-    @media (max-width: 768px) {
-        #professionalForm .col-md-6,
-        #companyForm .col-md-6 {
-            width: 100%; /* En móviles ocupará todo el ancho */
-        }
-        
-        .col-lg-6 {
-            width: 95%;
-        }
-    }
-
-    /* Alineación correcta para los términos y condiciones */
-    .form-check {
-        text-align: left !important;
-        display: flex !important;
-        align-items: flex-start !important;
-        justify-content: flex-start !important;
-        width: 100% !important;
-    }
-
-    .form-check-input {
-        margin-right: 10px !important;
-        margin-top: 5px !important;
-        flex-shrink: 0 !important;
-    }
-
-    .form-check-label {
-        text-align: left !important;
-        width: 100% !important;
-    }
-
-    /* Ajustar ancho del contenedor */
-    .auth-card {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    /* Corregir estructura del formulario */
-    #professionalForm .col-md-6, 
-    #companyForm .col-md-6 {
-        padding: 0 10px;
+        .auth-title { font-size: 1.3rem; }
+        .auth-subtitle { font-size: 0.9rem; }
+        .step h5 { font-size: 1.1rem; }
     }
 </style>
 {% endblock %}
