@@ -19,6 +19,12 @@ class User(UserMixin, db.Model):
     company_type = db.Column(db.String(20), nullable=True)  # 'direct' o 'consultant'
     account_verified = db.Column(db.Boolean, default=False)
     last_login = db.Column(db.DateTime, nullable=True)
+    
+    # Campos adicionales para información personal
+    first_name = db.Column(db.String(100), nullable=True)
+    last_name = db.Column(db.String(100), nullable=True)
+    company_name = db.Column(db.String(200), nullable=True)
+    nit = db.Column(db.String(20), nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

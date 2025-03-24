@@ -104,202 +104,129 @@ document.addEventListener('DOMContentLoaded', function() {
 {% endblock %}
 
 {% block styles %}
+<userStyle>Normal</userStyle>
 <style>
+    /* Contenedor de login */
     .login-container {
-        min-height: calc(100vh - 140px);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--white);
         padding: var(--spacing-xl) var(--spacing-md);
     }
-    
+
+    /* Tarjeta de autenticación */
     .auth-card {
-        background-color: white;
+        max-width: 400px;
+        width: 100%;
+        background-color: var(--white);
         border-radius: var(--border-radius-lg);
         box-shadow: var(--box-shadow-lg);
         overflow: hidden;
-        transition: all 0.3s ease;
-        margin-bottom: var(--spacing-xl);
+        transition: 
+            transform var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1),
+            box-shadow var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
+
     .auth-card:hover {
+        transform: translateY(-10px);
         box-shadow: 0 15px 35px rgba(236, 38, 143, 0.15);
-        transform: translateY(-5px);
     }
-    
+
+    /* Títulos */
     .auth-title {
         font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text-dark);
+        font-weight: var(--font-weight-bold);
+        color: var(--dark-text);
         margin-bottom: var(--spacing-xs);
     }
-    
+
     .auth-subtitle {
-        color: var(--text-medium);
+        color: var(--secondary-color);
         font-size: 0.95rem;
         margin-bottom: var(--spacing-lg);
     }
-    
-    .form-group label {
+
+    /* Inputs */
+    .form-label {
         font-weight: 600;
-        font-size: 0.9rem;
+        color: var(--dark-text);
         margin-bottom: var(--spacing-sm);
-        color: var(--text-dark);
     }
-    
+
     .input-group-text {
-        background-color: var(--background-light);
+        background-color: var(--light-bg);
         border-color: var(--border-color);
         color: var(--primary-color);
     }
-    
+
     .form-control {
+        border-radius: var(--border-radius-md);
         border-color: var(--border-color);
-        padding: 0.6rem 0.75rem;
-        border-radius: var(--border-radius-sm);
+        padding: 0.6rem 1rem;
+        transition: 
+            border-color var(--transition-speed-fast) cubic-bezier(0.4, 0, 0.2, 1),
+            box-shadow var(--transition-speed-fast) cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
+
     .form-control:focus {
         border-color: var(--primary-color);
         box-shadow: 0 0 0 0.25rem rgba(236, 38, 143, 0.15);
     }
-    
-    .form-check-input:checked {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-    }
-    
+
+    /* Enlace de contraseña olvidada */
     .forgot-link {
-        font-size: 0.85rem;
         color: var(--primary-color);
-        transition: all 0.2s ease;
+        text-decoration: none;
+        transition: color var(--transition-speed-fast) ease;
     }
-    
+
     .forgot-link:hover {
         color: var(--primary-dark);
-        text-decoration: underline !important;
+        text-decoration: underline;
     }
-    
+
+    /* Botones */
     .btn-login {
-        padding: 0.75rem 1rem;
-        font-weight: 600;
         background-color: var(--primary-color);
         border-color: var(--primary-color);
-        border-radius: var(--border-radius-sm);
-        transition: all 0.3s ease;
+        padding: 0.75rem 1.5rem;
+        transition: 
+            all var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
+
     .btn-login:hover {
         background-color: var(--primary-dark);
         border-color: var(--primary-dark);
         transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(236, 38, 143, 0.2);
+        box-shadow: 0 10px 20px rgba(236, 38, 143, 0.2);
     }
-    
-    .separator {
-        display: flex;
-        align-items: center;
-        text-align: center;
-        color: var(--text-light);
-    }
-    
-    .separator::before,
-    .separator::after {
-        content: '';
-        flex: 1;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .separator span {
-        padding: 0 1rem;
-    }
-    
-    .btn-register {
-        color: var(--primary-color);
+
+    /* Checkbox */
+    .form-check-input:checked {
+        background-color: var(--primary-color);
         border-color: var(--primary-color);
-        margin-top: var(--spacing-sm);
-        border-radius: var(--border-radius-sm);
-        padding: 0.75rem 1.5rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
     }
-    
-    .btn-register:hover {
-        background-color: rgba(236, 38, 143, 0.05);
-        color: var(--primary-dark);
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(236, 38, 143, 0.1);
-    }
-    
-    .btn-outline-secondary {
-        border-color: var(--border-color);
-        color: var(--text-medium);
-    }
-    
-    .btn-outline-secondary:hover {
-        background-color: var(--background-light);
-        color: var(--text-dark);
-        border-color: var(--border-color);
-    }
-    
-    /* Mejoras responsivas */
+
+    /* Responsive */
     @media (max-width: 576px) {
         .auth-card {
-            border-radius: 10px;
+            max-width: 100%;
+            margin: 0 var(--spacing-sm);
         }
-        
+
         .auth-title {
             font-size: 1.3rem;
         }
-        
+
         .auth-subtitle {
             font-size: 0.9rem;
         }
-        
-        .form-group label {
-            font-size: 0.85rem;
+
+        .btn-login {
+            padding: 0.6rem 1rem;
         }
-        
-        .forgot-link {
-            font-size: 0.8rem;
-        }
-        
-        .btn-login, .btn-register {
-            font-size: 0.95rem;
-            padding: 0.6rem 0.75rem;
-        }
-        
-        .input-group-text {
-            padding: 0.5rem 0.75rem;
-        }
-        
-        .form-control {
-            padding: 0.5rem 0.75rem;
-        }
-    }
-
-    /* Añadir esto a la sección de estilos */
-    .auth-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .auth-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(236, 38, 143, 0.15);
-    }
-
-    .input-group {
-        transition: all 0.3s ease;
-    }
-
-    .input-group:focus-within {
-        transform: translateY(-2px);
-    }
-
-    .btn-login {
-        transition: all 0.3s ease;
-    }
-
-    .btn-login:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(236, 38, 143, 0.2);
     }
 </style>
 {% endblock %}

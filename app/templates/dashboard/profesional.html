@@ -6,7 +6,7 @@
 <div class="dashboard-container">
     <div class="row mb-4">
         <div class="col-md-8">
-            <h2 class="dashboard-title">Bienvenido, {{ current_user.username|title|replace('_', ' ')|replace('.', ' ') }}</h2>
+            <h2 class="dashboard-title">Bienvenido, {% if current_user.nombres %}{{ current_user.nombres }}{% else %}{{ current_user.username|title|replace('_', ' ')|replace('.', ' ') }}{% endif %}</h2>
             <p class="dashboard-subtitle">Aquí tienes un resumen de tu actividad reciente y tareas pendientes.</p>
         </div>
         <div class="col-md-4 text-md-end">
@@ -349,76 +349,34 @@
 {% endblock %}
 
 {% block styles %}
+<userStyle>Normal</userStyle>
 <style>
-
-    /* Colores adicionales para fondos de iconos */
-    .bg-primary-light {
-        background-color: rgba(236, 38, 143, 0.1);
-        color: var(--primary-color);
-    }
-    .bg-warning-light {
-        background-color: rgba(244, 236, 37, 0.1);
-        color: #f6c343;
-    }
-    .bg-success-light {
-        background-color: rgba(40, 167, 69, 0.1);
-        color: #28a745;
-    }
-    .bg-info-light {
-        background-color: rgba(23, 162, 184, 0.1);
-        color: #17a2b8;
-    }
-
-    /* Mejorar estilos de botones */
-    .btn-primary {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-        transition: transform var(--transition-normal), box-shadow var(--transition-normal), background-color var(--transition-fast);
-    }
-
-    .btn-primary:hover {
-        background-color: var(--primary-dark);
-        border-color: var(--primary-dark);
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(236, 38, 143, 0.2);
-    }
-
-    .btn-outline-primary {
-        color: var(--primary-color);
-        border-color: var(--primary-color);
-        transition: transform var(--transition-normal), box-shadow var(--transition-normal), background-color var(--transition-fast);
-    }
-
-    .btn-outline-primary:hover {
-        background-color: var(--primary-color);
-        color: white;
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(236, 38, 143, 0.2);
-    }
-    /* Estilos para el dashboard */
+    /* Estilos base del dashboard */
     .dashboard-container {
-        padding: 1.5rem 0;
+        padding: var(--spacing-lg) 0;
     }
 
     .dashboard-title {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: var(--text-dark);
-        margin-bottom: 0.5rem;
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--dark-text);
+        margin-bottom: var(--spacing-sm);
     }
 
     .dashboard-subtitle {
-        color: var(--text-medium);
+        color: var(--secondary-color);
         margin-bottom: 0;
     }
 
     /* Tarjetas de estadísticas */
     .stats-card {
-        background-color: white;
+        background-color: var(--white);
         border-radius: var(--border-radius-md);
         box-shadow: var(--box-shadow-sm);
         height: 100%;
-        transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+        transition: 
+            transform var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1),
+            box-shadow var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1);
         overflow: hidden;
     }
     
@@ -431,12 +389,8 @@
         transform: scale(1.1);
     }
 
-    .stats-card-icon {
-        transition: transform var(--transition-normal);
-    }
-    
     .stats-card-body {
-        padding: 1.25rem;
+        padding: var(--spacing-lg);
         display: flex;
         align-items: center;
     }
@@ -448,9 +402,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 1rem;
-        color: white;
+        margin-right: var(--spacing-md);
+        color: var(--white);
         font-size: 1.25rem;
+        transition: transform var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .stats-card-icon.bg-primary {
@@ -462,232 +417,90 @@
     }
 
     .stats-card-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 0.25rem;
-        color: var(--text-dark);
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        margin-bottom: var(--spacing-xs);
+        color: var(--dark-text);
     }
 
     .stats-card-text {
-        color: var(--text-medium);
+        color: var(--secondary-color);
         margin-bottom: 0;
-        font-size: 0.9rem;
+        font-size: var(--font-size-sm);
     }
 
-    /* Tarjetas de módulos */
+    /* Módulos disponibles */
     .module-card {
-        background-color: white;
+        background-color: var(--white);
         border-radius: var(--border-radius-md);
-        padding: 1.5rem;
-        text-align: center;
-        height: 100%;
-        box-shadow: var(--box-shadow-sm);
-        transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+        padding: var(--spacing-lg);
         display: flex;
         flex-direction: column;
+        box-shadow: var(--box-shadow-sm);
+        transition: 
+            transform var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1),
+            box-shadow var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
     }
-    
-    .module-card:hover {
+
+    .module-card.hover-effect:hover {
         transform: translateY(-5px);
-        box-shadow: var(--box-shadow-lg);
+        box-shadow: var(--box-shadow-md);
     }
 
     .module-card-icon {
         width: 60px;
         height: 60px;
-        border-radius: 50%;
-        background-color: rgba(236, 38, 143, 0.1);
-        color: var(--primary-color);
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 1rem;
+        margin-bottom: var(--spacing-sm);
         font-size: 1.5rem;
     }
 
-    .module-card h6 {
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        color: var(--text-dark);
+    .bg-primary-light {
+        background-color: rgba(236, 38, 143, 0.1);
+        color: var(--primary-color);
     }
 
-    .module-card p {
-        color: var(--text-medium);
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
+    .bg-warning-light {
+        background-color: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+    }
+
+    .bg-success-light {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+    }
+
+    .bg-info-light {
+        background-color: rgba(23, 162, 184, 0.1);
+        color: #17a2b8;
     }
 
     .module-card-link {
         color: var(--primary-color);
         text-decoration: none;
         font-weight: 600;
-        margin-top: auto;
-        transition: all var(--transition-fast);
         display: inline-flex;
         align-items: center;
+        margin-top: var(--spacing-md);
+        transition: color var(--transition-speed-fast) ease;
     }
-    
+
     .module-card-link:hover {
         color: var(--primary-dark);
-        transform: translateX(5px);
     }
 
-    /* Lista de eventos */
-    .event-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
+    /* Responsive */
+    @media (max-width: 768px) {
+        .dashboard-title {
+            font-size: var(--font-size-xl);
+        }
 
-    .event-item {
-        display: flex;
-        align-items: center;
-        padding: 1rem;
-        border-bottom: 1px solid #f1f1f1;
-    }
-
-    .event-item:last-child {
-        border-bottom: none;
-    }
-
-    .event-date {
-        background-color: var(--primary-color);
-        color: white;
-        border-radius: 8px;
-        width: 50px;
-        height: 50px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        margin-right: 1rem;
-    }
-
-    .event-day {
-        font-size: 1.25rem;
-        font-weight: 700;
-        line-height: 1;
-    }
-
-    .event-month {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-    }
-
-    .event-details {
-        flex: 1;
-    }
-
-    .event-title {
-        margin-bottom: 0.25rem;
-        font-weight: 600;
-    }
-
-    .event-time {
-        color: var(--text-medium);
-        font-size: 0.85rem;
-        margin-bottom: 0;
-    }
-
-    /* Lista de actividades */
-    .activity-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .activity-item {
-        display: flex;
-        align-items: flex-start;
-        padding: 1rem;
-        border-bottom: 1px solid #f1f1f1;
-    }
-
-    .activity-item:last-child {
-        border-bottom: none;
-    }
-
-    .activity-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background-color: rgba(236, 38, 143, 0.1);
-        color: var(--primary-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 1rem;
-        font-size: 1rem;
-    }
-
-    .activity-content {
-        flex: 1;
-    }
-
-    .activity-text {
-        margin-bottom: 0.25rem;
-        font-size: 0.95rem;
-    }
-
-    .activity-time {
-        color: var(--text-light);
-        font-size: 0.8rem;
-    }
-
-    /* Lista de tareas */
-    .task-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .task-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-        border-bottom: 1px solid #f1f1f1;
-        transition: background-color 0.2s ease;
-    }
-
-    .task-item:last-child {
-        border-bottom: none;
-    }
-
-    .task-item:hover {
-        background-color: rgba(0,0,0,0.01);
-    }
-
-    .task-item.completed .form-check-label {
-        text-decoration: line-through;
-        color: var(--text-light);
-    }
-
-    .task-priority {
-        font-size: 0.75rem;
-        font-weight: 600;
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-    }
-
-    .task-priority.high {
-        background-color: #ffeff3;
-        color: #e63757;
-    }
-
-    .task-priority.medium {
-        background-color: #fff4d9;
-        color: #f6c343;
-    }
-
-    .task-priority.low {
-        background-color: #e8f5e9;
-        color: #3dd47a;
-    }
-
-    @media (max-width: 767px) {
         .stats-card-body {
-            padding: 1rem;
+            padding: var(--spacing-md);
         }
         
         .stats-card-icon {
@@ -697,11 +510,11 @@
         }
         
         .stats-card-title {
-            font-size: 1.25rem;
+            font-size: var(--font-size-xl);
         }
         
         .module-card {
-            padding: 1rem;
+            padding: var(--spacing-md);
         }
         
         .module-card-icon {

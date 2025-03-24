@@ -106,3 +106,164 @@ class Tarea(db.Model):
         if user_id:
             query = query.filter_by(assigned_to_id=user_id)
         return query.all()
+
+        {% block styles %}
+<userStyle>Normal</userStyle>
+<style>
+    /* Contenedor principal de tareas */
+    .dashboard-container {
+        padding: var(--spacing-lg) 0;
+    }
+
+    .dashboard-title {
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--dark-text);
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .dashboard-subtitle {
+        color: var(--secondary-color);
+        margin-bottom: 0;
+    }
+
+    /* Tarjetas de filtro y búsqueda */
+    .filter-card, 
+    .search-card {
+        background-color: var(--white);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--box-shadow-sm);
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+        transition: 
+            box-shadow var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .filter-card:hover,
+    .search-card:hover {
+        box-shadow: var(--box-shadow-md);
+    }
+
+    /* Lista de tareas */
+    .task-list {
+        background-color: var(--white);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--box-shadow-sm);
+    }
+
+    .task-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--spacing-md);
+        border-bottom: 1px solid var(--light-bg);
+        transition: background-color var(--transition-speed-fast) ease;
+    }
+
+    .task-item:hover {
+        background-color: rgba(0,0,0,0.02);
+    }
+
+    .task-item:last-child {
+        border-bottom: none;
+    }
+
+    /* Estado de tareas completadas */
+    .task-item.completed .form-check-label {
+        text-decoration: line-through;
+        color: var(--secondary-color);
+    }
+
+    /* Prioridades de tareas */
+    .task-priority {
+        font-size: var(--font-size-xs);
+        font-weight: 600;
+        padding: var(--spacing-xs) var(--spacing-sm);
+        border-radius: var(--border-radius-sm);
+    }
+
+    .task-priority.high {
+        background-color: #ffeff3;
+        color: #e63757;
+    }
+
+    .task-priority.medium {
+        background-color: #fff4d9;
+        color: #f6c343;
+    }
+
+    .task-priority.low {
+        background-color: #e8f5e9;
+        color: #3dd47a;
+    }
+
+    /* Botones de acción */
+    .task-actions {
+        display: flex;
+        gap: var(--spacing-sm);
+    }
+
+    .btn-task-action {
+        padding: var(--spacing-xs);
+        color: var(--secondary-color);
+        transition: 
+            color var(--transition-speed-fast) ease,
+            background-color var(--transition-speed-fast) ease;
+    }
+
+    .btn-task-action:hover {
+        color: var(--primary-color);
+        background-color: rgba(236, 38, 143, 0.1);
+    }
+
+    /* Modales y formularios */
+    .modal-task-form .form-control {
+        border-radius: var(--border-radius-md);
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    /* Etiquetas de estado */
+    .task-status {
+        font-size: var(--font-size-xs);
+        padding: var(--spacing-xs) var(--spacing-sm);
+        border-radius: var(--border-radius-sm);
+    }
+
+    .task-status.pending {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .task-status.in-progress {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .task-status.completed {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .dashboard-title {
+            font-size: var(--font-size-xl);
+        }
+
+        .task-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+        }
+
+        .task-actions {
+            width: 100%;
+            justify-content: flex-end;
+        }
+
+        .task-priority {
+            align-self: flex-start;
+        }
+    }
+</style>
+{% endblock %}
