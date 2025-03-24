@@ -43,7 +43,14 @@ def perfil():
 @login_required
 def actualizar_perfil():
     if request.method == 'POST':
-        # Actualizar información básica
+        print("Datos recibidos:", request.form)  # Para debuggear
+        username = request.form.get('username')
+        # Validar username
+        username = request.form.get('username')
+        if username:  # Solo actualizar si hay un valor
+            current_user.username = username
+
+        # Actualizar información según tipo de usuario
         if current_user.user_type == 'professional':
             current_user.first_name = request.form.get('first_name')
             current_user.last_name = request.form.get('last_name')
@@ -51,24 +58,14 @@ def actualizar_perfil():
             current_user.company_name = request.form.get('company_name')
             current_user.nit = request.form.get('nit')
         
-        # Campos comunes
-        current_user.username = request.form.get('username')
-        # Otros campos comunes
-        current_user.phone = request.form.get('phone')
-        current_user.city = request.form.get('city')
-        
-        # Guardar cambios
-        db.session.commit()
-        flash('Perfil actualizado exitosamente', 'success')
-        
+        try:
+            db.session.commit()
+            flash('Perfil actualizado exitosamente', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('Error al actualizar el perfil', 'danger')
+            
     return redirect(url_for('dashboard.perfil'))
-
-@dashboard_bp.route('/estadisticas')
-@login_required
-def estadisticas():
-    """Vista para mostrar estadísticas y análisis."""
-    stats = DashboardService.get_user_stats(current_user.id)
-    return render_template('dashboard/estadisticas.html', stats=stats)
 
 @dashboard_bp.route('/modulos')
 @login_required

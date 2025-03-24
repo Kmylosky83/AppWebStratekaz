@@ -25,6 +25,9 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(100), nullable=True)
     company_name = db.Column(db.String(200), nullable=True)
     nit = db.Column(db.String(20), nullable=True)
+    profession = db.Column(db.String(100), nullable=True)
+    phone = db.Column(db.String(20), nullable=True)
+    city = db.Column(db.String(100), nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
