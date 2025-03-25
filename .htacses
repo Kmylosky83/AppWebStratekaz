@@ -1,0 +1,6 @@
+AddHandler application/x-httpd-php8.1 .php
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ run.py/$1 [QSA,L]
+</IfModule>
