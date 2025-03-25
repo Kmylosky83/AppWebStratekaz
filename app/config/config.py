@@ -12,7 +12,7 @@ class Config:
     SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'False') == 'True'
     SESSION_COOKIE_HTTPONLY = True
     REMEMBER_COOKIE_DURATION = 3600 * 24 * 30  # 30 días
-    REMEMBER_COOKIE_SECURE = os.getenv('REMEMBER_COOKIE_SECURE', 'False') == 'True'
+    REMEMBER_COOKIE_SECURE = False  # Para desarrollo local
     REMEMBER_COOKIE_HTTPONLY = True
     
     # Configuración de Google Sheets

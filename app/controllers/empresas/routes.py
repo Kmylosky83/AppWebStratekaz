@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from app.models.empresa import Empresa
 from app.config.database import db
+from flask import jsonify
 
 empresas_bp = Blueprint('empresas', __name__, url_prefix='/empresas')
 
@@ -32,3 +33,16 @@ def nueva_empresa():
             print(f"Error: {str(e)}")
             
     return render_template('empresas/nueva.html')
+
+# En app/controllers/empresas/routes.py
+@empresas_bp.route('/api/empresas')
+@login_required
+def api_empresas():
+    empresas = Empresa.get_by_user(current_user.id)
+    empresas_data = [{
+        'id': empresa.id,
+        'nombre': empresa.nombre,
+        'ruc': empresa.ruc,
+        'created_at': empresa.created_at.strftime('%d/%m/%Y')
+    } for empresa in empresas]
+    return jsonify(empresas_data)

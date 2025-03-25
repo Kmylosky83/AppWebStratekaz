@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva Empresa - StrateKaz{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="dashboard-title">Registrar Nueva Empresa</h2>
+            <p class="dashboard-subtitle">Complete los datos para registrar una nueva empresa</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{{ url_for('empresas.index') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>Volver
+            </a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('empresas.nueva_empresa') }}">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="nombre" class="form-label">Nombre de la Empresa *</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="ruc" class="form-label">RUC/NIT *</label>
+                                <input type="text" class="form-control" id="ruc" name="ruc" required>
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <label for="direccion" class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="direccion" name="direccion">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <input type="text" class="form-control" id="telefono" name="telefono">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email">
+                            </div>
+                            
+                            <!-- Campos adicionales según necesites -->
+                            
+                            <div class="col-12 mt-4">
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Guardar Empresa
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

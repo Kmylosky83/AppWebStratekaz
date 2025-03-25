@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from datetime import datetime
 from app.config.config import config
 from app.config.database import init_db, db, login_manager
+from datetime import datetime, timedelta  # Agrega timedelta aquí
 
 def create_app():
     # Inicializar la aplicación Flask
@@ -38,6 +39,7 @@ def create_app():
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Por favor inicia sesión para acceder a esta página.'
     login_manager.login_message_category = 'warning'
+    login_manager.remember_cookie_duration = timedelta(days=30)
     
     # Manejar errores
     @app.errorhandler(404)
