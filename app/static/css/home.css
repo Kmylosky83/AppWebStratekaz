@@ -197,6 +197,26 @@
     color: var(--text-color);
 }
 
+.normativa-card:hover .normativa-name {
+    color: var(--primary-color);
+}
+
+.normativa-card:nth-child(1):hover .normativa-name {
+    color: var(--primary-color);
+}
+
+.normativa-card:nth-child(2):hover .normativa-name {
+    color: #ffc107;
+}
+
+.normativa-card:nth-child(3):hover .normativa-name {
+    color: var(--black);
+}
+
+.normativa-card:nth-child(4):hover .normativa-name {
+    color: #7a1b74;
+}
+
 /* ======= SECCIÓN CÓMO FUNCIONA ======= */
 .como-funciona-section {
     padding: 4rem 0;
