@@ -76,24 +76,39 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--spacing-md);
+            min-height: 45px; /* Define una altura mínima para el encabezado */
+            /* También puedes usar 'height: 60px;' si quieres una altura fija */
         }
-    
+        
         .header-logo {
             display: block;
+            max-width: 200px; /* O el ancho máximo que desees */
         }
-    
+        
         .responsive-logo {
             height: auto;
             width: auto;
-            max-height: 40px;
+            max-height: 50px; /* Controla la altura máxima del logo */
             transition: max-height 0.3s ease;
+            display: block;
         }
-    
-        /* Media queries para ajustar tamaños en diferentes dispositivos */
+        
         @media (min-width: 768px) {
             .responsive-logo {
-                max-height: 45px;
+                max-height: 80px;
             }
+        }        
+        
+        .nav-buttons {
+            /* Mantén los estilos existentes para los botones */
+        }
+        
+        .navbar-toggler {
+            /* Mantén los estilos existentes para el botón del menú móvil */
         }
     
         @media (max-width: 767px) {
