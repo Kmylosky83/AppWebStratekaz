@@ -22,36 +22,59 @@
         .site-header {
             background-color: white;
             box-shadow: var(--box-shadow-sm);
-            position: sticky;
+            position: fixed; /* Cambiado de sticky a fixed */
             top: 0;
+            left: 0;
+            right: 0;
             z-index: 1000;
-            height: 60px; /* Altura fija para el header */
-            display: flex;
-            align-items: center;
+            padding: 8px 0;
             width: 100%;
         }
         
         .header-logo {
             display: flex;
             align-items: center;
-            height: 100%; /* Que ocupe toda la altura del contenedor padre */
-            padding: 5px 0;
         }
         
         .responsive-logo {
-            max-height: calc(100% - 10px); /* Casi toda la altura disponible, dejando un pequeño margen */
+            max-height: 48px; /* Aumentado de 40px a 48px */
             width: auto;
         }
+
+        .welcome-message {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-right: 15px;
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: var(--box-shadow-md);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(236, 38, 143, 0.1);
+            color: var(--primary-color);
+        }
         
-        @media (min-width: 768px) {
-            .responsive-logo {
-                max-height: 60px;
+        @media (max-width: 767px) {
+            .welcome-message {
+                display: none;
             }
         }
         
         /* Navegación y botones */
         .nav-buttons .btn {
-            padding: 0.375rem 0.75rem;
+            height: 38px;
+            display: flex;
+            align-items: center;
         }
         
         .navbar-toggler {
@@ -87,7 +110,7 @@
         
         /* Estilos globales */
         body {
-            padding-top: 10px;
+            padding-top: 75px; /* Ajusta este valor según la altura final del header */
         }
         
         .btn-primary {
@@ -147,61 +170,61 @@
     <header class="site-header">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
+                <!-- Logo (izquierda) -->
                 <a href="{{ url_for('main.index') }}" class="header-logo">
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="StrateKaz" class="responsive-logo">
                 </a>
                 
-                <div class="nav-buttons d-none d-sm-flex">
+                <!-- Saludo y menú (derecha) -->
+                <div class="d-flex align-items-center">
                     {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-primary me-2">
-                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                        </a>
-                        <a href="{{ url_for('auth.logout') }}" class="btn btn-primary">
-                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                        </a>
-                    {% else %}
-                        {% if request.endpoint == 'auth.registro' %}
-                            <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary me-2">
-                                <i class="fas fa-home"></i> Inicio
-                            </a>
-                        {% elif request.endpoint == 'auth.login' %}
-                            <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary me-2">
-                                <i class="fas fa-home"></i> Inicio
-                            </a>
-                        {% elif request.endpoint == 'main.index' %}
-                            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary me-2">
-                                <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
-                            </a>
-                            <a href="{{ url_for('auth.registro') }}" class="btn btn-primary">
-                                <i class="fas fa-user-plus me-2"></i>Registrarse
-                            </a>
-                        {% endif %}
+                        <h5 class="welcome-message mb-0 me-3 text-end">
+                            Bienvenido, 
+                            {% if current_user.first_name %}
+                                {{ current_user.first_name }}
+                            {% else %}
+                                {{ current_user.username|title|replace('_', ' ')|replace('.', ' ') }}
+                            {% endif %}
+                        </h5>
                     {% endif %}
-                </div>
-                
-                <button class="navbar-toggler d-sm-none" type="button">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Navegación móvil -->
-        <div class="mobile-menu d-sm-none" id="mobileMenu">
-            <div class="container py-3">
-                <div class="d-flex flex-column">
-                    {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
-                        <a href="{{ url_for('auth.logout') }}">Cerrar Sesión</a>
-                    {% else %}
-                        {% if request.endpoint == 'auth.registro' %}
-                            <a href="{{ url_for('main.index') }}">Inicio</a>
-                        {% elif request.endpoint == 'auth.login' %}
-                            <a href="{{ url_for('main.index') }}">Inicio</a>
-                        {% elif request.endpoint == 'main.index' %}
-                            <a href="{{ url_for('auth.login') }}">Iniciar Sesión</a>
-                            <a href="{{ url_for('auth.registro') }}">Registrarse</a>
-                        {% endif %}
-                    {% endif %}
+                    
+                    <!-- Botón de menú -->
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="menuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-bars me-2"></i> Menú
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuDropdown">
+                            {% if current_user.is_authenticated %}
+                                <li><a class="dropdown-item" href="{{ url_for('dashboard.index') }}">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('dashboard.perfil') }}">
+                                    <i class="fas fa-user-circle me-2"></i>Mi Perfil
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                </a></li>
+                            {% else %}
+                                {% if request.endpoint == 'auth.registro' %}
+                                    <li><a class="dropdown-item" href="{{ url_for('main.index') }}">
+                                        <i class="fas fa-home me-2"></i>Inicio
+                                    </a></li>
+                                {% elif request.endpoint == 'auth.login' %}
+                                    <li><a class="dropdown-item" href="{{ url_for('main.index') }}">
+                                        <i class="fas fa-home me-2"></i>Inicio
+                                    </a></li>
+                                {% elif request.endpoint == 'main.index' %}
+                                    <li><a class="dropdown-item" href="{{ url_for('auth.login') }}">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('auth.registro') }}">
+                                        <i class="fas fa-user-plus me-2"></i>Registrarse
+                                    </a></li>
+                                {% endif %}
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -230,24 +253,6 @@
     {% block extra_scripts %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Toggle menú móvil
-            const navbarToggler = document.querySelector('.navbar-toggler');
-            const mobileMenu = document.getElementById('mobileMenu');
-            
-            if (navbarToggler && mobileMenu) {
-                navbarToggler.addEventListener('click', function() {
-                    mobileMenu.classList.toggle('show');
-                });
-            }
-            
-            // Cerrar menú móvil al hacer clic en enlaces
-            const mobileLinks = document.querySelectorAll('.mobile-menu a');
-            mobileLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    mobileMenu.classList.remove('show');
-                });
-            });
-            
             // Auto-cerrar alertas después de 5 segundos
             const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
             alerts.forEach(alert => {
@@ -259,7 +264,7 @@
                 }, 5000);
             });
         });
-    </script>   
+    </script>
     {% endblock %}
 </body>
 </html>

@@ -13,14 +13,21 @@ load_dotenv()
 
 def init_db(app):
     try:
-        # Obtener configuración de la base de datos desde variables de entorno
-        username = os.getenv('DB_USERNAME')
-        password = os.getenv('DB_PASSWORD')
-        host = os.getenv('DB_HOST')
-        database = os.getenv('DB_NAME')
+        # Determinar si estamos en entorno local
+        is_local = os.getenv('FLASK_ENV') == 'development' or os.path.exists('C:/Proyectos')
         
-        # Configurar la base de datos
-        app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{username}:{password}@{host}/{database}'
+        if is_local:
+            # Usar SQLite para desarrollo local
+            app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+            print("Ambiente local detectado: usando SQLite")
+        else:
+            # Configuración de producción para el hosting
+            username = os.getenv('DB_USERNAME')
+            password = os.getenv('DB_PASSWORD')
+            host = os.getenv('DB_HOST')
+            database = os.getenv('DB_NAME')
+            app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{username}:{password}@{host}/{database}'
+            
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         
         # Inicializar extensiones

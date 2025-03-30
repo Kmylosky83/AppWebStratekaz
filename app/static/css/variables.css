@@ -44,7 +44,7 @@
     --border-radius-lg: 0.75rem;
     --border-radius-xl: 1rem;
 
-    --box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --box-shadow-sm: 0 0.125rem 0.25rem rgba(212, 8, 165, 0.075);
     --box-shadow-md: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     --box-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
 

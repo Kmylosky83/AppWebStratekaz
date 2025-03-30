@@ -4,18 +4,6 @@
 
 {% block content %}
 <div class="dashboard-container">
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h2 class="dashboard-title">Bienvenido, {% if current_user.first_name %}{{ current_user.first_name }}{% else %}{{ current_user.username|title|replace('_', ' ')|replace('.', ' ')|replace('@', ' ') }}{% endif %}</h2>
-            <p class="dashboard-subtitle">Aquí tienes un resumen de tu actividad reciente y tareas pendientes.</p>
-        </div>
-        <div class="col-md-4 text-md-end">
-            <a href="{{ url_for('dashboard.perfil') }}" class="btn btn-outline-primary">
-                <i class="fas fa-user-cog me-2"></i>Mi Perfil
-            </a>
-        </div>
-    </div>
-
     <!-- Tarjetas de estadísticas -->
     <div class="row mb-4">
         <div class="col-md-3 col-sm-6 mb-4 mb-md-0">
