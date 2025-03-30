@@ -582,6 +582,29 @@
 
 {% block styles %}
 <style>
+    
+body.modal-open {
+    overflow: hidden;
+}
+.countdown-container {
+    gap: 15px;
+}
+.countdown-item {
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #ec268f;
+    color: white;
+    min-width: 70px;
+}
+.countdown-value {
+    font-size: 2rem;
+    font-weight: bold;
+}
+.countdown-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
 /* Estilos generales del home */
 :root {
     --primary-color: #ec268f;
@@ -1124,5 +1147,6 @@
     }
 }
 </style>
+<script src="{{ url_for('static', filename='js/countdown.js') }}"></script>
 {% endblock %}
 
