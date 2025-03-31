@@ -3,7 +3,7 @@
 {% block title %}Dashboard Profesional - StrateKaz{% endblock %}
 
 {% block content %}
-<div class="dashboard-container">
+<div class="dashboard-container">   
     <!-- Sección de indicadores clave -->
     <section id="indicadores" class="dashboard-section mb-5">
         <div class="card shadow-sm">
@@ -18,170 +18,158 @@
             <div class="card-body">
                 <p class="section-subtitle mb-4">Resumen de la actividad actual</p>
                 
-                <div class="row g-3">
-                    <div class="col-md-3 col-sm-6">
-                        <div class="stats-card">
-                            <div class="stats-card-body">
-                                <div class="stats-card-icon bg-primary">
-                                    <i class="fas fa-tasks"></i>
+                <div class="indicadores-simple">
+                    <div class="row">
+                        <!-- Tareas Pendientes -->
+                        <div class="col-md-3">
+                            <div class="indicador-simple">
+                                <div class="indicador-valor">{{ stats.pending_tasks }}</div>
+                                <div class="indicador-etiqueta">Tareas Pendientes</div>
+                                <div class="indicador-barra bg-primary">
+                                    <i class="fas fa-tasks indicador-icono"></i>
                                 </div>
-                                <div class="stats-card-content">
-                                    <h5 class="stats-card-title">{{ stats.pending_tasks }}</h5>
-                                    <p class="stats-card-text">Tareas Pendientes</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Documentos -->
+                        <div class="col-md-3">
+                            <div class="indicador-simple">
+                                <div class="indicador-valor">0</div>
+                                <div class="indicador-etiqueta">Documentos</div>
+                                <div class="indicador-barra bg-success">
+                                    <i class="fas fa-file-alt indicador-icono"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Clientes -->
+                        <div class="col-md-3">
+                            <div class="indicador-simple">
+                                <div class="indicador-valor">{{ stats.total_empresas }}</div>
+                                <div class="indicador-etiqueta">Clientes</div>
+                                <div class="indicador-barra bg-warning">
+                                    <i class="fas fa-users indicador-icono"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Proyectos -->
+                        <div class="col-md-3">
+                            <div class="indicador-simple">
+                                <div class="indicador-valor">0</div>
+                                <div class="indicador-etiqueta">Proyectos</div>
+                                <div class="indicador-barra bg-info">
+                                    <i class="fas fa-project-diagram indicador-icono"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-6 mb-4 mb-md-0">
-                        <div class="stats-card">
-                            <div class="stats-card-body">
-                                <div class="stats-card-icon bg-success">
-                                    <i class="fas fa-file-alt"></i>
-                                </div>
-                                <div class="stats-card-content">
-                                    <h5 class="stats-card-title">0</h5>
-                                    <p class="stats-card-text">Documentos</p>
-                                </div>
-                            </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Módulos disponibles -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5>Módulos Disponibles</h5>
+                <a href="{{ url_for('dashboard.modulos') }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-th-large me-1"></i>Ver todos
+                </a>
+            </div>
+            
+            <div class="row g-4 justify-content-center">
+                {% for modulo in modulos %}
+                <div class="col-md-6 col-lg-3 mb-3">
+                    <div style="display: flex; flex-direction: column; align-items: center; background-color: white; padding: 1.5rem; border-radius: 1rem; box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05); transition: transform 0.3s ease, box-shadow 0.3s ease; height: 100%; text-align: center;" 
+                        onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 1rem 2rem rgba(236, 38, 143, 0.2)';" 
+                        onmouseout="this.style.transform=''; this.style.boxShadow='';">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 2.5rem; color: white; background-color: {% if modulo.id == 'sg' %}#ec268f{% elif modulo.id == 'sgsst' %}#ffc107{% elif modulo.id == 'pesv' %}#000000{% else %}#7a1b74{% endif %};">
+                            <i class="fas fa-{{ modulo.icon }}"></i>
                         </div>
+                        <div style="font-size: 1.2rem; font-weight: 700; color: #212529; margin-bottom: 0.75rem;">{{ modulo.name }}</div>
+                        <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 1rem;">{{ modulo.description }}</p>
+                        {% if modulo.id != 'herramientas' %}
+                        <a href="#" 
+                        style="display: inline-block; background-color: transparent; border: 1px solid #ec268f; color: #ec268f; border-radius: 50px; padding: 0.375rem 1rem; font-size: 0.875rem; text-decoration: none; margin-top: auto; font-weight: 600; transition: all 0.3s ease;"
+                        onmouseover="this.style.backgroundColor='#ec268f'; this.style.color='white';" 
+                        onmouseout="this.style.backgroundColor='transparent'; this.style.color='#ec268f';"
+                        data-module-popup="true"
+                        data-module-name="{{ modulo.name }}"
+                        data-module-id="{{ modulo.id }}"
+                        data-module-icon="{{ modulo.icon }}">
+                            Acceder
+                        </a>
+                        {% else %}
+                        <a href="{{ modulo.url|default('#') }}" 
+                        style="display: inline-block; background-color: transparent; border: 1px solid #ec268f; color: #ec268f; border-radius: 50px; padding: 0.375rem 1rem; font-size: 0.875rem; text-decoration: none; margin-top: auto; font-weight: 600; transition: all 0.3s ease;"
+                        onmouseover="this.style.backgroundColor='#ec268f'; this.style.color='white';" 
+                        onmouseout="this.style.backgroundColor='transparent'; this.style.color='#ec268f';">
+                            Acceder
+                        </a>
+                        {% endif %}
                     </div>
-                    
-                    <div class="col-md-3 col-sm-6 mb-4 mb-md-0">
-                        <div class="stats-card">
-                            <div class="stats-card-body">
-                                <div class="stats-card-icon bg-warning">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                                <div class="stats-card-content">
-                                    <h5 class="stats-card-title">{{ stats.total_empresas }}</h5>
-                                    <p class="stats-card-text">Clientes</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-3 col-sm-6">
-                        <div class="stats-card">
-                            <div class="stats-card-body">
-                                <div class="stats-card-icon bg-info">
-                                    <i class="fas fa-project-diagram"></i>
-                                </div>
-                                <div class="stats-card-content">
-                                    <h5 class="stats-card-title">0</h5>
-                                    <p class="stats-card-text">Proyectos</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>         
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
-</section>
-    
-    
-         
-        <!-- Módulos disponibles -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5>Módulos Disponibles</h5>
-                    <a href="{{ url_for('dashboard.modulos') }}" class="btn btn-sm btn-primary">
-                        <i class="fas fa-th-large me-1"></i>Ver todos
+
+    <!-- Empresas registradas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Empresas Registradas</h5>
+                    <a href="{{ url_for('empresas.nueva_empresa') }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i>Nueva Empresa
                     </a>
                 </div>
-                
-                <div class="row g-4 justify-content-center">
-                    {% for modulo in modulos %}
-                    <div class="col-md-6 col-lg-3 mb-3">
-                        <div style="display: flex; flex-direction: column; align-items: center; background-color: white; padding: 1.5rem; border-radius: 1rem; box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05); transition: transform 0.3s ease, box-shadow 0.3s ease; height: 100%; text-align: center;" 
-                            onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 1rem 2rem rgba(236, 38, 143, 0.2)';" 
-                            onmouseout="this.style.transform=''; this.style.boxShadow='';">
-                            <div style="width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 2.5rem; color: white; background-color: {% if modulo.id == 'sg' %}#ec268f{% elif modulo.id == 'sgsst' %}#ffc107{% elif modulo.id == 'pesv' %}#000000{% else %}#7a1b74{% endif %};">
-                                <i class="fas fa-{{ modulo.icon }}"></i>
-                            </div>
-                            <div style="font-size: 1.2rem; font-weight: 700; color: #212529; margin-bottom: 0.75rem;">{{ modulo.name }}</div>
-                            <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 1rem;">{{ modulo.description }}</p>
-                            {% if modulo.id != 'herramientas' %}
-                            <a href="#" 
-                            style="display: inline-block; background-color: transparent; border: 1px solid #ec268f; color: #ec268f; border-radius: 50px; padding: 0.375rem 1rem; font-size: 0.875rem; text-decoration: none; margin-top: auto; font-weight: 600; transition: all 0.3s ease;"
-                            onmouseover="this.style.backgroundColor='#ec268f'; this.style.color='white';" 
-                            onmouseout="this.style.backgroundColor='transparent'; this.style.color='#ec268f';"
-                            data-module-popup="true"
-                            data-module-name="{{ modulo.name }}"
-                            data-module-id="{{ modulo.id }}"
-                            data-module-icon="{{ modulo.icon }}">
-                                Acceder
-                            </a>
-                            {% else %}
-                            <a href="{{ modulo.url|default('#') }}" 
-                            style="display: inline-block; background-color: transparent; border: 1px solid #ec268f; color: #ec268f; border-radius: 50px; padding: 0.375rem 1rem; font-size: 0.875rem; text-decoration: none; margin-top: auto; font-weight: 600; transition: all 0.3s ease;"
-                            onmouseover="this.style.backgroundColor='#ec268f'; this.style.color='white';" 
-                            onmouseout="this.style.backgroundColor='transparent'; this.style.color='#ec268f';">
-                                Acceder
-                            </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Empresas registradas -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Empresas Registradas</h5>
-                        <a href="{{ url_for('empresas.nueva_empresa') }}" class="btn btn-sm btn-primary">
-                            <i class="fas fa-plus me-1"></i>Nueva Empresa
-                        </a>
-                    </div>
-                    <div class="card-body" id="empresas-container">
-                        <!-- El contenido será reemplazado por AJAX -->
-                        <div class="text-center">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Cargando...</span>
-                            </div>
+                <div class="card-body" id="empresas-container">
+                    <!-- El contenido será reemplazado por AJAX -->
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Próximos eventos -->
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Próximos Eventos</h5>
-                </div>
-                <div class="card-body">
-                    {% if stats.upcoming_events %}
-                        <ul class="event-list">
-                            {% for event in stats.upcoming_events %}
-                            <li class="event-item">
-                                <div class="event-date">
-                                    <span class="event-day">{{ event.date.day }}</span>
-                                    <span class="event-month">{{ event.date.strftime('%b') }}</span>
-                                </div>
-                                <div class="event-details">
-                                    <h6 class="event-title">{{ event.title }}</h6>
-                                    <p class="event-time">
-                                        <i class="far fa-clock me-1"></i>
-                                        {{ event.date.strftime('%H:%M') }}
-                                    </p>
-                                </div>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <div class="text-center py-4">
-                            <img src="{{ url_for('static', filename='images/no-events.svg') }}" alt="No hay eventos" class="img-fluid mb-3" style="max-height: 120px;">
-                            <h6>No hay eventos próximos</h6>
-                            <p class="text-muted">Los eventos programados aparecerán aquí</p>
-                        </div>
-                    {% endif %}
-                </div>
+    </div>
+    
+    <!-- Próximos eventos -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Próximos Eventos</h5>
+            </div>
+            <div class="card-body">
+                {% if stats.upcoming_events %}
+                    <ul class="event-list">
+                        {% for event in stats.upcoming_events %}
+                        <li class="event-item">
+                            <div class="event-date">
+                                <span class="event-day">{{ event.date.day }}</span>
+                                <span class="event-month">{{ event.date.strftime('%b') }}</span>
+                            </div>
+                            <div class="event-details">
+                                <h6 class="event-title">{{ event.title }}</h6>
+                                <p class="event-time">
+                                    <i class="far fa-clock me-1"></i>
+                                    {{ event.date.strftime('%H:%M') }}
+                                </p>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="text-center py-4">
+                        <img src="{{ url_for('static', filename='images/no-events.svg') }}" alt="No hay eventos" class="img-fluid mb-3" style="max-height: 120px;">
+                        <h6>No hay eventos próximos</h6>
+                        <p class="text-muted">Los eventos programados aparecerán aquí</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -404,6 +392,83 @@
         // Establecer intervalo para actualizar cada 30 segundos
         setInterval(actualizarEmpresas, 30000);
     });
+
+    // En el bloque extra_scripts
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar el gráfico de progreso
+    const progressCtx = document.getElementById('progressChart').getContext('2d');
+    const progressChart = new Chart(progressCtx, {
+        type: 'line',
+        data: {
+            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Clientes',
+                data: [0, 1, 1, 1, 1, 1],
+                borderColor: '#ffc107',
+                backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Tareas Completadas',
+                data: [0, 2, 5, 8, 12, 15],
+                borderColor: '#ec268f',
+                backgroundColor: 'rgba(236, 38, 143, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Progreso Mensual'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    
+    // Configurar el gráfico de distribución
+    const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+    const distributionChart = new Chart(distributionCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Completadas', 'En Progreso', 'Pendientes'],
+            datasets: [{
+                data: [15, 5, 3],
+                backgroundColor: [
+                    '#28a745',
+                    '#ffc107',
+                    '#dc3545'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                },
+                title: {
+                    display: true,
+                    text: 'Estado de Tareas'
+                }
+            },
+            cutout: '70%'
+        }
+    });
+});
         
 
 </script>
@@ -412,230 +477,293 @@
 {% block styles %}
 <userStyle>Normal</userStyle>
 <style>
-    /* Estilos base del dashboard */
-    .dashboard-container {
-        padding: var(--spacing-lg) 0;
-    }
+/* Estilos base del dashboard */
+.dashboard-container {
+    padding: var(--spacing-lg) 0;
+}
 
+.dashboard-title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--dark-text);
+    margin-bottom: var(--spacing-sm);
+}
+
+.dashboard-subtitle {
+    color: var(--secondary-color);
+    margin-bottom: 0;
+}
+
+/* Estilos para el dashboard visual */
+.dashboard-indicators {
+    width: 100%;
+}
+
+/* Tarjetas de métricas */
+.metric-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.metric-card-body {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: #333;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0;
+}
+
+.metric-icon {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+/* Contenedores de gráficos */
+.chart-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    height: 100%;
+}
+
+/* Colores de fondo para los indicadores */
+.bg-primary { background-color: #0d6efd; }
+.bg-success { background-color: #198754; }
+.bg-warning { background-color: #ffc107; color: #000; }
+.bg-info { background-color: #0dcaf0; }
+
+/* Módulos disponibles */
+.module-card {
+    background-color: var(--white);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--box-shadow-sm);
+    transition: 
+        transform var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+}
+
+.module-card.hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow-md);
+}
+
+.module-card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-sm);
+    font-size: 1.5rem;
+}
+
+.bg-primary-light {
+    background-color: rgba(236, 38, 143, 0.1);
+    color: var(--primary-color);
+}
+
+.bg-warning-light {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.bg-success-light {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.bg-info-light {
+    background-color: rgba(23, 162, 184, 0.1);
+    color: #17a2b8;
+}
+
+.module-card-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    margin-top: var(--spacing-md);
+    transition: color var(--transition-speed-fast) ease;
+}
+
+.module-card-link:hover {
+    color: var(--primary-dark);
+}
+
+/* Estilos para las tarjetas de normativas */
+.normativa-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.normativa-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--hover-shadow);
+}
+
+.normativa-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 3rem;
+    color: white;
+}
+
+.sg-icon {
+    background-color: var(--primary-color);
+}
+
+.sgsst-icon {
+    background-color: #ffc107;
+}
+
+.pesv-icon {
+    background-color: var(--black);
+}
+
+.herramientas-icon {
+    background-color: #7a1b74;
+}
+
+.normativa-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+
+/* Indicadores simples como en la imagen */
+.indicadores-simple {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.indicador-simple {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.indicador-valor {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.indicador-etiqueta {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.indicador-barra {
+    height: 8px;
+    width: 100%;
+    border-radius: 4px;
+    position: relative;
+}
+
+.indicador-icono {
+    position: absolute;
+    top: -18px;
+    right: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: inherit;
+    border-radius: 50%;
+    padding: 5px;
+    height: 26px;
+    width: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Colores para las barras */
+.bg-primary { background-color: #007bff; }
+.bg-success { background-color: #28a745; }
+.bg-warning { background-color: #ffc107; }
+.bg-info { background-color: #17a2b8; }
+
+/* Responsive */
+@media (max-width: 768px) {
     .dashboard-title {
-        font-size: var(--font-size-2xl);
-        font-weight: var(--font-weight-bold);
-        color: var(--dark-text);
-        margin-bottom: var(--spacing-sm);
-    }
-
-    .dashboard-subtitle {
-        color: var(--secondary-color);
-        margin-bottom: 0;
-    }
-
-    /* Tarjetas de estadísticas */
-    .stats-card {
-        background-color: var(--white);
-        border-radius: var(--border-radius-md);
-        box-shadow: var(--box-shadow-sm);
-        height: 100%;
-        transition: 
-            transform var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1),
-            box-shadow var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1);
-        overflow: hidden;
+        font-size: var(--font-size-xl);
     }
     
-    .stats-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--box-shadow-lg);
+    .metric-card-body {
+        padding: 1rem;
     }
-
-    .stats-card:hover .stats-card-icon {
-        transform: scale(1.1);
+    
+    .metric-value {
+        font-size: 2rem;
     }
-
-    .stats-card-body {
-        padding: var(--spacing-lg);
-        display: flex;
-        align-items: center;
+    
+    .metric-icon {
+        width: 36px;
+        height: 36px;
     }
-
-    .stats-card-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: var(--spacing-md);
-        color: var(--white);
-        font-size: 1.25rem;
-        transition: transform var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1);
+    
+    .chart-container {
+        padding: 1rem;
     }
-
-    .stats-card-icon.bg-primary {
-        background-color: var(--primary-color);
-    }
-
-    .stats-card-content {
-        flex: 1;
-    }
-
-    .stats-card-title {
-        font-size: var(--font-size-2xl);
-        font-weight: var(--font-weight-bold);
-        margin-bottom: var(--spacing-xs);
-        color: var(--dark-text);
-    }
-
-    .stats-card-text {
-        color: var(--secondary-color);
-        margin-bottom: 0;
-        font-size: var(--font-size-sm);
-    }
-
-    /* Módulos disponibles */
+    
     .module-card {
-        background-color: var(--white);
-        border-radius: var(--border-radius-md);
-        padding: var(--spacing-lg);
-        display: flex;
-        flex-direction: column;
-        box-shadow: var(--box-shadow-sm);
-        transition: 
-            transform var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1),
-            box-shadow var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1);
-        height: 100%;
+        padding: var(--spacing-md);
     }
-
-    .module-card.hover-effect:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--box-shadow-md);
-    }
-
+    
     .module-card-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: var(--spacing-sm);
-        font-size: 1.5rem;
+        width: 50px;
+        height: 50px;
+        font-size: 1.25rem;
     }
-
-    .bg-primary-light {
-        background-color: rgba(236, 38, 143, 0.1);
-        color: var(--primary-color);
-    }
-
-    .bg-warning-light {
-        background-color: rgba(255, 193, 7, 0.1);
-        color: #ffc107;
-    }
-
-    .bg-success-light {
-        background-color: rgba(40, 167, 69, 0.1);
-        color: #28a745;
-    }
-
-    .bg-info-light {
-        background-color: rgba(23, 162, 184, 0.1);
-        color: #17a2b8;
-    }
-
-    .module-card-link {
-        color: var(--primary-color);
-        text-decoration: none;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        margin-top: var(--spacing-md);
-        transition: color var(--transition-speed-fast) ease;
-    }
-
-    .module-card-link:hover {
-        color: var(--primary-dark);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .dashboard-title {
-            font-size: var(--font-size-xl);
-        }
-
-        .stats-card-body {
-            padding: var(--spacing-md);
-        }
-        
-        .stats-card-icon {
-            width: 40px;
-            height: 40px;
-            font-size: 1rem;
-        }
-        
-        .stats-card-title {
-            font-size: var(--font-size-xl);
-        }
-        
-        .module-card {
-            padding: var(--spacing-md);
-        }
-        
-        .module-card-icon {
-            width: 50px;
-            height: 50px;
-            font-size: 1.25rem;
-        }
-    }
-
-    /* Estilos para las tarjetas de normativas */
-    .normativa-card {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: white;
-        padding: 2rem;
-        border-radius: 1rem;
-        box-shadow: var(--card-shadow);
-        transition: all 0.3s ease;
-        height: 100%;
-    }
-
-    .normativa-card:hover {
-        transform: translateY(-10px);
-        box-shadow: var(--hover-shadow);
-    }
-
-    .normativa-icon {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1.5rem;
-        font-size: 3rem;
-        color: white;
-    }
-
-    .sg-icon {
-        background-color: var(--primary-color);
-    }
-
-    .sgsst-icon {
-        background-color: #ffc107;
-    }
-
-    .pesv-icon {
-        background-color: var(--black);
-    }
-
-    .herramientas-icon {
-        background-color: #7a1b74;
-    }
-
-    .normativa-name {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text-color);
-        margin-bottom: 1rem;
-    }
+}
 </style>
 {% endblock %}
