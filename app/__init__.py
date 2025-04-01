@@ -1,8 +1,8 @@
 from flask import Flask, render_template
-from datetime import datetime
+from datetime import datetime, timedelta  # Agrega timedelta aquí
 from app.config.config import config
 from app.config.database import init_db, db, login_manager
-from datetime import datetime, timedelta  # Agrega timedelta aquí
+from flask_migrate import Migrate  # Añadir esta importación
 
 def create_app():
     # Inicializar la aplicación Flask
@@ -13,6 +13,9 @@ def create_app():
     
     # Inicializar base de datos
     init_db(app)
+    
+    # Inicializar Migrate
+    migrate = Migrate(app, db)
     
     # Registrar blueprints
     from app.controllers.auth.routes import auth_bp
@@ -72,5 +75,4 @@ def create_app():
 from app.models.user import User
 from app.models.empresa import Empresa
 from app.models.tarea import Tarea     
-from app.models.formacion import FichaFormacion, ListaAsistencia, Asistente, PreguntaFormacion, RespuestaFormacion   
-        
+from app.models.formacion import FichaFormacion, ListaAsistencia, Asistente, PreguntaFormacion, RespuestaFormacion

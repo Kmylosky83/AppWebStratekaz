@@ -3,12 +3,14 @@
 {% block title %}Dashboard Profesional - StrateKaz{% endblock %}
 
 {% block content %}
-<div class="dashboard-container">   
+<div class="dashboard-container">
     <!-- Sección de indicadores clave -->
     <section id="indicadores" class="dashboard-section mb-5">
         <div class="card shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                <h4 class="section-title mb-0"><i class="fas fa-chart-line me-2"></i>Indicadores Clave</h4>
+                <h4 class="section-title mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Indicadores Clave
+                </h4>
                 <div>
                     <a href="#" class="btn btn-sm btn-outline-primary">
                         <i class="fas fa-expand-alt me-1"></i>Expandir
@@ -18,53 +20,62 @@
             <div class="card-body">
                 <p class="section-subtitle mb-4">Resumen de la actividad actual</p>
                 
-                <div class="indicadores-simple">
-                    <div class="row">
-                        <!-- Tareas Pendientes -->
-                        <div class="col-md-3">
-                            <div class="indicador-simple">
-                                <div class="indicador-valor">{{ stats.pending_tasks }}</div>
-                                <div class="indicador-etiqueta">Tareas Pendientes</div>
-                                <div class="indicador-barra bg-primary">
-                                    <i class="fas fa-tasks indicador-icono"></i>
+                <div class="row g-3">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stats-card">
+                            <div class="stats-card-body">
+                                <div class="stats-card-icon bg-primary">
+                                    <i class="fas fa-tasks"></i>
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Documentos -->
-                        <div class="col-md-3">
-                            <div class="indicador-simple">
-                                <div class="indicador-valor">0</div>
-                                <div class="indicador-etiqueta">Documentos</div>
-                                <div class="indicador-barra bg-success">
-                                    <i class="fas fa-file-alt indicador-icono"></i>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Clientes -->
-                        <div class="col-md-3">
-                            <div class="indicador-simple">
-                                <div class="indicador-valor">{{ stats.total_empresas }}</div>
-                                <div class="indicador-etiqueta">Clientes</div>
-                                <div class="indicador-barra bg-warning">
-                                    <i class="fas fa-users indicador-icono"></i>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Proyectos -->
-                        <div class="col-md-3">
-                            <div class="indicador-simple">
-                                <div class="indicador-valor">0</div>
-                                <div class="indicador-etiqueta">Proyectos</div>
-                                <div class="indicador-barra bg-info">
-                                    <i class="fas fa-project-diagram indicador-icono"></i>
+                                <div class="stats-card-content">
+                                    <h5 class="stats-card-title">{{ stats.pending_tasks }}</h5>
+                                    <p class="stats-card-text">Tareas Pendientes</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                    <div class="col-md-3 col-sm-6 mb-4 mb-md-0">
+                        <div class="stats-card">
+                            <div class="stats-card-body">
+                                <div class="stats-card-icon bg-success">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="stats-card-content">
+                                    <h5 class="stats-card-title">{{ stats.total_documentos }}</h5>
+                                    <p class="stats-card-text">Documentos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 col-sm-6 mb-4 mb-md-0">
+                        <div class="stats-card">
+                            <div class="stats-card-body">
+                                <div class="stats-card-icon bg-warning">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stats-card-content">
+                                    <h5 class="stats-card-title">{{ stats.total_empresas }}</h5>
+                                    <p class="stats-card-text">Clientes</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stats-card">
+                            <div class="stats-card-body">
+                                <div class="stats-card-icon bg-info">
+                                    <i class="fas fa-project-diagram"></i>
+                                </div>
+                                <div class="stats-card-content">
+                                    <h5 class="stats-card-title">0</h5>
+                                    <p class="stats-card-text">Proyectos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>         
             </div>
         </div>
     </section>
@@ -82,33 +93,29 @@
             <div class="row g-4 justify-content-center">
                 {% for modulo in modulos %}
                 <div class="col-md-6 col-lg-3 mb-3">
-                    <div style="display: flex; flex-direction: column; align-items: center; background-color: white; padding: 1.5rem; border-radius: 1rem; box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05); transition: transform 0.3s ease, box-shadow 0.3s ease; height: 100%; text-align: center;" 
-                        onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 1rem 2rem rgba(236, 38, 143, 0.2)';" 
-                        onmouseout="this.style.transform=''; this.style.boxShadow='';">
-                        <div style="width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 2.5rem; color: white; background-color: {% if modulo.id == 'sg' %}#ec268f{% elif modulo.id == 'sgsst' %}#ffc107{% elif modulo.id == 'pesv' %}#000000{% else %}#7a1b74{% endif %};">
+                    <div class="module-card hover-effect">
+                        <div class="module-card-icon" style="background-color: {% if modulo.id == 'sg' %}#ec268f{% elif modulo.id == 'sgsst' %}#ffc107{% elif modulo.id == 'pesv' %}#000000{% else %}#7a1b74{% endif %};">
                             <i class="fas fa-{{ modulo.icon }}"></i>
                         </div>
-                        <div style="font-size: 1.2rem; font-weight: 700; color: #212529; margin-bottom: 0.75rem;">{{ modulo.name }}</div>
-                        <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 1rem;">{{ modulo.description }}</p>
-                        {% if modulo.id != 'herramientas' %}
-                        <a href="#" 
-                        style="display: inline-block; background-color: transparent; border: 1px solid #ec268f; color: #ec268f; border-radius: 50px; padding: 0.375rem 1rem; font-size: 0.875rem; text-decoration: none; margin-top: auto; font-weight: 600; transition: all 0.3s ease;"
-                        onmouseover="this.style.backgroundColor='#ec268f'; this.style.color='white';" 
-                        onmouseout="this.style.backgroundColor='transparent'; this.style.color='#ec268f';"
-                        data-module-popup="true"
-                        data-module-name="{{ modulo.name }}"
-                        data-module-id="{{ modulo.id }}"
-                        data-module-icon="{{ modulo.icon }}">
-                            Acceder
-                        </a>
-                        {% else %}
-                        <a href="{{ modulo.url|default('#') }}" 
-                        style="display: inline-block; background-color: transparent; border: 1px solid #ec268f; color: #ec268f; border-radius: 50px; padding: 0.375rem 1rem; font-size: 0.875rem; text-decoration: none; margin-top: auto; font-weight: 600; transition: all 0.3s ease;"
-                        onmouseover="this.style.backgroundColor='#ec268f'; this.style.color='white';" 
-                        onmouseout="this.style.backgroundColor='transparent'; this.style.color='#ec268f';">
-                            Acceder
-                        </a>
-                        {% endif %}
+                        <div class="module-card-content">
+                            <h4 class="module-card-title">{{ modulo.name }}</h4>
+                            <p class="module-card-description">{{ modulo.description }}</p>
+                            
+                            {% if modulo.id != 'herramientas' %}
+                            <a href="#" 
+                               class="module-card-link"
+                               data-module-popup="true"
+                               data-module-name="{{ modulo.name }}"
+                               data-module-id="{{ modulo.id }}"
+                               data-module-icon="{{ modulo.icon }}">
+                                Acceder
+                            </a>
+                            {% else %}
+                            <a href="{{ modulo.url|default('#') }}" class="module-card-link">
+                                Acceder
+                            </a>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
@@ -116,82 +123,25 @@
         </div>
     </div>
 
-    <!-- Empresas registradas -->
+    <!-- Información Complementaria -->
     <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">Empresas Registradas</h5>
-                    <a href="{{ url_for('empresas.nueva_empresa') }}" class="btn btn-sm btn-primary">
-                        <i class="fas fa-plus me-1"></i>Nueva Empresa
-                    </a>
-                </div>
-                <div class="card-body" id="empresas-container">
-                    <!-- El contenido será reemplazado por AJAX -->
-                    <div class="text-center">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Cargando...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Próximos eventos -->
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Próximos Eventos</h5>
-            </div>
-            <div class="card-body">
-                {% if stats.upcoming_events %}
-                    <ul class="event-list">
-                        {% for event in stats.upcoming_events %}
-                        <li class="event-item">
-                            <div class="event-date">
-                                <span class="event-day">{{ event.date.day }}</span>
-                                <span class="event-month">{{ event.date.strftime('%b') }}</span>
-                            </div>
-                            <div class="event-details">
-                                <h6 class="event-title">{{ event.title }}</h6>
-                                <p class="event-time">
-                                    <i class="far fa-clock me-1"></i>
-                                    {{ event.date.strftime('%H:%M') }}
-                                </p>
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <div class="text-center py-4">
-                        <img src="{{ url_for('static', filename='images/no-events.svg') }}" alt="No hay eventos" class="img-fluid mb-3" style="max-height: 120px;">
-                        <h6>No hay eventos próximos</h6>
-                        <p class="text-muted">Los eventos programados aparecerán aquí</p>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <!-- Actividad reciente -->
-        <div class="col-md-6 mb-4">
+        <!-- Actividad Reciente -->
+        <div class="col-md-4">
             <div class="card h-100">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Actividad Reciente</h5>
+                    <h5 class="card-title">🚀 Tu Viaje Empresarial</h5>
                 </div>
                 <div class="card-body p-0">
                     {% if stats.recent_activity %}
-                        <ul class="activity-list">
+                        <ul class="list-group list-group-flush">
                             {% for activity in stats.recent_activity %}
-                            <li class="activity-item">
-                                <div class="activity-icon">
-                                    <i class="{{ activity.icon }}"></i>
+                            <li class="list-group-item d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="{{ activity.icon }} text-primary"></i>
                                 </div>
-                                <div class="activity-content">
-                                    <p class="activity-text">{{ activity.text }}</p>
-                                    <span class="activity-time">{{ activity.time }}</span>
+                                <div>
+                                    <p class="mb-1">{{ activity.text }}</p>
+                                    <small class="text-muted">{{ activity.time }}</small>
                                 </div>
                             </li>
                             {% endfor %}
@@ -207,43 +157,68 @@
             </div>
         </div>
 
-        <!-- Tareas pendientes -->
-        <div class="col-md-6 mb-4">
+        <!-- Próximos Eventos -->
+        <div class="col-md-4">
             <div class="card h-100">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">Tareas Pendientes</h5>
-                    <a href="#" class="btn btn-sm btn-outline-primary">Ver todas</a>
+                <div class="card-header">
+                    <h5 class="card-title">📅 Horizontes que se Aproximan</h5>
+                </div>
+                <div class="card-body">
+                    {% if stats.upcoming_events %}
+                        <ul class="list-group list-group-flush">
+                            {% for event in stats.upcoming_events %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="my-0">{{ event.title }}</h6>
+                                    <small class="text-muted">{{ event.date.strftime('%d/%m/%Y %H:%M') }}</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <img src="{{ url_for('static', filename='images/no-events.svg') }}" alt="No hay eventos" class="img-fluid mb-3" style="max-height: 120px;">
+                            <h6>No hay eventos próximos</h6>
+                            <p class="text-muted">Los eventos programados aparecerán aquí</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Tareas Pendientes -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title">⏳ Misiones en Progreso</h5>
                 </div>
                 <div class="card-body p-0">
-                    <ul class="task-list">
-                        <li class="task-item">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="task1">
-                                <label class="form-check-label" for="task1">
-                                    Completar perfil profesional
-                                </label>
-                            </div>
-                            <span class="task-priority high">Alta</span>
-                        </li>
-                        <li class="task-item">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="task2">
-                                <label class="form-check-label" for="task2">
-                                    Registrar primer cliente
-                                </label>
-                            </div>
-                            <span class="task-priority medium">Media</span>
-                        </li>
-                        <li class="task-item">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="task3">
-                                <label class="form-check-label" for="task3">
-                                    Crear primer documento
-                                </label>
-                            </div>
-                            <span class="task-priority low">Baja</span>
-                        </li>
-                    </ul>
+                    {% if pendientes %}
+                        <ul class="list-group list-group-flush">
+                            {% for tarea in pendientes %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="tarea{{ tarea.id }}">
+                                    <label class="form-check-label" for="tarea{{ tarea.id }}">
+                                        {{ tarea.title }}
+                                    </label>
+                                </div>
+                                <span class="badge bg-{{ 'danger' if tarea.priority == 'alta' else 'warning' if tarea.priority == 'media' else 'secondary' }} rounded-pill">
+                                    {{ tarea.priority|upper }}
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <img src="{{ url_for('static', filename='images/no-tasks.svg') }}" alt="No hay tareas" class="img-fluid mb-3" style="max-height: 120px;">
+                            <h6>No hay tareas pendientes</h6>
+                            <p class="text-muted">¡Excelente! Has completado todas tus tareas</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -253,25 +228,8 @@
 
 {% block extra_scripts %}
 <script>
-    // Lógica para cambiar estado de tareas
     document.addEventListener('DOMContentLoaded', function() {
-        const checkboxes = document.querySelectorAll('.task-item .form-check-input');
-        
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const taskItem = this.closest('.task-item');
-                if (this.checked) {
-                    taskItem.classList.add('completed');
-                } else {
-                    taskItem.classList.remove('completed');
-                }
-            });
-        });
-    });
-    <!-- Agregar esto en app/templates/dashboard/profesional.html y company.html -->
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Agregar manejadores de eventos a botones de módulos no disponibles
+        // Eventos para interacción con módulos no disponibles
         document.querySelectorAll('[data-module-popup="true"]').forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -279,12 +237,11 @@
                 const moduleName = this.getAttribute('data-module-name');
                 const moduleId = this.getAttribute('data-module-id');
                 
-                // Mostrar popup con SweetAlert2
                 Swal.fire({
                     title: '¡Próximamente!',
                     html: `
                         <div class="text-center">
-                            <div style="width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2.5rem; color: white; background-color: #ec268f;">
+                            <div class="module-preview-icon" style="background-color: #ec268f;">
                                 <i class="fas fa-${this.getAttribute('data-module-icon')}"></i>
                             </div>
                             <h5>${moduleName}</h5>
@@ -299,10 +256,7 @@
                         </div>
                     `,
                     showConfirmButton: false,
-                    showCloseButton: true,
-                    customClass: {
-                        popup: 'animated fadeInUp'
-                    }
+                    showCloseButton: true
                 });
                 
                 // Manejar envío del formulario de lista de espera
@@ -310,8 +264,6 @@
                     e.preventDefault();
                     const email = this.querySelector('#email').value;
                     
-                    // Aquí se enviaría a un endpoint para guardar el email
-                    // Por ahora solo mostraremos un mensaje de confirmación
                     Swal.fire({
                         icon: 'success',
                         title: '¡Gracias!',
@@ -322,448 +274,22 @@
             });
         });
     });
-
-    
-    function actualizarEmpresas() {
-        fetch('/empresas/api/empresas')
-            .then(response => response.json())
-            .then(data => {
-                const empresasContainer = document.getElementById('empresas-container');
-                
-                if (data.length > 0) {
-                    // Generar HTML para lista de empresas
-                    let empresasHTML = '<div class="table-responsive"><table class="table table-hover">';
-                    empresasHTML += '<thead><tr><th>Nombre</th><th>RUC/NIT</th><th>Fecha Registro</th><th>Cumplimiento</th><th>Acciones</th></tr></thead><tbody>';
-                    
-                    data.forEach(empresa => {
-                        empresasHTML += `
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="company-avatar">
-                                            ${empresa.nombre[0]}
-                                        </div>
-                                        <span class="ms-2 fw-medium">${empresa.nombre}</span>
-                                    </div>
-                                </td>
-                                <td>${empresa.ruc}</td>
-                                <td>${empresa.created_at}</td>
-                                <td>
-                                    <div class="progress" style="height: 6px;">
-                                        <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <span class="small">0%</span>
-                                </td>
-                                <td>
-                                    <div class="btn-group">
-                                        <a href="#" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-sm btn-outline-info">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                    
-                    empresasHTML += '</tbody></table></div>';
-                    empresasContainer.innerHTML = empresasHTML;
-                } else {
-                    // Mostrar mensaje "No hay empresas"
-                    empresasHTML = `
-                        <div class="text-center">
-                            <img src="{{ url_for('static', filename='images/empty-company.svg') }}" alt="No hay empresas" class="img-fluid mb-3" style="max-height: 150px;" onerror="this.src='https://via.placeholder.com/150x150?text=No+Empresas'">
-                            <h5>No tienes empresas registradas</h5>
-                            <p class="text-muted mb-4">Registra tu primera empresa para comenzar</p>
-                        </div>
-                    `;
-                    empresasContainer.innerHTML = empresasHTML;
-                }
-            })
-            .catch(error => console.error('Error al actualizar empresas:', error));
-    }
-    
-    // Actualizar empresas al cargar la página
-    document.addEventListener('DOMContentLoaded', function() {
-        actualizarEmpresas();
-        
-        // Establecer intervalo para actualizar cada 30 segundos
-        setInterval(actualizarEmpresas, 30000);
-    });
-
-    // En el bloque extra_scripts
-document.addEventListener('DOMContentLoaded', function() {
-    // Configurar el gráfico de progreso
-    const progressCtx = document.getElementById('progressChart').getContext('2d');
-    const progressChart = new Chart(progressCtx, {
-        type: 'line',
-        data: {
-            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-            datasets: [{
-                label: 'Clientes',
-                data: [0, 1, 1, 1, 1, 1],
-                borderColor: '#ffc107',
-                backgroundColor: 'rgba(255, 193, 7, 0.1)',
-                tension: 0.4,
-                fill: true
-            }, {
-                label: 'Tareas Completadas',
-                data: [0, 2, 5, 8, 12, 15],
-                borderColor: '#ec268f',
-                backgroundColor: 'rgba(236, 38, 143, 0.1)',
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: 'Progreso Mensual'
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-    
-    // Configurar el gráfico de distribución
-    const distributionCtx = document.getElementById('distributionChart').getContext('2d');
-    const distributionChart = new Chart(distributionCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Completadas', 'En Progreso', 'Pendientes'],
-            datasets: [{
-                data: [15, 5, 3],
-                backgroundColor: [
-                    '#28a745',
-                    '#ffc107',
-                    '#dc3545'
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'right',
-                },
-                title: {
-                    display: true,
-                    text: 'Estado de Tareas'
-                }
-            },
-            cutout: '70%'
-        }
-    });
-});
-        
-
 </script>
 {% endblock %}
 
 {% block styles %}
-<userStyle>Normal</userStyle>
 <style>
-/* Estilos base del dashboard */
-.dashboard-container {
-    padding: var(--spacing-lg) 0;
-}
-
-.dashboard-title {
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--dark-text);
-    margin-bottom: var(--spacing-sm);
-}
-
-.dashboard-subtitle {
-    color: var(--secondary-color);
-    margin-bottom: 0;
-}
-
-/* Estilos para el dashboard visual */
-.dashboard-indicators {
-    width: 100%;
-}
-
-/* Tarjetas de métricas */
-.metric-card {
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    height: 100%;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.metric-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-}
-
-.metric-card-body {
-    padding: 1.5rem;
-    text-align: center;
-}
-
-.metric-value {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
-    color: #333;
-}
-
-.metric-label {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 0;
-}
-
-.metric-icon {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-/* Contenedores de gráficos */
-.chart-container {
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    padding: 1.5rem;
-    height: 100%;
-}
-
-/* Colores de fondo para los indicadores */
-.bg-primary { background-color: #0d6efd; }
-.bg-success { background-color: #198754; }
-.bg-warning { background-color: #ffc107; color: #000; }
-.bg-info { background-color: #0dcaf0; }
-
-/* Módulos disponibles */
-.module-card {
-    background-color: var(--white);
-    border-radius: var(--border-radius-md);
-    padding: var(--spacing-lg);
-    display: flex;
-    flex-direction: column;
-    box-shadow: var(--box-shadow-sm);
-    transition: 
-        transform var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow var(--transition-speed-normal) cubic-bezier(0.4, 0, 0.2, 1);
-    height: 100%;
-}
-
-.module-card.hover-effect:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--box-shadow-md);
-}
-
-.module-card-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: var(--spacing-sm);
-    font-size: 1.5rem;
-}
-
-.bg-primary-light {
-    background-color: rgba(236, 38, 143, 0.1);
-    color: var(--primary-color);
-}
-
-.bg-warning-light {
-    background-color: rgba(255, 193, 7, 0.1);
-    color: #ffc107;
-}
-
-.bg-success-light {
-    background-color: rgba(40, 167, 69, 0.1);
-    color: #28a745;
-}
-
-.bg-info-light {
-    background-color: rgba(23, 162, 184, 0.1);
-    color: #17a2b8;
-}
-
-.module-card-link {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    margin-top: var(--spacing-md);
-    transition: color var(--transition-speed-fast) ease;
-}
-
-.module-card-link:hover {
-    color: var(--primary-dark);
-}
-
-/* Estilos para las tarjetas de normativas */
-.normativa-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: white;
-    padding: 2rem;
-    border-radius: 1rem;
-    box-shadow: var(--card-shadow);
-    transition: all 0.3s ease;
-    height: 100%;
-}
-
-.normativa-card:hover {
-    transform: translateY(-10px);
-    box-shadow: var(--hover-shadow);
-}
-
-.normativa-icon {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-    font-size: 3rem;
-    color: white;
-}
-
-.sg-icon {
-    background-color: var(--primary-color);
-}
-
-.sgsst-icon {
-    background-color: #ffc107;
-}
-
-.pesv-icon {
-    background-color: var(--black);
-}
-
-.herramientas-icon {
-    background-color: #7a1b74;
-}
-
-.normativa-name {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-color);
-    margin-bottom: 1rem;
-}
-
-/* Indicadores simples como en la imagen */
-.indicadores-simple {
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-.indicador-simple {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 15px;
-}
-
-.indicador-valor {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 5px;
-    color: #333;
-}
-
-.indicador-etiqueta {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 10px;
-}
-
-.indicador-barra {
-    height: 8px;
-    width: 100%;
-    border-radius: 4px;
-    position: relative;
-}
-
-.indicador-icono {
-    position: absolute;
-    top: -18px;
-    right: 10px;
-    font-size: 16px;
-    color: white;
-    background-color: inherit;
-    border-radius: 50%;
-    padding: 5px;
-    height: 26px;
-    width: 26px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Colores para las barras */
-.bg-primary { background-color: #007bff; }
-.bg-success { background-color: #28a745; }
-.bg-warning { background-color: #ffc107; }
-.bg-info { background-color: #17a2b8; }
-
-/* Responsive */
-@media (max-width: 768px) {
-    .dashboard-title {
-        font-size: var(--font-size-xl);
+    /* Estilos específicos para el dashboard */
+    .module-preview-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2.5rem;
+        color: white;
     }
-    
-    .metric-card-body {
-        padding: 1rem;
-    }
-    
-    .metric-value {
-        font-size: 2rem;
-    }
-    
-    .metric-icon {
-        width: 36px;
-        height: 36px;
-    }
-    
-    .chart-container {
-        padding: 1rem;
-    }
-    
-    .module-card {
-        padding: var(--spacing-md);
-    }
-    
-    .module-card-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.25rem;
-    }
-}
 </style>
 {% endblock %}
