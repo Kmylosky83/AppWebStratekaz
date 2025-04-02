@@ -188,3 +188,10 @@ def herramientas():
     ]
     
     return render_template('dashboard/herramientas.html', herramientas=herramientas)
+
+@dashboard_bp.route('/estadisticas')
+@login_required
+def estadisticas():
+    # Lógica para la vista de estadísticas
+    stats = DashboardService.get_stats_for_user(current_user.id)
+    return render_template('dashboard/estadisticas.html', stats=stats)

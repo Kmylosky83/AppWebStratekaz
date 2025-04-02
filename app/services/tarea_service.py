@@ -4,28 +4,44 @@ from app.config.database import db
 
 class TareaService:
     @staticmethod
-    def get_tareas_pendientes(user_id, limit=5):
+    def get_estadisticas_usuario(user_id):
         """
-        Obtiene las tareas pendientes de un usuario
+        Obtiene estadísticas de tareas para un usuario específico
         
         Args:
             user_id: ID del usuario
-            limit: Número máximo de tareas a devolver
             
         Returns:
-            list: Lista de tareas pendientes
+            dict: Estadísticas de tareas
         """
-        # Esta es una implementación básica, puedes expandirla según tus necesidades
-        try:
-            tareas = Tarea.query.filter_by(
-                user_id=user_id,
-                estado='pendiente'
-            ).order_by(Tarea.fecha_vencimiento.asc()).limit(limit).all()
-            
-            return tareas
-        except Exception as e:
-            print(f"Error obteniendo tareas pendientes: {str(e)}")
-            return []
+        stats = {
+            'total_tareas': Tarea.query.filter(
+                (Tarea.created_by_id == user_id)
+            ).count(),
+            'tareas_pendientes': Tarea.query.filter(
+                (Tarea.created_by_id == user_id) & 
+                (Tarea.status == 'pending')
+            ).count(),
+            'tareas_completadas': Tarea.query.filter(
+                (Tarea.created_by_id == user_id) & 
+                (Tarea.status == 'completed')
+            ).count(),
+            'tareas_por_prioridad': {
+                'alta': Tarea.query.filter(
+                    (Tarea.created_by_id == user_id) & 
+                    (Tarea.priority == 'high')
+                ).count(),
+                'media': Tarea.query.filter(
+                    (Tarea.created_by_id == user_id) & 
+                    (Tarea.priority == 'medium')
+                ).count(),
+                'baja': Tarea.query.filter(
+                    (Tarea.created_by_id == user_id) & 
+                    (Tarea.priority == 'low')
+                ).count()
+            }
+        }
+        return stats
     
     @staticmethod
     def crear_tarea(user_id, titulo, descripcion, fecha_vencimiento, prioridad='media'):
