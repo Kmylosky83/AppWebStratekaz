@@ -16,6 +16,8 @@
     {% if request.endpoint == 'main.index' %}
     <link href="{{ url_for('static', filename='css/home.css') }}" rel="stylesheet">
     {% endif %}
+    <!-- Añade esto junto con los otros CSS -->
+    <link href="{{ url_for('static', filename='css/kmy_assistant.css') }}" rel="stylesheet">
         
     <style>
         /* Estilos para el encabezado y logo */
@@ -266,6 +268,8 @@
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="{{ url_for('static', filename='js/kmy_assistant.js') }}"></script>
     {% endblock %}
+    {% include 'components/kmy_assistant.html' %}
 </body>
 </html>
