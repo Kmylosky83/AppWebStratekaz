@@ -60,6 +60,25 @@
                                 </select>
                             </div>
                             {% endif %}
+
+                            <div class="col-md-12 mt-3">
+                                <h5>Método de diligenciamiento</h5>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="metodo_diligenciamiento" id="metodo_directo" value="directo" checked>
+                                    <label class="form-check-label" for="metodo_directo">
+                                        Diligenciar directamente en la plataforma
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="metodo_diligenciamiento" id="metodo_externo" value="externo">
+                                    <label class="form-check-label" for="metodo_externo">
+                                        Generar enlace para profesional externo
+                                    </label>
+                                </div>
+                                <div id="externo_info" class="mt-2 ps-4 d-none">
+                                    <input type="email" class="form-control" name="email_externo" placeholder="Email del profesional externo">
+                                </div>
+                            </div>
                             
                             <!-- Preguntas -->
                             <div class="col-12 mt-4">
@@ -144,7 +163,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const preguntasJson = document.getElementById('preguntas-json');
     const agregarPreguntaBtn = document.getElementById('agregar-pregunta');
     const preguntaTemplate = document.getElementById('pregunta-template');
-    
+    const metodoDireto = document.getElementById('metodo_directo');
+    const metodoExterno = document.getElementById('metodo_externo');
+    const externoInfo = document.getElementById('externo_info');
+
+    metodoExterno.addEventListener('change', function() {
+        if (this.checked) {
+            externoInfo.classList.remove('d-none');
+        }
+    });
+
+    metodoDireto.addEventListener('change', function() {
+        if (this.checked) {
+            externoInfo.classList.add('d-none');
+        }
+    });
+
     let preguntas = [];
     
     // Agregar pregunta

@@ -65,6 +65,8 @@ class ListaAsistencia(db.Model):
     fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
     estado = db.Column(db.String(50), default='activa')  # activa, cerrada
     enlace_compartible = db.Column(db.String(200), nullable=True)
+    es_externo = db.Column(db.Boolean, default=False)
+    email_externo = db.Column(db.String(100), nullable=True)
     
     # Relación con la ficha
     ficha_id = db.Column(db.Integer, db.ForeignKey('fichas_formacion.id'), nullable=False)

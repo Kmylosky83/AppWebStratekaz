@@ -54,27 +54,62 @@ def crear_ficha():
         preguntas_json = request.form.get('preguntas', '[]')
         preguntas_data = json.loads(preguntas_json)
         
-        db.session.add(ficha)
-        db.session.flush()  # Para obtener el ID de la ficha
-        
-        for pregunta_data in preguntas_data:
-            pregunta = PreguntaFormacion(
-                texto=pregunta_data['texto'],
-                tipo=pregunta_data['tipo'],
-                opciones=json.dumps(pregunta_data.get('opciones', [])),
-                ficha_id=ficha.id
-            )
-            db.session.add(pregunta)
-        
-        # Crear lista de asistencia asociada
-        lista = ListaAsistencia(
-            ficha_id=ficha.id,
-            enlace_compartible=str(uuid.uuid4())
-        )
-        db.session.add(lista)
-        
         try:
+            db.session.add(ficha)
+            db.session.flush()  # Para obtener el ID de la ficha
+            
+            for pregunta_data in preguntas_data:
+                pregunta = PreguntaFormacion(
+                    texto=pregunta_data['texto'],
+                    tipo=pregunta_data['tipo'],
+                    opciones=json.dumps(pregunta_data.get('opciones', [])),
+                    ficha_id=ficha.id
+                )
+                db.session.add(pregunta)
+            
+            # Crear lista de asistencia asociada
+            metodo_diligenciamiento = request.form.get('metodo_diligenciamiento', 'directo')
+            es_externo = metodo_diligenciamiento == 'externo'
+            email_externo = request.form.get('email_externo') if es_externo else None
+
+            lista = ListaAsistencia(
+                ficha_id=ficha.id,
+                enlace_compartible=str(uuid.uuid4()),
+                es_externo=es_externo,
+                email_externo=email_externo
+            )
+            db.session.add(lista)
             db.session.commit()
+            
+            # Enviar correo si es externo
+            if es_externo and email_externo:
+                try:
+                    # Importar función de envío de correo
+                    from app.utils.email_utils import send_email
+                    
+                    enlace_completo = request.host_url.rstrip('/') + url_for('formacion.lista_asistencia', enlace=lista.enlace_compartible)
+                    
+                    asunto = f"Invitación para diligenciar Ficha de Formación: {ficha.titulo}"
+                    cuerpo = f"""
+                    Hola,
+                    
+                    Has sido invitado a diligenciar una ficha de formación en la plataforma StrateKaz.
+                    
+                    Título: {ficha.titulo}
+                    Responsable: {ficha.responsable}
+                    
+                    Por favor accede al siguiente enlace para completar la información:
+                    {enlace_completo}
+                    
+                    Saludos,
+                    Equipo StrateKaz
+                    """
+                    
+                    send_email(email_externo, asunto, cuerpo)
+                    flash('Se ha enviado un correo al profesional externo con el enlace para diligenciar la ficha', 'info')
+                except Exception as e:
+                    flash(f'La ficha se creó correctamente, pero hubo un error al enviar el correo: {str(e)}', 'warning')
+            
             flash('Ficha de formación creada exitosamente', 'success')
             return redirect(url_for('formacion.ver_ficha', ficha_id=ficha.id))
         except Exception as e:
