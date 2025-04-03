@@ -3,6 +3,7 @@ from datetime import datetime, timedelta  # Agrega timedelta aquí
 from app.config.config import config
 from app.config.database import init_db, db, login_manager
 from flask_migrate import Migrate  # Añadir esta importación
+from app.controllers.kmy.routes import kmy_bp
 
 def create_app():
     # Inicializar la aplicación Flask
@@ -31,6 +32,7 @@ def create_app():
     app.register_blueprint(main_bp)
     app.register_blueprint(tareas_bp, url_prefix='/tareas')
     app.register_blueprint(formacion_bp, url_prefix='/formacion')
+    app.register_blueprint(kmy_bp, url_prefix='/api/kmy')
     
     # Configurar login_manager
     @login_manager.user_loader
