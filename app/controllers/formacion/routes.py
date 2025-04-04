@@ -33,9 +33,16 @@ def crear_ficha():
         responsable = request.form.get('responsable')
         objetivos = request.form.get('objetivos')
         empresa_id = request.form.get('empresa_id') or None
+        metodologia = request.form.get('metodologia')  # Ahora es un solo valor
+        recursos = request.form.getlist('recursos')    # Esto sigue siendo una lista
         
         # Generar código único para la ficha
         codigo = f"FORM-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}"
+        
+              
+        # Convertir a JSON para guardar en la base de datos
+        metodologias_json = json.dumps(metodologias) if metodologias else None
+        recursos_json = json.dumps(recursos) if recursos else None
         
         # Crear la ficha
         ficha = FichaFormacion(
@@ -48,7 +55,9 @@ def crear_ficha():
             objetivos=objetivos,
             codigo=codigo,
             user_id=current_user.id,
-            empresa_id=empresa_id
+            empresa_id=empresa_id,
+            metodologias=metodologia,  # Ya no es JSON, solo un string
+            recursos=json.dumps(recursos) if recursos else None
         )
         
         # Guardar preguntas

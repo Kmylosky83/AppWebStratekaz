@@ -2,6 +2,10 @@
 
 {% block title %}Crear Ficha de Formación - StrateKaz{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+{% endblock %}
+
 {% block content %}
 <div class="container py-4">
     <div class="row justify-content-center">
@@ -47,6 +51,36 @@
                             <div class="col-md-12">
                                 <label for="objetivos" class="form-label">Objetivos</label>
                                 <textarea class="form-control" id="objetivos" name="objetivos" rows="3"></textarea>
+                            </div>
+
+                            <div class="col-md-12 mt-3">
+                                <label for="metodologia" class="form-label">Metodología</label>
+                                <select class="form-select" id="metodologia" name="metodologia">
+                                    <option value="">Seleccione una metodología...</option>
+                                    <option value="clase_magistral">Clase Magistral</option>
+                                    <option value="taller_practico">Taller Práctico</option>
+                                    <option value="exposicion_virtual">Exposición Virtual</option>
+                                    <option value="discusion_grupal">Discusión Grupal</option>
+                                    <option value="demostracion">Demostración</option>
+                                    <option value="juego_roles">Juego de Roles</option>
+                                    <option value="estudio_caso">Estudio de Caso</option>
+                                    <option value="aprendizaje_basado_proyectos">Aprendizaje Basado en Proyectos</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Mantener el de recursos como múltiple -->
+                            <div class="col-md-12 mt-3">
+                                <label for="recursos" class="form-label">Recursos</label>
+                                <select class="form-select" id="recursos" name="recursos" multiple>
+                                    <option value="presentacion">Presentación/Diapositivas</option>
+                                    <option value="videos">Videos</option>
+                                    <option value="material_impreso">Material Impreso</option>
+                                    <option value="casos_estudio">Casos de Estudio</option>
+                                    <option value="software">Software Especializado</option>
+                                    <option value="equipos">Equipos/Herramientas</option>
+                                    <option value="recursos_digitales">Recursos Digitales</option>
+                                    <option value="libros">Libros/Manuales</option>
+                                </select>
                             </div>
                             
                             {% if empresas %}
@@ -157,8 +191,24 @@
 {% endblock %}
 
 {% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script>
+
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar selects múltiples
+    new Choices('#metodologias', {
+        removeItemButton: true,
+        allowHTML: false,
+        placeholderValue: 'Seleccione las metodologías...'
+    });
+
+    new Choices('#recursos', {
+        removeItemButton: true,
+        allowHTML: false,
+        placeholderValue: 'Seleccione los recursos...'
+    });
+
     const preguntasContainer = document.getElementById('preguntas-container');
     const preguntasJson = document.getElementById('preguntas-json');
     const agregarPreguntaBtn = document.getElementById('agregar-pregunta');
@@ -281,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Actualizar input hidden
         preguntasJson.value = JSON.stringify(preguntas);
     }
-    
+
     // Validación del formulario
     document.getElementById('fichaNuevaForm').addEventListener('submit', function(event) {
         const titulo = document.getElementById('titulo').value;

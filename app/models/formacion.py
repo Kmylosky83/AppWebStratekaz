@@ -14,6 +14,8 @@ class FichaFormacion(db.Model):
     responsable = db.Column(db.String(100), nullable=True)
     objetivos = db.Column(db.Text, nullable=True)
     codigo = db.Column(db.String(50), nullable=True)  # Código para control documental
+    metodologias = db.Column(db.Text, nullable=True)  # Almacenará lista JSON
+    recursos = db.Column(db.Text, nullable=True)      # Almacenará lista JSON
     
     # Relaciones
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
