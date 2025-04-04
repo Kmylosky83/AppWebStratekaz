@@ -55,4 +55,75 @@
         </div>
     {% endif %}
 </div>
+<!-- Modal para opciones de nueva ficha -->
+<div class="modal fade" id="modalOpcionesNuevaFicha" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Nueva Ficha de Formación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="d-grid gap-3">
+            <a href="{{ url_for('formacion.crear_ficha') }}" class="btn btn-primary">
+              <i class="fas fa-pencil-alt me-2"></i>Crear nueva ficha
+            </a>
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#collapseEnvioCorreo">
+              <i class="fas fa-share-alt me-2"></i>Compartir para creación externa
+            </button>
+            
+            <div class="collapse mt-3" id="collapseEnvioCorreo">
+              <div class="card card-body">
+                <form id="formEnvioEnlace">
+                  <div class="mb-3">
+                    <label class="form-label">Correo del profesional externo</label>
+                    <input type="email" class="form-control" id="emailExterno" required>
+                  </div>
+                  <button type="submit" class="btn btn-success">
+                    <i class="fas fa-paper-plane me-2"></i>Enviar enlace
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Cambiar el comportamiento del botón Nueva Ficha
+  document.querySelector('a.btn-nueva-ficha, a.btn[href*="crear"]').addEventListener('click', function(e) {
+    e.preventDefault();
+    let modal = new bootstrap.Modal(document.getElementById('modalOpcionesNuevaFicha'));
+    modal.show();
+  });
+  
+  // Manejar envío del formulario
+  document.getElementById('formEnvioEnlace').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('emailExterno').value;
+    
+    fetch("{{ url_for('formacion.enviar_enlace_creacion') }}", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: email }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('Enlace enviado correctamente');
+        bootstrap.Modal.getInstance(document.getElementById('modalOpcionesNuevaFicha')).hide();
+      } else {
+        alert('Error: ' + data.message);
+      }
+    });
+  });
+});
+</script>
 {% endblock %}

@@ -4,6 +4,7 @@ from app.models.formacion import FichaFormacion, ListaAsistencia, Asistente, Pre
 from app.models.empresa import Empresa
 from app.config.database import db
 from datetime import datetime
+from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify, session
 import json
 import uuid
 import base64
@@ -212,6 +213,80 @@ def generar_acta(ficha_id):
     # Por ahora solo mostraremos una vista previa
     return render_template('formacion/vista_previa_acta.html', ficha=ficha, lista=lista)
 
+@formacion_bp.route('/enviar-enlace-creacion', methods=['POST'])
+@login_required
+def enviar_enlace_creacion():
+    """Enviar enlace para creación externa de ficha"""
+    data = request.json
+    email = data.get('email')
+    
+    if not email:
+        return jsonify({'success': False, 'message': 'Email requerido'})
+    
+    try:
+        # Generar token único para este enlace
+        token = str(uuid.uuid4())
+        
+        # Guardar token en sesión o base de datos para validarlo después
+        # Por simplicidad usamos sesión, pero en producción debería guardarse en BD
+        if 'enlaces_creacion' not in session:
+            session['enlaces_creacion'] = {}
+        
+        session['enlaces_creacion'][token] = {
+            'email': email,
+            'user_id': current_user.id,
+            'created_at': datetime.now().isoformat()
+        }
+        
+        # Importar función de envío de correo
+        from app.utils.email_utils import send_email
+        
+        enlace_completo = request.host_url.rstrip('/') + url_for('formacion.crear_ficha_externa', token=token)
+        
+        asunto = "Invitación para crear Ficha de Formación en StrateKaz"
+        cuerpo = f"""
+        Hola,
+        
+        Has sido invitado a crear una ficha de formación en la plataforma StrateKaz.
+        
+        Por favor accede al siguiente enlace para completar la información:
+        {enlace_completo}
+        
+        Saludos,
+        Equipo StrateKaz
+        """
+        
+        send_email(email, asunto, cuerpo)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+@formacion_bp.route('/crear-externa/<token>')
+def crear_ficha_externa(token):
+    """Formulario para crear ficha por un externo"""
+    # Verificar token
+    enlaces = session.get('enlaces_creacion', {})
+    if token not in enlaces:
+        flash('Enlace inválido o expirado', 'danger')
+        return redirect(url_for('main.index'))
+    
+    # Usar datos del token
+    data = enlaces[token]
+    user_id = data['user_id']
+    
+    # Obtener usuario
+    from app.models.user import User
+    user = User.query.get(user_id)
+    if not user:
+        flash('Usuario no encontrado', 'danger')
+        return redirect(url_for('main.index'))
+    
+    # Mostrar formulario adaptado para externos
+    return render_template('formacion/crear_ficha.html', 
+                          token=token, 
+                          email=data['email'],
+                          es_externo=True)
+
 @formacion_bp.route('/<int:ficha_id>/editar', methods=['GET', 'POST'])
 @login_required
 def editar_ficha(ficha_id):
@@ -240,6 +315,7 @@ def editar_ficha(ficha_id):
         except Exception as e:
             db.session.rollback()
             flash(f'Error al actualizar la ficha: {str(e)}', 'danger')
+            
     
     # GET: Mostrar formulario
     return render_template('formacion/editar_ficha.html', ficha=ficha)
