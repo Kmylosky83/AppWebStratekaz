@@ -31,7 +31,10 @@ def crear_ficha():
         lugar = request.form.get('lugar')
         duracion = request.form.get('duracion')
         responsable = request.form.get('responsable')
-        objetivos = request.form.get('objetivos')
+        objetivos_json = request.form.get('objetivos', '[]')
+        objetivos_data = json.loads(objetivos_json)
+        objetivos_texto = '\n• '.join([obj['texto'] for obj in objetivos_data if obj['texto']])
+        objetivos = '• ' + objetivos_texto if objetivos_texto else ''
         empresa_id = request.form.get('empresa_id') or None
         metodologia = request.form.get('metodologia')  # Ahora es un solo valor
         recursos = request.form.getlist('recursos')    # Esto sigue siendo una lista
@@ -41,7 +44,7 @@ def crear_ficha():
         
               
         # Convertir a JSON para guardar en la base de datos
-        metodologias_json = json.dumps(metodologias) if metodologias else None
+        metodologia_valor = metodologia if metodologia else None
         recursos_json = json.dumps(recursos) if recursos else None
         
         # Crear la ficha

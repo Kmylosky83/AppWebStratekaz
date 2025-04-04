@@ -23,11 +23,6 @@
                                 <input type="text" class="form-control" id="titulo" name="titulo" required>
                             </div>
                             
-                            <div class="col-md-12">
-                                <label for="descripcion" class="form-label">Descripción</label>
-                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
-                            </div>
-                            
                             <div class="col-md-6">
                                 <label for="fecha" class="form-label">Fecha y Hora *</label>
                                 <input type="datetime-local" class="form-control" id="fecha" name="fecha" required>
@@ -47,11 +42,45 @@
                                 <label for="responsable" class="form-label">Responsable *</label>
                                 <input type="text" class="form-control" id="responsable" name="responsable" required>
                             </div>
-                            
+
                             <div class="col-md-12">
-                                <label for="objetivos" class="form-label">Objetivos</label>
-                                <textarea class="form-control" id="objetivos" name="objetivos" rows="3"></textarea>
+                                <label for="descripcion" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
                             </div>
+                            
+                            <div class="col-12 mt-4">
+                                <h5>Objetivos</h5>
+                                <p class="text-muted small">Agregue los objetivos de la formación</p>
+                                
+                                <div id="objetivos-container">
+                                    <!-- Aquí se agregarán los objetivos dinámicamente -->
+                                </div>
+                                
+                                <input type="hidden" name="objetivos" id="objetivos-json" value="[]">
+                                
+                                <button type="button" class="btn btn-outline-primary mt-3" id="agregar-objetivo">
+                                    <i class="fas fa-plus me-2"></i>Agregar Objetivo
+                                </button>
+                            </div>
+
+                            <!-- Template para objetivo -->
+                            <template id="objetivo-template">
+                                <div class="card mb-3 objetivo-item">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <h6 class="card-title">Objetivo <span class="numero-objetivo"></span></h6>
+                                            <button type="button" class="btn btn-sm btn-outline-danger eliminar-objetivo">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">Texto del objetivo</label>
+                                            <input type="text" class="form-control objetivo-texto">
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
 
                             <div class="col-md-12 mt-3">
                                 <label for="metodologia" class="form-label">Metodología</label>
@@ -68,19 +97,60 @@
                                 </select>
                             </div>
                             
-                            <!-- Mantener el de recursos como múltiple -->
                             <div class="col-md-12 mt-3">
-                                <label for="recursos" class="form-label">Recursos</label>
-                                <select class="form-select" id="recursos" name="recursos" multiple>
-                                    <option value="presentacion">Presentación/Diapositivas</option>
-                                    <option value="videos">Videos</option>
-                                    <option value="material_impreso">Material Impreso</option>
-                                    <option value="casos_estudio">Casos de Estudio</option>
-                                    <option value="software">Software Especializado</option>
-                                    <option value="equipos">Equipos/Herramientas</option>
-                                    <option value="recursos_digitales">Recursos Digitales</option>
-                                    <option value="libros">Libros/Manuales</option>
-                                </select>
+                                <label class="form-label">Recursos</label>
+                                <div class="border p-3 rounded">
+                                    <div class="row g-2">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="presentacion" id="recursos_presentacion">
+                                                <label class="form-check-label" for="recursos_presentacion">Presentación/Diapositivas</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="videos" id="recursos_videos">
+                                                <label class="form-check-label" for="recursos_videos">Videos</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="material_impreso" id="recursos_material">
+                                                <label class="form-check-label" for="recursos_material">Material Impreso</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="casos_estudio" id="recursos_casos">
+                                                <label class="form-check-label" for="recursos_casos">Casos de Estudio</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="software" id="recursos_software">
+                                                <label class="form-check-label" for="recursos_software">Software Especializado</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="equipos" id="recursos_equipos">
+                                                <label class="form-check-label" for="recursos_equipos">Equipos/Herramientas</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="recursos_digitales" id="recursos_digitales">
+                                                <label class="form-check-label" for="recursos_digitales">Recursos Digitales</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="libros" id="recursos_libros">
+                                                <label class="form-check-label" for="recursos_libros">Libros/Manuales</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             
                             {% if empresas %}
@@ -94,26 +164,7 @@
                                 </select>
                             </div>
                             {% endif %}
-
-                            <div class="col-md-12 mt-3">
-                                <h5>Método de diligenciamiento</h5>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="radio" name="metodo_diligenciamiento" id="metodo_directo" value="directo" checked>
-                                    <label class="form-check-label" for="metodo_directo">
-                                        Diligenciar directamente en la plataforma
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="metodo_diligenciamiento" id="metodo_externo" value="externo">
-                                    <label class="form-check-label" for="metodo_externo">
-                                        Generar enlace para profesional externo
-                                    </label>
-                                </div>
-                                <div id="externo_info" class="mt-2 ps-4 d-none">
-                                    <input type="email" class="form-control" name="email_externo" placeholder="Email del profesional externo">
-                                </div>
-                            </div>
-                            
+                                                     
                             <!-- Preguntas -->
                             <div class="col-12 mt-4">
                                 <h5>Preguntas para Asistentes</h5>
@@ -194,42 +245,92 @@
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script>
 
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar selects múltiples
-    new Choices('#metodologias', {
-        removeItemButton: true,
-        allowHTML: false,
-        placeholderValue: 'Seleccione las metodologías...'
-    });
-
-    new Choices('#recursos', {
-        removeItemButton: true,
-        allowHTML: false,
-        placeholderValue: 'Seleccione los recursos...'
-    });
+   
+    if (document.getElementById('recursos') && document.getElementById('recursos').tagName === 'SELECT') {
+        new Choices('#recursos', {
+            removeItemButton: true,
+            allowHTML: false,
+            placeholderValue: 'Seleccione los recursos...'
+        });
+    }
 
     const preguntasContainer = document.getElementById('preguntas-container');
     const preguntasJson = document.getElementById('preguntas-json');
     const agregarPreguntaBtn = document.getElementById('agregar-pregunta');
     const preguntaTemplate = document.getElementById('pregunta-template');
-    const metodoDireto = document.getElementById('metodo_directo');
-    const metodoExterno = document.getElementById('metodo_externo');
-    const externoInfo = document.getElementById('externo_info');
-
-    metodoExterno.addEventListener('change', function() {
-        if (this.checked) {
-            externoInfo.classList.remove('d-none');
-        }
-    });
-
-    metodoDireto.addEventListener('change', function() {
-        if (this.checked) {
-            externoInfo.classList.add('d-none');
-        }
-    });
-
+    
     let preguntas = [];
+
+    // Manejo de objetivos dinámicos
+    const objetivosContainer = document.getElementById('objetivos-container');
+    const objetivosJson = document.getElementById('objetivos-json');
+    const agregarObjetivoBtn = document.getElementById('agregar-objetivo');
+    const objetivoTemplate = document.getElementById('objetivo-template');
+
+    // Agregar aquí el código de depuración
+    console.log('Elementos de objetivos:');
+    console.log('Container:', objetivosContainer);
+    console.log('JSON:', objetivosJson);
+    console.log('Botón:', agregarObjetivoBtn);
+    console.log('Template:', objetivoTemplate);
+
+    let objetivos = [];
+
+    // Agregar objetivo
+    agregarObjetivoBtn.addEventListener('click', function() {
+              
+        const nuevoObjetivo = objetivoTemplate.content.cloneNode(true); // Solo una vez
+        const objetivoItem = nuevoObjetivo.querySelector('.objetivo-item');
+        const numeroObjetivo = objetivos.length + 1;
+        
+        objetivoItem.dataset.index = objetivos.length;
+        nuevoObjetivo.querySelector('.numero-objetivo').textContent = numeroObjetivo;
+        
+        // Evento para eliminar objetivo
+        nuevoObjetivo.querySelector('.eliminar-objetivo').addEventListener('click', function() {
+            const index = parseInt(objetivoItem.dataset.index);
+            objetivos.splice(index, 1);
+            objetivoItem.remove();
+            actualizarNumerosObjetivos();
+            actualizarObjetivos();
+        });
+        
+        // Eventos para inputs
+        nuevoObjetivo.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', actualizarObjetivos);
+        });
+        
+        objetivosContainer.appendChild(nuevoObjetivo);
+        
+        // Añadir objetivo al array
+        objetivos.push({
+            texto: ''
+        });
+        
+        actualizarObjetivos();
+    });
+
+    // Actualizar números de objetivos
+    function actualizarNumerosObjetivos() {
+        document.querySelectorAll('.objetivo-item').forEach((item, index) => {
+            item.dataset.index = index;
+            item.querySelector('.numero-objetivo').textContent = index + 1;
+        });
+    }
+
+    // Actualizar array de objetivos
+    function actualizarObjetivos() {
+        objetivos = [];
+        
+        document.querySelectorAll('.objetivo-item').forEach(item => {
+            const texto = item.querySelector('.objetivo-texto').value;
+            objetivos.push({ texto });
+        });
+        
+        // Actualizar input hidden
+        objetivosJson.value = JSON.stringify(objetivos);
+    }
     
     // Agregar pregunta
     agregarPreguntaBtn.addEventListener('click', function() {
