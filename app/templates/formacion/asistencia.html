@@ -90,8 +90,73 @@
                                     {% endfor %}
                                 </select>
                                 {% endif %}
+
+                                <h6 class="border-bottom pb-2 mb-3">Evaluación del Capacitador (Opcional)</h6>
+                                <div class="mb-4">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Dominio del tema</label>
+                                            <select class="form-select" name="dominio_tema">
+                                                <option value="">Seleccionar...</option>
+                                                <option value="1">1 - Deficiente</option>
+                                                <option value="2">2 - Regular</option>
+                                                <option value="3">3 - Bueno</option>
+                                                <option value="4">4 - Muy bueno</option>
+                                                <option value="5">5 - Excelente</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Claridad de la explicación</label>
+                                            <select class="form-select" name="claridad">
+                                                <option value="">Seleccionar...</option>
+                                                <option value="1">1 - Deficiente</option>
+                                                <option value="2">2 - Regular</option>
+                                                <option value="3">3 - Bueno</option>
+                                                <option value="4">4 - Muy bueno</option>
+                                                <option value="5">5 - Excelente</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Calidad del material</label>
+                                            <select class="form-select" name="material">
+                                                <option value="">Seleccionar...</option>
+                                                <option value="1">1 - Deficiente</option>
+                                                <option value="2">2 - Regular</option>
+                                                <option value="3">3 - Bueno</option>
+                                                <option value="4">4 - Muy bueno</option>
+                                                <option value="5">5 - Excelente</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Manejo del tiempo</label>
+                                            <select class="form-select" name="tiempo">
+                                                <option value="">Seleccionar...</option>
+                                                <option value="1">1 - Deficiente</option>
+                                                <option value="2">2 - Regular</option>
+                                                <option value="3">3 - Bueno</option>
+                                                <option value="4">4 - Muy bueno</option>
+                                                <option value="5">5 - Excelente</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Utilidad de la formación</label>
+                                            <select class="form-select" name="utilidad">
+                                                <option value="">Seleccionar...</option>
+                                                <option value="1">1 - Deficiente</option>
+                                                <option value="2">2 - Regular</option>
+                                                <option value="3">3 - Bueno</option>
+                                                <option value="4">4 - Muy bueno</option>
+                                                <option value="5">5 - Excelente</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">Comentarios adicionales</label>
+                                            <textarea class="form-control" name="comentarios" rows="2"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            {% endfor %}
+                            {% endfor %}                            
                         </div>
                         {% endif %}
                         

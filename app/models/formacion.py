@@ -59,7 +59,8 @@ class PreguntaFormacion(db.Model):
     
     # Relación con las respuestas
     respuestas = relationship("RespuestaFormacion", back_populates="pregunta", cascade="all, delete-orphan")
-
+    respuesta_correcta = db.Column(db.String(200), nullable=True)
+    
 class ListaAsistencia(db.Model):
     __tablename__ = 'listas_asistencia'
     
@@ -91,6 +92,7 @@ class Asistente(db.Model):
     telefono = db.Column(db.String(20), nullable=True)
     firma_data = db.Column(db.Text, nullable=True)  # Datos de la firma digital (base64)
     fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
+    evaluacion = relationship("EvaluacionCapacitador", back_populates="asistente", uselist=False, cascade="all, delete-orphan")
     
     # Relación con la lista
     lista_id = db.Column(db.Integer, db.ForeignKey('listas_asistencia.id'), nullable=False)
@@ -114,3 +116,17 @@ class RespuestaFormacion(db.Model):
     
     pregunta = relationship("PreguntaFormacion", back_populates="respuestas")
     asistente = relationship("Asistente", back_populates="respuestas")
+    
+class EvaluacionCapacitador(db.Model):
+    __tablename__ = 'evaluaciones_capacitador'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    dominio_tema = db.Column(db.Integer, nullable=True)  # 1-5
+    claridad = db.Column(db.Integer, nullable=True)  # 1-5
+    material = db.Column(db.Integer, nullable=True)  # 1-5
+    tiempo = db.Column(db.Integer, nullable=True)  # 1-5
+    utilidad = db.Column(db.Integer, nullable=True)  # 1-5
+    comentarios = db.Column(db.Text, nullable=True)
+    
+    asistente_id = db.Column(db.Integer, db.ForeignKey('asistentes.id'), nullable=False)
+    asistente = relationship("Asistente", back_populates="evaluacion")

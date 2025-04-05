@@ -9,6 +9,7 @@ import json
 import uuid
 import base64
 import os
+from app.models.formacion import FichaFormacion, ListaAsistencia, Asistente, PreguntaFormacion, RespuestaFormacion, EvaluacionCapacitador
 
 formacion_bp = Blueprint('formacion', __name__, url_prefix='/formacion')
 
@@ -197,6 +198,27 @@ def registrar_asistente():
             )
             db.session.add(respuesta)
     
+    # Guardar evaluación del capacitador
+    dominio_tema = request.form.get('dominio_tema')
+    claridad = request.form.get('claridad')
+    material = request.form.get('material')
+    tiempo = request.form.get('tiempo')
+    utilidad = request.form.get('utilidad')
+    comentarios = request.form.get('comentarios')
+    
+    # Solo crear evaluación si hay al menos un campo completado
+    if dominio_tema or claridad or material or tiempo or utilidad or comentarios:
+        evaluacion = EvaluacionCapacitador(
+            dominio_tema=int(dominio_tema) if dominio_tema else None,
+            claridad=int(claridad) if claridad else None,
+            material=int(material) if material else None,
+            tiempo=int(tiempo) if tiempo else None,
+            utilidad=int(utilidad) if utilidad else None,
+            comentarios=comentarios,
+            asistente_id=asistente.id
+        )
+        db.session.add(evaluacion)
+    
     try:
         db.session.commit()
         return jsonify({'success': True, 'message': 'Asistencia registrada correctamente'})
@@ -310,6 +332,12 @@ def editar_ficha(ficha_id):
         flash('No tienes permiso para editar esta ficha', 'danger')
         return redirect(url_for('formacion.index'))
     
+    # Verificar si hay asistentes registrados
+    lista = ListaAsistencia.query.filter_by(ficha_id=ficha.id).first()
+    if lista and lista.asistentes:
+        flash('No se puede editar una ficha que ya tiene asistentes registrados', 'warning')
+        return redirect(url_for('formacion.ver_ficha', ficha_id=ficha.id))
+    
     if request.method == 'POST':
         # Actualizar datos básicos
         ficha.titulo = request.form.get('titulo')
@@ -319,6 +347,25 @@ def editar_ficha(ficha_id):
         ficha.duracion = request.form.get('duracion')
         ficha.responsable = request.form.get('responsable')
         ficha.objetivos = request.form.get('objetivos')
+        ficha.metodologias = request.form.get('metodologia')
+        ficha.recursos = json.dumps(request.form.getlist('recursos')) if request.form.getlist('recursos') else None
+        
+        # Actualizar preguntas
+        preguntas_json = request.form.get('preguntas', '[]')
+        preguntas_data = json.loads(preguntas_json)
+        
+        # Primero eliminar preguntas existentes
+        PreguntaFormacion.query.filter_by(ficha_id=ficha.id).delete()
+        
+        # Luego crear las nuevas preguntas
+        for pregunta_data in preguntas_data:
+            pregunta = PreguntaFormacion(
+                texto=pregunta_data['texto'],
+                tipo=pregunta_data['tipo'],
+                opciones=json.dumps(pregunta_data.get('opciones', [])),
+                ficha_id=ficha.id
+            )
+            db.session.add(pregunta)
         
         try:
             db.session.commit()
