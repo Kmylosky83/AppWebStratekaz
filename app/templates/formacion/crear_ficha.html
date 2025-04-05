@@ -15,7 +15,7 @@
                     <h3 class="card-title mb-0">Nueva Ficha de Formación</h3>
                 </div>
                 <div class="card-body">
-                    <form id="fichaNuevaForm" method="POST" action="{{ url_for('formacion.crear_ficha') }}">
+                    <form id="fichaNuevaForm" method="POST" action="{{ url_for('formacion.crear_ficha') }}" onkeydown="return event.key != 'Enter';">
                         <div class="row g-3">
                             <!-- Información básica -->
                             <div class="col-md-12">
@@ -29,13 +29,13 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <label for="lugar" class="form-label">Lugar</label>
-                                <input type="text" class="form-control" id="lugar" name="lugar">
+                                <label for="lugar" class="form-label">Lugar *</label>
+                                <input type="text" class="form-control" id="lugar" name="lugar" required>
                             </div>
                             
                             <div class="col-md-6">
-                                <label for="duracion" class="form-label">Duración</label>
-                                <input type="text" class="form-control" id="duracion" name="duracion" placeholder="Ej: 2 horas">
+                                <label for="duracion" class="form-label">Duración *</label>
+                                <input type="text" class="form-control" id="duracion" name="duracion" placeholder="Ej: 2 horas" required>
                             </div>
                             
                             <div class="col-md-6">
@@ -44,8 +44,8 @@
                             </div>
 
                             <div class="col-md-12">
-                                <label for="descripcion" class="form-label">Descripción</label>
-                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                                <label for="descripcion" class="form-label">Descripción *</label>
+                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
                             </div>
                             
                             <div class="col-12 mt-4">
@@ -83,7 +83,7 @@
                             </template>
 
                             <div class="col-md-12 mt-3">
-                                <label for="metodologia" class="form-label">Metodología</label>
+                                <label for="metodologia" class="form-label">Metodología *</label>
                                 <select class="form-select" id="metodologia" name="metodologia">
                                     <option value="">Seleccione una metodología...</option>
                                     <option value="clase_magistral">Clase Magistral</option>
@@ -98,7 +98,7 @@
                             </div>
                             
                             <div class="col-md-12 mt-3">
-                                <label class="form-label">Recursos</label>
+                                <label class="form-label">Recursos *</label>
                                 <div class="border p-3 rounded">
                                     <div class="row g-2">
                                         <div class="col-md-6">
@@ -222,10 +222,28 @@
                 </select>
             </div>
             
+            <!-- Campo para respuesta correcta Si/No -->
+            <div class="respuesta-correcta-si-no d-none mb-3">
+                <label class="form-label">Respuesta correcta:</label>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="correcta_si_no_temp" value="Sí" checked>
+                    <label class="form-check-label">Sí</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="correcta_si_no_temp" value="No">
+                    <label class="form-check-label">No</label>
+                </div>
+            </div>
+            
             <div class="opciones-container d-none">
                 <label class="form-label">Opciones de respuesta</label>
                 <div class="opciones-lista">
                     <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <input type="radio" class="respuesta-correcta" name="correcta_temp" checked>
+                            </div>
+                        </div>
                         <input type="text" class="form-control opcion-texto" placeholder="Opción 1">
                         <button class="btn btn-outline-danger eliminar-opcion" type="button">
                             <i class="fas fa-times"></i>
@@ -340,20 +358,32 @@ document.addEventListener('DOMContentLoaded', function() {
         
         preguntaItem.dataset.index = preguntas.length;
         nuevaPregunta.querySelector('.numero-pregunta').textContent = numeroPregunta;
+
+        const primerRadio = preguntaItem.querySelector('.respuesta-correcta');
+        primerRadio.name = `correcta_pregunta_${preguntas.length}`;
+
+        // Corregir esto - Definir tipoSelect primero
+        const tipoSelect = nuevaPregunta.querySelector('.pregunta-tipo');
         
         // Evento para cambiar tipo de pregunta
-        const tipoSelect = nuevaPregunta.querySelector('.pregunta-tipo');
-        const opcionesContainer = nuevaPregunta.querySelector('.opciones-container');
-        
         tipoSelect.addEventListener('change', function() {
+            const preguntaItem = this.closest('.pregunta-item');
+            const respuestaCorrectaSiNo = preguntaItem.querySelector('.respuesta-correcta-si-no');
+            const opcionesContainer = preguntaItem.querySelector('.opciones-container');
+            
+            // Ocultar ambos contenedores primero
+            respuestaCorrectaSiNo.classList.add('d-none');
+            opcionesContainer.classList.add('d-none');
+            
             if (this.value === 'opcion_multiple') {
                 opcionesContainer.classList.remove('d-none');
-            } else {
-                opcionesContainer.classList.add('d-none');
+            } else if (this.value === 'si_no') {
+                respuestaCorrectaSiNo.classList.remove('d-none');
             }
+            
             actualizarPreguntas();
         });
-        
+                
         // Evento para eliminar pregunta
         nuevaPregunta.querySelector('.eliminar-pregunta').addEventListener('click', function() {
             const index = parseInt(preguntaItem.dataset.index);
@@ -365,10 +395,17 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Eventos para agregar/eliminar opciones
         nuevaPregunta.querySelector('.agregar-opcion').addEventListener('click', function() {
-            const opcionesLista = this.parentElement.querySelector('.opciones-lista');
+            const preguntaItem = this.closest('.pregunta-item');
+            const preguntaIndex = preguntaItem.dataset.index;
+            const opcionesLista = preguntaItem.querySelector('.opciones-lista');
             const nuevaOpcion = document.createElement('div');
             nuevaOpcion.className = 'input-group mb-2';
             nuevaOpcion.innerHTML = `
+                <div class="input-group-prepend">
+                    <div class="input-group-text">
+                        <input type="radio" class="respuesta-correcta" name="correcta_pregunta_${preguntaIndex}">
+                    </div>
+                </div>
                 <input type="text" class="form-control opcion-texto" placeholder="Nueva opción">
                 <button class="btn btn-outline-danger eliminar-opcion" type="button">
                     <i class="fas fa-times"></i>
@@ -416,32 +453,54 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.pregunta-item').forEach(item => {
             const texto = item.querySelector('.pregunta-texto').value;
             const tipo = item.querySelector('.pregunta-tipo').value;
+            let respuestaCorrecta = null;
             const opciones = [];
             
             if (tipo === 'opcion_multiple') {
-                item.querySelectorAll('.opcion-texto').forEach(input => {
+                const opcionesElems = item.querySelectorAll('.opcion-texto');
+                const correctasElems = item.querySelectorAll('.respuesta-correcta');
+                
+                opcionesElems.forEach((input, index) => {
                     if (input.value.trim()) {
                         opciones.push(input.value.trim());
+                        if (correctasElems[index].checked) {
+                            respuestaCorrecta = index;
+                        }
+                    }
+                });
+            } else if (tipo === 'si_no') {
+                const correctaRadios = item.querySelectorAll('.respuesta-correcta-si-no input[type="radio"]');
+                correctaRadios.forEach(radio => {
+                    if (radio.checked) {
+                        respuestaCorrecta = radio.value;
                     }
                 });
             }
             
-            preguntas.push({ texto, tipo, opciones });
+            preguntas.push({ 
+                texto, 
+                tipo, 
+                opciones, 
+                respuestaCorrecta 
+            });
         });
         
         // Actualizar input hidden
         preguntasJson.value = JSON.stringify(preguntas);
     }
-
     // Validación del formulario
     document.getElementById('fichaNuevaForm').addEventListener('submit', function(event) {
         const titulo = document.getElementById('titulo').value;
         const fecha = document.getElementById('fecha').value;
         const responsable = document.getElementById('responsable').value;
+        const lugar = document.getElementById('lugar').value;
+        const duracion = document.getElementById('duracion').value;
+        const descripcion = document.getElementById('descripcion').value;
+        const metodologia = document.getElementById('metodologia').value;
         
-        if (!titulo || !fecha || !responsable) {
+        if (!titulo || !fecha || !responsable || !lugar || !duracion || !descripcion || !metodologia || objetivos.length === 0 || preguntas.length === 0) {
             event.preventDefault();
-            alert('Por favor complete todos los campos requeridos.');
+            alert('Por favor complete todos los campos requeridos y añada al menos un objetivo y una pregunta.');
             return false;
         }
         
