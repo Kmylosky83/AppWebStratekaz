@@ -402,6 +402,9 @@ def editar_ficha(ficha_id):
         for texto in objetivos_texto:
             if texto.strip():
                 objetivos_json.append({"texto": texto.strip()})
+                
+    # Agregar un print para depuración
+    print("Objetivos procesados:", objetivos_json)
         
     # Obtener recursos
     recursos = json.loads(ficha.recursos) if ficha.recursos else []
@@ -410,14 +413,9 @@ def editar_ficha(ficha_id):
     empresas = []
     if current_user.user_type == 'company' and current_user.company_type == 'consultant':
         empresas = Empresa.query.filter_by(user_id=current_user.id).all()
-
-    # Preparar objetivos en formato JSON
-    objetivos_json = []
-    if ficha.objetivos:
-        objetivos_texto = ficha.objetivos.replace('• ', '').split('\n')
-        for texto in objetivos_texto:
-            if texto.strip():
-                objetivos_json.append({"texto": texto.strip()})
+        
+    print("Contenido original de objetivos:", ficha.objetivos)
+    print("Objetivos procesados:", objetivos_json)
 
     return render_template('formacion/editar_ficha.html', 
                         ficha=ficha,

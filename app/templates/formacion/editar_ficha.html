@@ -262,15 +262,13 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Referencias de elementos
         const preguntasContainer = document.getElementById('preguntas-container');
         const preguntasJson = document.getElementById('preguntas-json');
         const agregarPreguntaBtn = document.getElementById('agregar-pregunta');
-        const preguntaTemplate = document.getElementById('pregunta-template');
-        
+        const preguntaTemplate = document.getElementById('pregunta-template');        
         const objetivosContainer = document.getElementById('objetivos-container');
         const objetivosJson = document.getElementById('objetivos-json');
         const agregarObjetivoBtn = document.getElementById('agregar-objetivo');
@@ -301,9 +299,9 @@
         // Cargar recursos existentes
         {% if recursos %}
             {% for recurso in recursos %}
-                const checkboxRecurso = document.getElementById('recursos_{{ recurso }}');
-                if (checkboxRecurso) {
-                    checkboxRecurso.checked = true;
+                const checkboxRecurso_{{ recurso }} = document.getElementById('recursos_{{ recurso }}');
+                if (checkboxRecurso_{{ recurso }}) {
+                    checkboxRecurso_{{ recurso }}.checked = true;
                 }
             {% endfor %}
         {% endif %}
@@ -312,9 +310,13 @@
         
         // Actualizar números de objetivos
         function actualizarNumerosObjetivos() {
-            document.querySelectorAll('.objetivo-item').forEach((item, index) => {
+            const objetivosItems = document.querySelectorAll('.objetivo-item');
+            objetivosItems.forEach((item, index) => {
                 item.dataset.index = index;
-                item.querySelector('.numero-objetivo').textContent = index + 1;
+                const numeroObjetivo = item.querySelector('.numero-objetivo');
+                if (numeroObjetivo) {
+                    numeroObjetivo.textContent = index + 1;
+                }
             });
         }
         
@@ -334,9 +336,13 @@
         
         // Actualizar números de preguntas
         function actualizarNumerosPreguntas() {
-            document.querySelectorAll('.pregunta-item').forEach((item, index) => {
+            const preguntasItems = document.querySelectorAll('.pregunta-item');
+            preguntasItems.forEach((item, index) => {
                 item.dataset.index = index;
-                item.querySelector('.numero-pregunta').textContent = index + 1;
+                const numeroPregunta = item.querySelector('.numero-pregunta');
+                if (numeroPregunta) {
+                    numeroPregunta.textContent = index + 1;
+                }
             });
         }
         
@@ -385,12 +391,14 @@
         }
         
         // Crear nuevo objetivo
-        function crearNuevoObjetivo(texto = '') {
+        function crearNuevoObjetivo(texto = '', indicePersonalizado = null) {
             const nuevoObjetivo = objetivoTemplate.content.cloneNode(true);
             const objetivoItem = nuevoObjetivo.querySelector('.objetivo-item');
-            const numeroObjetivo = objetivos.length + 1;
             
-            objetivoItem.dataset.index = objetivos.length;
+            // Usar el índice personalizado si se proporciona, de lo contrario usar la longitud actual
+            const numeroObjetivo = indicePersonalizado !== null ? indicePersonalizado + 1 : objetivos.length + 1;
+            
+            objetivoItem.dataset.index = indicePersonalizado !== null ? indicePersonalizado : objetivos.length;
             nuevoObjetivo.querySelector('.numero-objetivo').textContent = numeroObjetivo;
             
             if (texto) {
@@ -414,20 +422,24 @@
             // Añadir objetivo al array si no se proporcionó texto
             if (!texto) {
                 objetivos.push({ texto: '' });
+            } else if (indicePersonalizado === null) {
+                objetivos.push({ texto: texto });
             }
             
             actualizarObjetivos();
         }
         
         // Crear nueva pregunta
-        function crearNuevaPregunta(preguntaData = null) {
+        function crearNuevaPregunta(preguntaData = null, indicePersonalizado = null) {
             const nuevaPregunta = preguntaTemplate.content.cloneNode(true);
             const preguntaItem = nuevaPregunta.querySelector('.pregunta-item');
-            const numeroPregunta = preguntas.length + 1;
+
+            // Usar el índice personalizado si se proporciona, de lo contrario usar la longitud actual
+            const numeroPregunta = indicePersonalizado !== null ? indicePersonalizado + 1 : preguntas.length + 1;
             
-            preguntaItem.dataset.index = preguntas.length;
-            nuevaPregunta.querySelector('.numero-pregunta').textContent = numeroPregunta;
-            
+            preguntaItem.dataset.index = indicePersonalizado !== null ? indicePersonalizado : preguntas.length;
+            nuevaPregunta.querySelector('.numero-pregunta').textContent = numeroPregunta;            
+                       
             const tipoSelect = nuevaPregunta.querySelector('.pregunta-tipo');
             const respuestaCorrectaSiNo = preguntaItem.querySelector('.respuesta-correcta-si-no');
             const opcionesContainer = preguntaItem.querySelector('.opciones-container');
@@ -437,6 +449,23 @@
                 nuevaPregunta.querySelector('.pregunta-texto').value = preguntaData.texto;
                 tipoSelect.value = preguntaData.tipo;
                 
+                // Para preguntas Si/No
+                if (preguntaData.tipo === 'si_no') {
+                    respuestaCorrectaSiNo.classList.remove('d-none');
+                    const radios = respuestaCorrectaSiNo.querySelectorAll('input[type="radio"]');
+                    radios.forEach(radio => {
+                        radio.addEventListener('change', function() {
+                            preguntaData.respuestaCorrecta = this.value;
+                            actualizarPreguntas();
+                        });
+                        
+                        if (radio.value === preguntaData.respuestaCorrecta) {
+                            radio.checked = true;
+                        }
+                    });
+                }
+
+                // Para preguntas de opción múltiple
                 if (preguntaData.tipo === 'opcion_multiple') {
                     opcionesContainer.classList.remove('d-none');
                     const opcionesLista = preguntaItem.querySelector('.opciones-lista');
@@ -457,20 +486,21 @@
                             </button>
                         `;
                         
+                        // Agregar evento para seleccionar respuesta correcta
+                        nuevaOpcion.querySelector('.respuesta-correcta').addEventListener('change', function() {
+                            if (this.checked) {
+                                const index = Array.from(opcionesLista.children).indexOf(nuevaOpcion);
+                                preguntaData.respuestaCorrecta = index;
+                                actualizarPreguntas();
+                            }
+                        });
+                        
                         nuevaOpcion.querySelector('.eliminar-opcion').addEventListener('click', function() {
                             nuevaOpcion.remove();
                             actualizarPreguntas();
                         });
                         
                         opcionesLista.appendChild(nuevaOpcion);
-                    });
-                } else if (preguntaData.tipo === 'si_no') {
-                    respuestaCorrectaSiNo.classList.remove('d-none');
-                    const radios = respuestaCorrectaSiNo.querySelectorAll('input[type="radio"]');
-                    radios.forEach(radio => {
-                        if (radio.value === preguntaData.respuestaCorrecta) {
-                            radio.checked = true;
-                        }
                     });
                 }
             }
@@ -540,6 +570,8 @@
                     tipo: 'texto',
                     opciones: []
                 });
+            } else if (indicePersonalizado === null) {
+                preguntas.push(preguntaData);
             }
             
             actualizarPreguntas();
@@ -565,6 +597,20 @@
         
         // Validación del formulario
         document.getElementById('fichaNuevaForm').addEventListener('submit', function(event) {
+            console.log('Objetivos:', objetivos);
+            console.log('Preguntas:', preguntas);
+
+            if (objetivos.length === 0) {
+                event.preventDefault();
+                alert('Debe agregar al menos un objetivo.');
+                return false;
+            }
+        
+            if (preguntas.length === 0) {
+                event.preventDefault();
+                alert('Debe agregar al menos una pregunta.');
+                return false;
+            }
             const titulo = document.getElementById('titulo').value;
             const fecha = document.getElementById('fecha').value;
             const responsable = document.getElementById('responsable').value;
@@ -602,47 +648,76 @@
             preguntas.forEach(pregunta => {
                 if (!pregunta.texto) {
                     preguntasValidas = false;
+                    return;
                 }
                 
-                if (pregunta.tipo === 'opcion_multiple' && pregunta.opciones.length < 2) {
+                if (pregunta.tipo === 'opcion_multiple') {
+                    if (pregunta.opciones.length < 2) {
+                        preguntasValidas = false;
+                        alert('Las preguntas de opción múltiple deben tener al menos 2 opciones.');
+                    } else if (pregunta.respuestaCorrecta === null || pregunta.respuestaCorrecta === undefined) {
+                        preguntasValidas = false;
+                        alert('Debe seleccionar una opción correcta en las preguntas de opción múltiple.');
+                    }
+                }
+                
+                if (pregunta.tipo === 'si_no' && 
+                    (pregunta.respuestaCorrecta !== 'Sí' && pregunta.respuestaCorrecta !== 'No')) {
                     preguntasValidas = false;
+                    alert('Debe seleccionar una respuesta correcta (Sí o No) para preguntas de tipo Sí/No.');
                 }
             });
-            
+
             if (!preguntasValidas) {
                 event.preventDefault();
-                alert('Por favor complete correctamente todas las preguntas. Las preguntas de opción múltiple deben tener al menos 2 opciones.');
                 return false;
             }
+            
+            // Validar recursos seleccionados
+            const recursosSeleccionados = Array.from(document.querySelectorAll('input[name="recursos"]:checked'));
+            if (recursosSeleccionados.length === 0) {
+                event.preventDefault();
+                alert('Por favor seleccione al menos un recurso.');
+                return false;
+            }
+            
+            console.log('Formulario validado y listo para enviar');
         });
         
         // CARGAR DATOS EXISTENTES
-        
-        // Cargar objetivos existentes
         {% if objetivos_json %}
-            const objetivosExistentes = {{ objetivos_json|safe }};
-            console.log('Cargando objetivos existentes:', objetivosExistentes);
-            
-            if (objetivosExistentes && objetivosExistentes.length > 0) {
-                objetivosExistentes.forEach(objetivo => {
-                    objetivos.push(objetivo);
-                    crearNuevoObjetivo(objetivo.texto);
-                });
-            }
+        const objetivosExistentes = {{ objetivos_json|safe }};
+        console.log('Cargando objetivos existentes:', objetivosExistentes);
+
+        // Limpiar contenedor antes de agregars
+        objetivosContainer.innerHTML = '';
+        objetivos = []; // Reiniciar array de objetivos
+
+        if (objetivosExistentes && objetivosExistentes.length > 0) {
+            objetivosExistentes.forEach((objetivo, index) => {
+                // Pasar el índice real como parámetro adicional
+                crearNuevoObjetivo(objetivo.texto, index);
+            });
+        }
         {% endif %}
         
         // Cargar preguntas existentes
         {% if preguntas_json %}
-            const preguntasExistentes = {{ preguntas_json|safe }};
-            console.log('Cargando preguntas existentes:', preguntasExistentes);
-            
-            if (preguntasExistentes && preguntasExistentes.length > 0) {
-                preguntasExistentes.forEach(pregunta => {
-                    preguntas.push(pregunta);
-                    crearNuevaPregunta(pregunta);
-                });
-            }
-        {% endif %}
+        const preguntasExistentes = {{ preguntas_json|safe }};
+        console.log('Cargando preguntas existentes:', preguntasExistentes);
+
+        // Limpiar contenedor antes de agregar
+        preguntasContainer.innerHTML = '';
+        preguntas = []; // Reiniciar array de preguntas
+
+        if (preguntasExistentes && preguntasExistentes.length > 0) {
+            preguntasExistentes.forEach((pregunta, index) => {
+                // Pasar el índice real como parámetro adicional
+                crearNuevaPregunta(pregunta, index);
+            });
+        }
+        {% endif %}   
     });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     {% endblock %}

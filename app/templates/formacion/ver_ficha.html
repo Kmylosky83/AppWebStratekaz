@@ -33,7 +33,17 @@
                     
                     <div class="mb-4">
                         <h5>Objetivos</h5>
-                        <p>{{ ficha.objetivos or 'Sin objetivos definidos' }}</p>
+                        {% if ficha.objetivos %}
+                        <ol class="px-3">
+                            {% for objetivo in ficha.objetivos.split('\n') %}
+                                {% if objetivo.strip() %}
+                                <li>{{ objetivo.replace('•', '').strip() }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ol>
+                        {% else %}
+                        <p>Sin objetivos definidos</p>
+                        {% endif %}
                     </div>
                     
                     {% if ficha.preguntas %}
