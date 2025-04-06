@@ -77,6 +77,7 @@ def crear_ficha():
                     texto=pregunta_data['texto'],
                     tipo=pregunta_data['tipo'],
                     opciones=json.dumps(pregunta_data.get('opciones', [])),
+                    respuesta_correcta=pregunta_data.get('respuestaCorrecta'),  # Añadir esta línea
                     ficha_id=ficha.id
                 )
                 db.session.add(pregunta)
@@ -346,7 +347,10 @@ def editar_ficha(ficha_id):
         ficha.lugar = request.form.get('lugar')
         ficha.duracion = request.form.get('duracion')
         ficha.responsable = request.form.get('responsable')
-        ficha.objetivos = request.form.get('objetivos')
+        objetivos_json = request.form.get('objetivos', '[]')
+        objetivos_data = json.loads(objetivos_json)
+        objetivos_texto = '\n• '.join([obj['texto'] for obj in objetivos_data if obj['texto']])
+        ficha.objetivos = '• ' + objetivos_texto if objetivos_texto else ''
         ficha.metodologias = request.form.get('metodologia')
         ficha.recursos = json.dumps(request.form.getlist('recursos')) if request.form.getlist('recursos') else None
         
@@ -363,6 +367,7 @@ def editar_ficha(ficha_id):
                 texto=pregunta_data['texto'],
                 tipo=pregunta_data['tipo'],
                 opciones=json.dumps(pregunta_data.get('opciones', [])),
+                respuesta_correcta=pregunta_data.get('respuestaCorrecta'),
                 ficha_id=ficha.id
             )
             db.session.add(pregunta)
@@ -377,4 +382,75 @@ def editar_ficha(ficha_id):
             
     
     # GET: Mostrar formulario
-    return render_template('formacion/editar_ficha.html', ficha=ficha)
+    preguntas = PreguntaFormacion.query.filter_by(ficha_id=ficha.id).all()
+        
+    # Preparar datos para el formulario
+    preguntas_json = []
+    for pregunta in preguntas:
+        opciones = json.loads(pregunta.opciones) if pregunta.opciones else []
+        preguntas_json.append({
+            'texto': pregunta.texto,
+            'tipo': pregunta.tipo,
+            'opciones': opciones,
+            'respuestaCorrecta': pregunta.respuesta_correcta
+        })
+
+    # Procesar objetivos para JSON
+    objetivos_json = []
+    if ficha.objetivos:
+        objetivos_texto = ficha.objetivos.replace('• ', '').split('\n')
+        for texto in objetivos_texto:
+            if texto.strip():
+                objetivos_json.append({"texto": texto.strip()})
+        
+    # Obtener recursos
+    recursos = json.loads(ficha.recursos) if ficha.recursos else []
+
+    # Obtener empresas para el select
+    empresas = []
+    if current_user.user_type == 'company' and current_user.company_type == 'consultant':
+        empresas = Empresa.query.filter_by(user_id=current_user.id).all()
+
+    # Preparar objetivos en formato JSON
+    objetivos_json = []
+    if ficha.objetivos:
+        objetivos_texto = ficha.objetivos.replace('• ', '').split('\n')
+        for texto in objetivos_texto:
+            if texto.strip():
+                objetivos_json.append({"texto": texto.strip()})
+
+    return render_template('formacion/editar_ficha.html', 
+                        ficha=ficha,
+                        preguntas=preguntas,
+                        preguntas_json=json.dumps(preguntas_json),
+                        objetivos_json=json.dumps(objetivos_json),
+                        recursos=recursos,
+                        empresas=empresas)
+    
+@formacion_bp.route('/<int:ficha_id>/eliminar', methods=['POST'])
+@login_required
+def eliminar_ficha(ficha_id):
+    """Eliminar una ficha de formación"""
+    ficha = FichaFormacion.query.get_or_404(ficha_id)
+    
+    # Verificar permiso
+    if ficha.user_id != current_user.id:
+        flash('No tienes permiso para eliminar esta ficha', 'danger')
+        return redirect(url_for('formacion.index'))
+    
+    # Verificar contraseña
+    password = request.form.get('password')
+    if not current_user.check_password(password):
+        flash('Contraseña incorrecta', 'danger')
+        return redirect(url_for('formacion.ver_ficha', ficha_id=ficha.id))
+    
+    try:
+        # Eliminar ficha y dependencias
+        db.session.delete(ficha)  # Las cascadas eliminarán los registros relacionados
+        db.session.commit()
+        flash('Ficha eliminada correctamente', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar la ficha: {str(e)}', 'danger')
+    
+    return redirect(url_for('formacion.index'))

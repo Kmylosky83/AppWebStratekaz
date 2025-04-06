@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Editar Ficha - {{ ficha.titulo }}{% endblock %}
+{% block title %}Editar Ficha de Formación - StrateKaz{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -11,53 +15,180 @@
                     <h3 class="card-title mb-0">Editar Ficha de Formación</h3>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ url_for('formacion.editar_ficha', ficha_id=ficha.id) }}">
+                    <form id="fichaNuevaForm" method="POST" action="{{ url_for('formacion.editar_ficha', ficha_id=ficha.id) }}" onkeydown="return event.key != 'Enter';">
                         <div class="row g-3">
                             <!-- Información básica -->
                             <div class="col-md-12">
                                 <label for="titulo" class="form-label">Título de la Formación *</label>
-                                <input type="text" class="form-control" id="titulo" name="titulo" required value="{{ ficha.titulo }}">
-                            </div>
-                            
-                            <div class="col-md-12">
-                                <label for="descripcion" class="form-label">Descripción</label>
-                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3">{{ ficha.descripcion }}</textarea>
+                                <input type="text" class="form-control" id="titulo" name="titulo" required value="{{ ficha.titulo or '' }}">
                             </div>
                             
                             <div class="col-md-6">
                                 <label for="fecha" class="form-label">Fecha y Hora *</label>
-                                <input type="datetime-local" class="form-control" id="fecha" name="fecha" required 
-                                       value="{{ ficha.fecha.strftime('%Y-%m-%dT%H:%M') }}">
+                                <input type="datetime-local" class="form-control" id="fecha" name="fecha" required value="{{ ficha.fecha.strftime('%Y-%m-%dT%H:%M') }}">
                             </div>
                             
                             <div class="col-md-6">
-                                <label for="lugar" class="form-label">Lugar</label>
-                                <input type="text" class="form-control" id="lugar" name="lugar" value="{{ ficha.lugar }}">
+                                <label for="lugar" class="form-label">Lugar *</label>
+                                <input type="text" class="form-control" id="lugar" name="lugar" required value="{{ ficha.lugar or '' }}">
                             </div>
                             
                             <div class="col-md-6">
-                                <label for="duracion" class="form-label">Duración</label>
-                                <input type="text" class="form-control" id="duracion" name="duracion" 
-                                       placeholder="Ej: 2 horas" value="{{ ficha.duracion }}">
+                                <label for="duracion" class="form-label">Duración *</label>
+                                <input type="text" class="form-control" id="duracion" name="duracion" placeholder="Ej: 2 horas" required value="{{ ficha.duracion or '' }}">
                             </div>
                             
                             <div class="col-md-6">
                                 <label for="responsable" class="form-label">Responsable *</label>
-                                <input type="text" class="form-control" id="responsable" name="responsable" 
-                                       required value="{{ ficha.responsable }}">
+                                <input type="text" class="form-control" id="responsable" name="responsable" required value="{{ ficha.responsable or '' }}">
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="descripcion" class="form-label">Descripción *</label>
+                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required>{{ ficha.descripcion or '' }}</textarea>
                             </div>
                             
+                            <div class="col-12 mt-4">
+                                <h5>Objetivos</h5>
+                                <p class="text-muted small">Agregue los objetivos de la formación</p>
+                                
+                                <div id="objetivos-container">
+                                    <!-- Aquí se agregarán los objetivos dinámicamente -->
+                                </div>
+                                
+                                <input type="hidden" name="objetivos" id="objetivos-json" value="[]">
+                                
+                                <button type="button" class="btn btn-outline-primary mt-3" id="agregar-objetivo">
+                                    <i class="fas fa-plus me-2"></i>Agregar Objetivo
+                                </button>
+                            </div>
+
+                            <!-- Template para objetivo -->
+                            <template id="objetivo-template">
+                                <div class="card mb-3 objetivo-item">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <h6 class="card-title">Objetivo <span class="numero-objetivo"></span></h6>
+                                            <button type="button" class="btn btn-sm btn-outline-danger eliminar-objetivo">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">Texto del objetivo</label>
+                                            <input type="text" class="form-control objetivo-texto">
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <div class="col-md-12 mt-3">
+                                <h5>Metodología *</h5>
+                                <p class="text-muted small">Seleccione la metodología de la formación</p>
+                                <select class="form-select" id="metodologia" name="metodologia">
+                                    <option value="">Seleccione una metodología...</option>
+                                    <option value="clase_magistral">Clase Magistral</option>
+                                    <option value="taller_practico">Taller Práctico</option>
+                                    <option value="exposicion_virtual">Exposición Virtual</option>
+                                    <option value="discusion_grupal">Discusión Grupal</option>
+                                    <option value="demostracion">Demostración</option>
+                                    <option value="juego_roles">Juego de Roles</option>
+                                    <option value="estudio_caso">Estudio de Caso</option>
+                                    <option value="aprendizaje_basado_proyectos">Aprendizaje Basado en Proyectos</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-12 mt-3">
+                                <h5>Recursos *</h5>
+                                <p class="text-muted small">Seleccione los recursos a utilizar</p>
+                                <div class="border p-3 rounded">
+                                    <div class="row g-2">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="presentacion" id="recursos_presentacion">
+                                                <label class="form-check-label" for="recursos_presentacion">Presentación/Diapositivas</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="videos" id="recursos_videos">
+                                                <label class="form-check-label" for="recursos_videos">Videos</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="material_impreso" id="recursos_material">
+                                                <label class="form-check-label" for="recursos_material">Material Impreso</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="casos_estudio" id="recursos_casos">
+                                                <label class="form-check-label" for="recursos_casos">Casos de Estudio</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="software" id="recursos_software">
+                                                <label class="form-check-label" for="recursos_software">Software Especializado</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="equipos" id="recursos_equipos">
+                                                <label class="form-check-label" for="recursos_equipos">Equipos/Herramientas</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="recursos_digitales" id="recursos_digitales">
+                                                <label class="form-check-label" for="recursos_digitales">Recursos Digitales</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="recursos" value="libros" id="recursos_libros">
+                                                <label class="form-check-label" for="recursos_libros">Libros/Manuales</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if empresas %}
                             <div class="col-md-12">
-                                <label for="objetivos" class="form-label">Objetivos</label>
-                                <textarea class="form-control" id="objetivos" name="objetivos" rows="3">{{ ficha.objetivos }}</textarea>
+                                <label for="empresa_id" class="form-label">Empresa</label>
+                                <select class="form-select" id="empresa_id" name="empresa_id">
+                                    <option value="">Seleccionar empresa...</option>
+                                    {% for empresa in empresas %}
+                                    <option value="{{ empresa.id }}">{{ empresa.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+                                                     
+                            <!-- Preguntas -->
+                            <div class="col-12 mt-4">
+                                <h5>Preguntas para Asistentes *</h5>
+                                <p class="text-muted small">Agregue preguntas para los asistentes (Minimo una pregunta)</p>
+                                
+                                <div id="preguntas-container">
+                                    <!-- Aquí se agregarán las preguntas dinámicamente -->
+                                </div>
+                                
+                                <input type="hidden" name="preguntas" id="preguntas-json" value="[]">
+                                
+                                <button type="button" class="btn btn-outline-primary mt-3" id="agregar-pregunta">
+                                    <i class="fas fa-plus me-2"></i>Agregar Pregunta
+                                </button>
                             </div>
                             
                             <div class="col-12 mt-4 d-flex justify-content-between">
-                                <a href="{{ url_for('formacion.ver_ficha', ficha_id=ficha.id) }}" class="btn btn-outline-secondary">
+                                <a href="{{ url_for('formacion.index') }}" class="btn btn-outline-secondary">
                                     <i class="fas fa-arrow-left me-2"></i>Cancelar
                                 </a>
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save me-2"></i>Guardar Cambios
+                                    <i class="fas fa-save me-2"></i>Guardar Ficha
                                 </button>
                             </div>
                         </div>
@@ -67,4 +198,451 @@
         </div>
     </div>
 </div>
+
+<!-- Template para pregunta -->
+<template id="pregunta-template">
+    <div class="card mb-3 pregunta-item">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <h6 class="card-title">Pregunta <span class="numero-pregunta"></span></h6>
+                <button type="button" class="btn btn-sm btn-outline-danger eliminar-pregunta">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Texto de la pregunta</label>
+                <input type="text" class="form-control pregunta-texto">
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Tipo de respuesta</label>
+                <select class="form-select pregunta-tipo">
+                    <option value="texto">Texto libre</option>
+                    <option value="si_no">Sí/No</option>
+                    <option value="opcion_multiple">Opción múltiple</option>
+                </select>
+            </div>
+            
+            <!-- Campo para respuesta correcta Si/No -->
+            <div class="respuesta-correcta-si-no d-none mb-3">
+                <label class="form-label">Respuesta correcta:</label>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="correcta_si_no_temp" value="Sí" checked>
+                    <label class="form-check-label">Sí</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="correcta_si_no_temp" value="No">
+                    <label class="form-check-label">No</label>
+                </div>
+            </div>
+            
+            <div class="opciones-container d-none">
+                <label class="form-label">Opciones de respuesta</label>
+                <div class="opciones-lista">
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <input type="radio" class="respuesta-correcta" name="correcta_temp" checked>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control opcion-texto" placeholder="Opción 1">
+                        <button class="btn btn-outline-danger eliminar-opcion" type="button">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary agregar-opcion mt-2">
+                    <i class="fas fa-plus me-1"></i>Agregar Opción
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
 {% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Referencias de elementos
+        const preguntasContainer = document.getElementById('preguntas-container');
+        const preguntasJson = document.getElementById('preguntas-json');
+        const agregarPreguntaBtn = document.getElementById('agregar-pregunta');
+        const preguntaTemplate = document.getElementById('pregunta-template');
+        
+        const objetivosContainer = document.getElementById('objetivos-container');
+        const objetivosJson = document.getElementById('objetivos-json');
+        const agregarObjetivoBtn = document.getElementById('agregar-objetivo');
+        const objetivoTemplate = document.getElementById('objetivo-template');
+        
+        console.log('Elementos DOM:', {
+            preguntasContainer, preguntasJson, agregarPreguntaBtn, preguntaTemplate,
+            objetivosContainer, objetivosJson, agregarObjetivoBtn, objetivoTemplate
+        });
+        
+        // Variables para almacenar datos
+        let preguntas = [];
+        let objetivos = [];
+        
+        // Cargar metodología existente
+        if ("{{ ficha.metodologias }}") {
+            document.getElementById('metodologia').value = "{{ ficha.metodologias }}";
+        }
+        
+        // Cargar empresa seleccionada
+        {% if empresa_seleccionada %}
+        const empresaSelect = document.getElementById('empresa_id');
+        if (empresaSelect) {
+            empresaSelect.value = "{{ empresa_seleccionada }}";
+        }
+        {% endif %}
+        
+        // Cargar recursos existentes
+        {% if recursos %}
+            {% for recurso in recursos %}
+                const checkboxRecurso = document.getElementById('recursos_{{ recurso }}');
+                if (checkboxRecurso) {
+                    checkboxRecurso.checked = true;
+                }
+            {% endfor %}
+        {% endif %}
+    
+        // FUNCIONES AUXILIARES
+        
+        // Actualizar números de objetivos
+        function actualizarNumerosObjetivos() {
+            document.querySelectorAll('.objetivo-item').forEach((item, index) => {
+                item.dataset.index = index;
+                item.querySelector('.numero-objetivo').textContent = index + 1;
+            });
+        }
+        
+        // Actualizar array de objetivos
+        function actualizarObjetivos() {
+            objetivos = [];
+            
+            document.querySelectorAll('.objetivo-item').forEach(item => {
+                const texto = item.querySelector('.objetivo-texto').value;
+                objetivos.push({ texto });
+            });
+            
+            // Actualizar input hidden
+            objetivosJson.value = JSON.stringify(objetivos);
+            console.log('Objetivos actualizados:', objetivos.length);
+        }
+        
+        // Actualizar números de preguntas
+        function actualizarNumerosPreguntas() {
+            document.querySelectorAll('.pregunta-item').forEach((item, index) => {
+                item.dataset.index = index;
+                item.querySelector('.numero-pregunta').textContent = index + 1;
+            });
+        }
+        
+        // Actualizar array de preguntas
+        function actualizarPreguntas() {
+            preguntas = [];
+            
+            document.querySelectorAll('.pregunta-item').forEach(item => {
+                const texto = item.querySelector('.pregunta-texto').value;
+                const tipo = item.querySelector('.pregunta-tipo').value;
+                let respuestaCorrecta = null;
+                const opciones = [];
+                
+                if (tipo === 'opcion_multiple') {
+                    const opcionesElems = item.querySelectorAll('.opcion-texto');
+                    const correctasElems = item.querySelectorAll('.respuesta-correcta');
+                    
+                    opcionesElems.forEach((input, index) => {
+                        if (input.value.trim()) {
+                            opciones.push(input.value.trim());
+                            if (correctasElems[index].checked) {
+                                respuestaCorrecta = index;
+                            }
+                        }
+                    });
+                } else if (tipo === 'si_no') {
+                    const correctaRadios = item.querySelectorAll('.respuesta-correcta-si-no input[type="radio"]');
+                    correctaRadios.forEach(radio => {
+                        if (radio.checked) {
+                            respuestaCorrecta = radio.value;
+                        }
+                    });
+                }
+                
+                preguntas.push({ 
+                    texto, 
+                    tipo, 
+                    opciones, 
+                    respuestaCorrecta 
+                });
+            });
+            
+            // Actualizar input hidden
+            preguntasJson.value = JSON.stringify(preguntas);
+            console.log('Preguntas actualizadas:', preguntas.length);
+        }
+        
+        // Crear nuevo objetivo
+        function crearNuevoObjetivo(texto = '') {
+            const nuevoObjetivo = objetivoTemplate.content.cloneNode(true);
+            const objetivoItem = nuevoObjetivo.querySelector('.objetivo-item');
+            const numeroObjetivo = objetivos.length + 1;
+            
+            objetivoItem.dataset.index = objetivos.length;
+            nuevoObjetivo.querySelector('.numero-objetivo').textContent = numeroObjetivo;
+            
+            if (texto) {
+                nuevoObjetivo.querySelector('.objetivo-texto').value = texto;
+            }
+            
+            // Evento para eliminar objetivo
+            nuevoObjetivo.querySelector('.eliminar-objetivo').addEventListener('click', function() {
+                objetivoItem.remove();
+                actualizarNumerosObjetivos();
+                actualizarObjetivos();
+            });
+            
+            // Eventos para inputs
+            nuevoObjetivo.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', actualizarObjetivos);
+            });
+            
+            objetivosContainer.appendChild(nuevoObjetivo);
+            
+            // Añadir objetivo al array si no se proporcionó texto
+            if (!texto) {
+                objetivos.push({ texto: '' });
+            }
+            
+            actualizarObjetivos();
+        }
+        
+        // Crear nueva pregunta
+        function crearNuevaPregunta(preguntaData = null) {
+            const nuevaPregunta = preguntaTemplate.content.cloneNode(true);
+            const preguntaItem = nuevaPregunta.querySelector('.pregunta-item');
+            const numeroPregunta = preguntas.length + 1;
+            
+            preguntaItem.dataset.index = preguntas.length;
+            nuevaPregunta.querySelector('.numero-pregunta').textContent = numeroPregunta;
+            
+            const tipoSelect = nuevaPregunta.querySelector('.pregunta-tipo');
+            const respuestaCorrectaSiNo = preguntaItem.querySelector('.respuesta-correcta-si-no');
+            const opcionesContainer = preguntaItem.querySelector('.opciones-container');
+            
+            // Si hay datos de pregunta, configurarlos
+            if (preguntaData) {
+                nuevaPregunta.querySelector('.pregunta-texto').value = preguntaData.texto;
+                tipoSelect.value = preguntaData.tipo;
+                
+                if (preguntaData.tipo === 'opcion_multiple') {
+                    opcionesContainer.classList.remove('d-none');
+                    const opcionesLista = preguntaItem.querySelector('.opciones-lista');
+                    opcionesLista.innerHTML = '';
+                    
+                    preguntaData.opciones.forEach((opcion, i) => {
+                        const nuevaOpcion = document.createElement('div');
+                        nuevaOpcion.className = 'input-group mb-2';
+                        nuevaOpcion.innerHTML = `
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                    <input type="radio" class="respuesta-correcta" name="correcta_pregunta_${preguntas.length}" ${preguntaData.respuestaCorrecta === i ? 'checked' : ''}>
+                                </div>
+                            </div>
+                            <input type="text" class="form-control opcion-texto" value="${opcion}">
+                            <button class="btn btn-outline-danger eliminar-opcion" type="button">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+                        
+                        nuevaOpcion.querySelector('.eliminar-opcion').addEventListener('click', function() {
+                            nuevaOpcion.remove();
+                            actualizarPreguntas();
+                        });
+                        
+                        opcionesLista.appendChild(nuevaOpcion);
+                    });
+                } else if (preguntaData.tipo === 'si_no') {
+                    respuestaCorrectaSiNo.classList.remove('d-none');
+                    const radios = respuestaCorrectaSiNo.querySelectorAll('input[type="radio"]');
+                    radios.forEach(radio => {
+                        if (radio.value === preguntaData.respuestaCorrecta) {
+                            radio.checked = true;
+                        }
+                    });
+                }
+            }
+            
+            // Evento para cambiar tipo de pregunta
+            tipoSelect.addEventListener('change', function() {
+                respuestaCorrectaSiNo.classList.add('d-none');
+                opcionesContainer.classList.add('d-none');
+                
+                if (this.value === 'opcion_multiple') {
+                    opcionesContainer.classList.remove('d-none');
+                } else if (this.value === 'si_no') {
+                    respuestaCorrectaSiNo.classList.remove('d-none');
+                }
+                
+                actualizarPreguntas();
+            });
+            
+            // Evento para eliminar pregunta
+            nuevaPregunta.querySelector('.eliminar-pregunta').addEventListener('click', function() {
+                preguntaItem.remove();
+                actualizarNumerosPreguntas();
+                actualizarPreguntas();
+            });
+            
+            // Evento para agregar opción
+            nuevaPregunta.querySelector('.agregar-opcion').addEventListener('click', function() {
+                const opcionesLista = preguntaItem.querySelector('.opciones-lista');
+                const nuevaOpcion = document.createElement('div');
+                nuevaOpcion.className = 'input-group mb-2';
+                nuevaOpcion.innerHTML = `
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <input type="radio" class="respuesta-correcta" name="correcta_pregunta_${preguntas.length}">
+                        </div>
+                    </div>
+                    <input type="text" class="form-control opcion-texto" placeholder="Nueva opción">
+                    <button class="btn btn-outline-danger eliminar-opcion" type="button">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                nuevaOpcion.querySelector('.eliminar-opcion').addEventListener('click', function() {
+                    nuevaOpcion.remove();
+                    actualizarPreguntas();
+                });
+                
+                nuevaOpcion.querySelector('.opcion-texto').addEventListener('input', actualizarPreguntas);
+                nuevaOpcion.querySelector('.respuesta-correcta').addEventListener('change', actualizarPreguntas);
+                
+                opcionesLista.appendChild(nuevaOpcion);
+                actualizarPreguntas();
+            });
+            
+            // Eventos para inputs
+            nuevaPregunta.querySelectorAll('input, select').forEach(input => {
+                input.addEventListener('input', actualizarPreguntas);
+                input.addEventListener('change', actualizarPreguntas);
+            });
+            
+            preguntasContainer.appendChild(nuevaPregunta);
+            
+            // Si no hay datos, agregar pregunta vacía
+            if (!preguntaData) {
+                preguntas.push({
+                    texto: '',
+                    tipo: 'texto',
+                    opciones: []
+                });
+            }
+            
+            actualizarPreguntas();
+        }
+        
+        // EVENTOS PRINCIPALES
+        
+        // Evento del botón agregar objetivo
+        if (agregarObjetivoBtn) {
+            agregarObjetivoBtn.addEventListener('click', function() {
+                console.log('Agregando nuevo objetivo');
+                crearNuevoObjetivo();
+            });
+        }
+        
+        // Evento del botón agregar pregunta
+        if (agregarPreguntaBtn) {
+            agregarPreguntaBtn.addEventListener('click', function() {
+                console.log('Agregando nueva pregunta');
+                crearNuevaPregunta();
+            });
+        }
+        
+        // Validación del formulario
+        document.getElementById('fichaNuevaForm').addEventListener('submit', function(event) {
+            const titulo = document.getElementById('titulo').value;
+            const fecha = document.getElementById('fecha').value;
+            const responsable = document.getElementById('responsable').value;
+            const lugar = document.getElementById('lugar').value;
+            const duracion = document.getElementById('duracion').value;
+            const descripcion = document.getElementById('descripcion').value;
+            const metodologia = document.getElementById('metodologia').value;
+            
+            console.log('Validando formulario:', {
+                objetivos: objetivos.length,
+                preguntas: preguntas.length,
+                metodologia
+            });
+            
+            if (!titulo || !fecha || !responsable || !lugar || !duracion || !descripcion || !metodologia) {
+                event.preventDefault();
+                alert('Por favor complete todos los campos requeridos (título, fecha, responsable, lugar, duración, descripción y metodología).');
+                return false;
+            }
+            
+            if (objetivos.length === 0) {
+                event.preventDefault();
+                alert('Por favor añada al menos un objetivo.');
+                return false;
+            }
+            
+            if (preguntas.length === 0) {
+                event.preventDefault();
+                alert('Por favor añada al menos una pregunta.');
+                return false;
+            }
+            
+            // Validar preguntas
+            let preguntasValidas = true;
+            preguntas.forEach(pregunta => {
+                if (!pregunta.texto) {
+                    preguntasValidas = false;
+                }
+                
+                if (pregunta.tipo === 'opcion_multiple' && pregunta.opciones.length < 2) {
+                    preguntasValidas = false;
+                }
+            });
+            
+            if (!preguntasValidas) {
+                event.preventDefault();
+                alert('Por favor complete correctamente todas las preguntas. Las preguntas de opción múltiple deben tener al menos 2 opciones.');
+                return false;
+            }
+        });
+        
+        // CARGAR DATOS EXISTENTES
+        
+        // Cargar objetivos existentes
+        {% if objetivos_json %}
+            const objetivosExistentes = {{ objetivos_json|safe }};
+            console.log('Cargando objetivos existentes:', objetivosExistentes);
+            
+            if (objetivosExistentes && objetivosExistentes.length > 0) {
+                objetivosExistentes.forEach(objetivo => {
+                    objetivos.push(objetivo);
+                    crearNuevoObjetivo(objetivo.texto);
+                });
+            }
+        {% endif %}
+        
+        // Cargar preguntas existentes
+        {% if preguntas_json %}
+            const preguntasExistentes = {{ preguntas_json|safe }};
+            console.log('Cargando preguntas existentes:', preguntasExistentes);
+            
+            if (preguntasExistentes && preguntasExistentes.length > 0) {
+                preguntasExistentes.forEach(pregunta => {
+                    preguntas.push(pregunta);
+                    crearNuevaPregunta(pregunta);
+                });
+            }
+        {% endif %}
+    });
+    </script>
+    {% endblock %}

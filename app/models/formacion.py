@@ -52,6 +52,7 @@ class PreguntaFormacion(db.Model):
     texto = db.Column(db.String(500), nullable=False)
     tipo = db.Column(db.String(50), nullable=False)  # 'opcion_multiple', 'texto', 'si_no'
     opciones = db.Column(db.Text, nullable=True)  # JSON string con opciones para opción múltiple
+    respuesta_correcta = db.Column(db.String(200), nullable=True)  # Asegúrate que esta línea esté correctamente situada
     
     # Relación con la ficha
     ficha_id = db.Column(db.Integer, db.ForeignKey('fichas_formacion.id'), nullable=False)
@@ -59,8 +60,7 @@ class PreguntaFormacion(db.Model):
     
     # Relación con las respuestas
     respuestas = relationship("RespuestaFormacion", back_populates="pregunta", cascade="all, delete-orphan")
-    respuesta_correcta = db.Column(db.String(200), nullable=True)
-    
+        
 class ListaAsistencia(db.Model):
     __tablename__ = 'listas_asistencia'
     
