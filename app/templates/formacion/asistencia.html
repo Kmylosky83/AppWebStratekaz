@@ -65,7 +65,7 @@
                         <div class="mb-4">
                             {% for pregunta in preguntas %}
                             <div class="mb-3">
-                                <label class="form-label">{{ pregunta.texto }}</label>
+                                <label class="form-label"><strong>{{ loop.index }}.</strong> {{ pregunta.texto }}</label>
                                 
                                 {% if pregunta.tipo == 'texto' %}
                                 <textarea class="form-control" name="pregunta_{{ pregunta.id }}" rows="2"></textarea>
@@ -103,10 +103,8 @@
                                         <label class="form-label">Dominio del tema</label>
                                         <select class="form-select" name="dominio_tema">
                                             <option value="">Seleccionar...</option>
-                                            <option value="1">1 - Deficiente</option>
-                                            <option value="2">2 - Regular</option>
-                                            <option value="3">3 - Bueno</option>
-                                            <option value="4">4 - Muy bueno</option>
+                                            <option value="1">1 - Deficiente</option>                                        
+                                            <option value="3">3 - Bueno</option>                               
                                             <option value="5">5 - Excelente</option>
                                         </select>
                                     </div>
@@ -114,10 +112,8 @@
                                         <label class="form-label">Claridad de la explicación</label>
                                         <select class="form-select" name="claridad">
                                             <option value="">Seleccionar...</option>
-                                            <option value="1">1 - Deficiente</option>
-                                            <option value="2">2 - Regular</option>
-                                            <option value="3">3 - Bueno</option>
-                                            <option value="4">4 - Muy bueno</option>
+                                            <option value="1">1 - Deficiente</option>                                          
+                                            <option value="3">3 - Bueno</option>                                       
                                             <option value="5">5 - Excelente</option>
                                         </select>
                                     </div>
@@ -125,10 +121,8 @@
                                         <label class="form-label">Calidad del material</label>
                                         <select class="form-select" name="material">
                                             <option value="">Seleccionar...</option>
-                                            <option value="1">1 - Deficiente</option>
-                                            <option value="2">2 - Regular</option>
-                                            <option value="3">3 - Bueno</option>
-                                            <option value="4">4 - Muy bueno</option>
+                                            <option value="1">1 - Deficiente</option>                                           
+                                            <option value="3">3 - Bueno</option>                                           
                                             <option value="5">5 - Excelente</option>
                                         </select>
                                     </div>
@@ -136,10 +130,8 @@
                                         <label class="form-label">Manejo del tiempo</label>
                                         <select class="form-select" name="tiempo">
                                             <option value="">Seleccionar...</option>
-                                            <option value="1">1 - Deficiente</option>
-                                            <option value="2">2 - Regular</option>
-                                            <option value="3">3 - Bueno</option>
-                                            <option value="4">4 - Muy bueno</option>
+                                            <option value="1">1 - Deficiente</option>                                            
+                                            <option value="3">3 - Bueno</option>                                            
                                             <option value="5">5 - Excelente</option>
                                         </select>
                                     </div>
@@ -147,10 +139,8 @@
                                         <label class="form-label">Utilidad de la formación</label>
                                         <select class="form-select" name="utilidad">
                                             <option value="">Seleccionar...</option>
-                                            <option value="1">1 - Deficiente</option>
-                                            <option value="2">2 - Regular</option>
-                                            <option value="3">3 - Bueno</option>
-                                            <option value="4">4 - Muy bueno</option>
+                                            <option value="1">1 - Deficiente</option>                                           
+                                            <option value="3">3 - Bueno</option>                                        
                                             <option value="5">5 - Excelente</option>
                                         </select>
                                     </div>
@@ -219,18 +209,16 @@
         border: 1px solid #ddd;
         border-radius: 0.25rem;
         background-color: #fff;
-        overflow: hidden;
-        margin: 15px 0; /* Añade margen vertical */
-        padding: 10px; /* Añade relleno interno */
+        margin: 10px 0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     
     .signature-pad {
         width: 100%;
         height: 200px;
         border-radius: 0.25rem;
-        touch-action: none; /* Mejora la experiencia táctil */
-        display: block; /* Asegura que es un bloque */
-    }
+    }   
+   
 </style>
 {% endblock %}
 

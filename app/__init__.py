@@ -4,6 +4,7 @@ from app.config.config import config
 from app.config.database import init_db, db, login_manager
 from flask_migrate import Migrate  # Añadir esta importación
 from app.controllers.kmy.routes import kmy_bp
+import os  # Añadir esta importación
 
 def create_app():
     # Inicializar la aplicación Flask
@@ -11,6 +12,10 @@ def create_app():
     
     # Cargar configuración
     app.config.from_object(config['development'])
+    
+    # Configurar carpeta de uploads
+    app.config['UPLOAD_FOLDER'] = os.path.join(app.static_folder, 'uploads')
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
     # Inicializar base de datos
     init_db(app)

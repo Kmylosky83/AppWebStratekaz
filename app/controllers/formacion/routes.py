@@ -10,6 +10,12 @@ import uuid
 import base64
 import os
 from app.models.formacion import FichaFormacion, ListaAsistencia, Asistente, PreguntaFormacion, RespuestaFormacion, EvaluacionCapacitador
+from app.models.user import User
+from app.models.empresa import Empresa
+from werkzeug.utils import secure_filename
+import time
+import os
+from flask import current_app
 
 formacion_bp = Blueprint('formacion', __name__, url_prefix='/formacion')
 
@@ -222,6 +228,41 @@ def registrar_asistente():
     
     try:
         db.session.commit()
+        
+        # Obtener la lista desde el ID
+        lista_id = request.form.get('lista_id')
+        lista = ListaAsistencia.query.get(lista_id)
+
+        # Obtener datos de la ficha para el correo
+        ficha = lista.ficha  # Usa la relación directa
+        user = User.query.get(ficha.user_id)
+        
+        # Enviar correo de notificación al creador de la ficha
+        if user and user.email:
+            try:
+                from app.utils.email_utils import send_email
+                
+                asunto = f"Nueva firma registrada en {ficha.titulo}"
+                cuerpo = f"""
+                Hola {user.first_name or 'Usuario'},
+                
+                Se ha registrado una nueva firma en la lista de asistencia:
+                
+                Ficha: {ficha.titulo}
+                Asistente: {nombre} ({email})
+                Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M')}
+                
+                Nos puedes visitar en: <a href="https://www.stratekaz.com">www.stratekaz.com</a>
+                
+                Saludos,
+                Equipo StrateKaz               
+                """
+                
+                send_email(user.email, asunto, cuerpo)
+            except Exception as e:
+                # No interrumpir el flujo si falla el correo
+                print(f"Error al enviar correo: {str(e)}")
+        
         return jsonify({'success': True, 'message': 'Asistencia registrada correctamente'})
     except Exception as e:
         db.session.rollback()
@@ -424,6 +465,55 @@ def editar_ficha(ficha_id):
                         objetivos_json=json.dumps(objetivos_json),
                         recursos=recursos,
                         empresas=empresas)
+@formacion_bp.route('/<int:ficha_id>/subir-imagenes', methods=['POST'])
+@login_required
+def subir_imagenes(ficha_id):
+    """Subir imágenes para el acta"""
+    ficha = FichaFormacion.query.get_or_404(ficha_id)
+    
+    # Verificar permiso
+    if ficha.user_id != current_user.id:
+        flash('No tienes permiso para modificar esta ficha', 'danger')
+        return redirect(url_for('formacion.index'))
+    
+    # Procesar imágenes
+    if 'logo' in request.files and request.files['logo'].filename:
+        logo = request.files['logo']
+        # Validar tipo de archivo
+        if logo and allowed_file(logo.filename, ['png', 'jpg', 'jpeg']):
+            filename = secure_filename(f"logo_{ficha_id}_{int(time.time())}.{logo.filename.rsplit('.', 1)[1].lower()}")
+            logo_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            logo.save(logo_path)
+            ficha.logo_personalizado = filename
+    
+    if 'imagen1' in request.files and request.files['imagen1'].filename:
+        img1 = request.files['imagen1']
+        if img1 and allowed_file(img1.filename, ['png', 'jpg', 'jpeg']):
+            filename = secure_filename(f"img1_{ficha_id}_{int(time.time())}.{img1.filename.rsplit('.', 1)[1].lower()}")
+            img_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            img1.save(img_path)
+            ficha.imagen_evento1 = filename
+            
+    if 'imagen2' in request.files and request.files['imagen2'].filename:
+        img2 = request.files['imagen2']
+        if img2 and allowed_file(img2.filename, ['png', 'jpg', 'jpeg']):
+            filename = secure_filename(f"img2_{ficha_id}_{int(time.time())}.{img2.filename.rsplit('.', 1)[1].lower()}")
+            img_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            img2.save(img_path)
+            ficha.imagen_evento2 = filename
+    
+    try:
+        db.session.commit()
+        flash('Imágenes actualizadas correctamente', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al guardar imágenes: {str(e)}', 'danger')
+    
+    return redirect(url_for('formacion.ver_ficha', ficha_id=ficha_id))
+
+# Función auxiliar para validar tipos de archivo
+def allowed_file(filename, allowed_extensions):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
     
 @formacion_bp.route('/<int:ficha_id>/eliminar', methods=['POST'])
 @login_required

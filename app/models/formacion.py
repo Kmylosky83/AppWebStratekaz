@@ -16,6 +16,9 @@ class FichaFormacion(db.Model):
     codigo = db.Column(db.String(50), nullable=True)  # Código para control documental
     metodologias = db.Column(db.Text, nullable=True)  # Almacenará lista JSON
     recursos = db.Column(db.Text, nullable=True)      # Almacenará lista JSON
+    logo_personalizado = db.Column(db.String(255), nullable=True)
+    imagen_evento1 = db.Column(db.String(255), nullable=True)
+    imagen_evento2 = db.Column(db.String(255), nullable=True)
     
     # Relaciones
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
