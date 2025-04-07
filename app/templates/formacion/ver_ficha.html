@@ -4,6 +4,33 @@
 
 {% block content %}
 <div class="container py-4">
+    <!-- Cabecera con botones principales -->
+    <div class="mb-4 d-flex justify-content-between align-items-center">
+        <a href="{{ url_for('formacion.index') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Volver
+        </a>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('formacion.editar_ficha', ficha_id=ficha.id) }}" class="btn btn-outline-primary">
+                <i class="fas fa-edit me-2"></i>Editar Ficha
+            </a>
+            
+            {% if lista and lista.asistentes %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#imagenModal">
+                    <i class="fas fa-image me-1"></i>Gestionar Imágenes
+                </button>                
+                <a href="{{ url_for('formacion.generar_acta', ficha_id=ficha.id) }}" class="btn btn-primary">
+                    <i class="fas fa-file-pdf me-2"></i>Generar Acta
+                </a>
+            </div>
+            {% endif %}
+            
+            <button type="button" class="btn" style="background-color:rgb(7, 7, 7); color: white;" data-bs-toggle="modal" data-bs-target="#eliminarFichaModal">
+                <i class="fas fa-trash me-2"></i>Eliminar Ficha
+            </button>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-lg-8">
             <div class="card shadow-sm mb-4">
@@ -79,26 +106,6 @@
                         </div>
                     </div>
                     {% endif %}
-                    <div class="mt-4 text-end">
-                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#eliminarFichaModal">
-                            <i class="fas fa-trash me-2"></i>Eliminar Ficha
-                        </button>
-                    </div>
-                </div>
-                <div class="card-footer bg-white d-flex justify-content-between">
-                    <a href="{{ url_for('formacion.index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Volver
-                    </a>
-                    <div>
-                        <a href="{{ url_for('formacion.editar_ficha', ficha_id=ficha.id) }}" class="btn btn-outline-primary me-2">
-                            <i class="fas fa-edit me-2"></i>Editar
-                        </a>
-                        {% if lista and lista.asistentes %}
-                        <a href="{{ url_for('formacion.generar_acta', ficha_id=ficha.id) }}" class="btn btn-primary">
-                            <i class="fas fa-file-pdf me-2"></i>Generar Acta
-                        </a>
-                        {% endif %}
-                    </div>
                 </div>
             </div>
         </div>
@@ -149,85 +156,54 @@
                     {% endif %}
                 </div>
             </div>
-        </div>
-    </div>
-    
-    <!-- Sección de Acta del Evento -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card shadow-sm">
+            
+            <!-- Sección de imágenes del Acta (cuando existen) -->
+            {% if lista and lista.asistentes and (ficha.logo_personalizado or ficha.imagen_evento1 or ficha.imagen_evento2) %}
+            <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0">Acta del Evento</h5>
+                    <h5 class="mb-0">Imágenes del Acta</h5>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <p class="mb-0">Gestione las imágenes que se mostrarán en el acta del evento.</p>
-                        <div>
-                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#imagenModal">
-                                <i class="fas fa-image me-1"></i>Gestionar Imágenes
-                            </button>
-                            {% if lista and lista.asistentes %}
-                            <a href="{{ url_for('formacion.generar_acta', ficha_id=ficha.id) }}" class="btn btn-primary ms-2">
-                                <i class="fas fa-file-alt me-1"></i>Ver Acta
-                            </a>
-                            {% else %}
-                            <button class="btn btn-primary ms-2" disabled>
-                                <i class="fas fa-file-alt me-1"></i>Ver Acta
-                            </button>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <!-- Mostrar miniaturas de imágenes si existen -->
-                    {% if ficha.logo_personalizado or ficha.imagen_evento1 or ficha.imagen_evento2 %}
-                    <div class="row mt-4">
+                    <div class="row g-2">
                         {% if ficha.logo_personalizado %}
-                        <div class="col-md-4 mb-3">
+                        <div class="col-6">
                             <div class="card h-100">
-                                <div class="card-header bg-light py-2">
-                                    <small>Logo personalizado</small>
-                                </div>
-                                <div class="card-body text-center">
+                                <div class="card-body p-2 text-center">
+                                    <small class="d-block mb-1 text-muted">Logo</small>
                                     <img src="{{ url_for('static', filename='uploads/' + ficha.logo_personalizado) }}" 
-                                         alt="Logo" class="img-thumbnail" style="max-height: 100px;">
+                                         alt="Logo" class="img-thumbnail" style="max-height: 80px;">
                                 </div>
                             </div>
                         </div>
                         {% endif %}
                         
                         {% if ficha.imagen_evento1 %}
-                        <div class="col-md-4 mb-3">
+                        <div class="col-6">
                             <div class="card h-100">
-                                <div class="card-header bg-light py-2">
-                                    <small>Imagen del evento 1</small>
-                                </div>
-                                <div class="card-body text-center">
+                                <div class="card-body p-2 text-center">
+                                    <small class="d-block mb-1 text-muted">Imagen 1</small>
                                     <img src="{{ url_for('static', filename='uploads/' + ficha.imagen_evento1) }}" 
-                                         alt="Imagen 1" class="img-thumbnail" style="max-height: 100px;">
+                                         alt="Imagen 1" class="img-thumbnail" style="max-height: 80px;">
                                 </div>
                             </div>
                         </div>
                         {% endif %}
                         
                         {% if ficha.imagen_evento2 %}
-                        <div class="col-md-4 mb-3">
+                        <div class="col-6">
                             <div class="card h-100">
-                                <div class="card-header bg-light py-2">
-                                    <small>Imagen del evento 2</small>
-                                </div>
-                                <div class="card-body text-center">
+                                <div class="card-body p-2 text-center">
+                                    <small class="d-block mb-1 text-muted">Imagen 2</small>
                                     <img src="{{ url_for('static', filename='uploads/' + ficha.imagen_evento2) }}" 
-                                         alt="Imagen 2" class="img-thumbnail" style="max-height: 100px;">
+                                         alt="Imagen 2" class="img-thumbnail" style="max-height: 80px;">
                                 </div>
                             </div>
                         </div>
                         {% endif %}
                     </div>
-                    {% else %}
-                    <p class="text-muted small mt-3">No hay imágenes configuradas para el acta.</p>
-                    {% endif %}
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -236,9 +212,9 @@
 <div class="modal fade" id="eliminarFichaModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header" style="background-color:rgb(0, 0, 0); color: white;">
                 <h5 class="modal-title">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ url_for('formacion.eliminar_ficha', ficha_id=ficha.id) }}" method="POST">
                 <div class="modal-body">
@@ -249,8 +225,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">Eliminar Ficha</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn" style="background-color: #e83e8c; color: white;">Eliminar Ficha</button>
                 </div>
             </form>
         </div>
@@ -261,9 +237,9 @@
 <div class="modal fade" id="imagenModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header" style="background-color: #e83e8c; color: white;">
                 <h5 class="modal-title">Gestionar Imágenes</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ url_for('formacion.subir_imagenes', ficha_id=ficha.id) }}" method="POST" enctype="multipart/form-data">
                 <div class="modal-body">
@@ -284,8 +260,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar Imágenes</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn" style="background-color: #e83e8c; color: white;">Guardar Imágenes</button>
                 </div>
             </form>
         </div>
@@ -297,35 +273,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar clipboard.js
-    const clipboard = new ClipboardJS('#copiar-enlace');
+    var clipboard = new ClipboardJS('#copiar-enlace');
     
     clipboard.on('success', function(e) {
-        const button = e.trigger;
-        const originalText = button.innerHTML;
-        
-        button.innerHTML = '<i class="fas fa-check me-2"></i>¡Enlace Copiado!';
-        button.classList.remove('btn-primary');
-        button.classList.add('btn-success');
-        
-        setTimeout(function() {
-            button.innerHTML = originalText;
-            button.classList.remove('btn-success');
-            button.classList.add('btn-primary');
-        }, 2000);
-        
+        alert('Enlace copiado al portapapeles');
         e.clearSelection();
     });
 });
 </script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var clipboard = new ClipboardJS('#copiar-enlace');
-        
-        clipboard.on('success', function(e) {
-            alert('Enlace copiado al portapapeles');
-            e.clearSelection();
-        });
-    });
-    </script>
 {% endblock %}
