@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Asistentes - {{ ficha.titulo }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h3 class="mb-0">Asistentes de: {{ ficha.titulo }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>Correo Electrónico</th>
+                            <th>Cargo</th>
+                            <th>Fecha de Registro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for asistente in asistentes %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ asistente.nombre }}</td>
+                            <td>{{ asistente.email }}</td>
+                            <td>{{ asistente.cargo or '-' }}</td>
+                            <td>{{ asistente.fecha_registro.strftime('%d/%m/%Y %H:%M') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

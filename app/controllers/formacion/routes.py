@@ -16,6 +16,8 @@ from werkzeug.utils import secure_filename
 import time
 import os
 from flask import current_app
+from flask_socketio import emit
+from app import socketio
 
 formacion_bp = Blueprint('formacion', __name__, url_prefix='/formacion')
 
@@ -229,15 +231,31 @@ def registrar_asistente():
     try:
         db.session.commit()
         
-        # Obtener la lista desde el ID
-        lista_id = request.form.get('lista_id')
+        # Obtener la lista desde el ID primero
         lista = ListaAsistencia.query.get(lista_id)
-
-        # Obtener datos de la ficha para el correo
         ficha = lista.ficha  # Usa la relación directa
+        
+        # Emitir evento de socket para actualizar
+        from app import socketio
+        socketio.emit('nuevo_asistente', {
+            'id': asistente.id,
+            'nombre': asistente.nombre,
+            'email': asistente.email,
+            'cargo': asistente.cargo or '-',
+            'firma': asistente.firma_data,
+            'ficha_id': ficha.id
+        })
+        
+        # También emitir evento antiguo para compatibilidad
+        socketio.emit('actualizar_asistentes', {
+            'ficha_id': ficha.id,
+            'total_asistentes': len(lista.asistentes)
+        })
+        
+        # Continuar con el resto de la función...
         user = User.query.get(ficha.user_id)
         
-        # Enviar correo de notificación al creador de la ficha
+        # Si deseas mantener el envío de correo:
         if user and user.email:
             try:
                 from app.utils.email_utils import send_email
@@ -267,7 +285,7 @@ def registrar_asistente():
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': f'Error al registrar asistencia: {str(e)}'})
-
+   
 @formacion_bp.route('/<int:ficha_id>/generar-acta')
 @login_required
 def generar_acta(ficha_id):
@@ -542,3 +560,27 @@ def eliminar_ficha(ficha_id):
         flash(f'Error al eliminar la ficha: {str(e)}', 'danger')
     
     return redirect(url_for('formacion.index'))
+
+@formacion_bp.route('/<int:ficha_id>/asistentes')
+@login_required
+def lista_completa_asistentes(ficha_id):
+    ficha = FichaFormacion.query.get_or_404(ficha_id)
+    
+    # Verificar permiso
+    if ficha.user_id != current_user.id:
+        flash('No tienes permiso para ver esta lista', 'danger')
+        return redirect(url_for('formacion.index'))
+    
+    lista = ListaAsistencia.query.filter_by(ficha_id=ficha.id).first_or_404()
+    
+    return render_template('formacion/lista_completa_asistentes.html', 
+                           ficha=ficha, 
+                           lista=lista, 
+                           asistentes=lista.asistentes)
+
+@socketio.on('nuevo_registro', namespace='/formacion')
+def handle_nuevo_registro(data):
+    # Lógica para emitir actualización
+    ficha_id = data['ficha_id']
+    # Emitir evento con datos actualizados
+    emit('actualizar_asistentes', {'ficha_id': ficha_id}, broadcast=True)

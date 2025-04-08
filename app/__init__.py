@@ -1,10 +1,13 @@
 from flask import Flask, render_template
-from datetime import datetime, timedelta  # Agrega timedelta aquí
+from datetime import datetime, timedelta
 from app.config.config import config
 from app.config.database import init_db, db, login_manager
-from flask_migrate import Migrate  # Añadir esta importación
-from app.controllers.kmy.routes import kmy_bp
-import os  # Añadir esta importación
+from flask_migrate import Migrate
+from flask_socketio import SocketIO
+import os
+
+# Inicializar SocketIO antes de crear la app
+socketio = SocketIO()
 
 def create_app():
     # Inicializar la aplicación Flask
@@ -23,6 +26,9 @@ def create_app():
     # Inicializar Migrate
     migrate = Migrate(app, db)
     
+    # Inicializar SocketIO con la app
+    socketio.init_app(app, cors_allowed_origins="*")
+    
     # Registrar blueprints
     from app.controllers.auth.routes import auth_bp
     from app.controllers.dashboard.routes import dashboard_bp
@@ -30,6 +36,7 @@ def create_app():
     from app.controllers.main.routes import main_bp
     from app.controllers.tareas.routes import tareas_bp
     from app.controllers.formacion.routes import formacion_bp
+    from app.controllers.kmy.routes import kmy_bp
     
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
@@ -44,7 +51,6 @@ def create_app():
     def load_user(user_id):
         from app.models.user import User
         return User.query.get(int(user_id))
-        
     
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Por favor inicia sesión para acceder a esta página.'
@@ -83,3 +89,6 @@ from app.models.user import User
 from app.models.empresa import Empresa
 from app.models.tarea import Tarea     
 from app.models.formacion import FichaFormacion, ListaAsistencia, Asistente, PreguntaFormacion, RespuestaFormacion
+
+# Crea la aplicación
+app = create_app()
