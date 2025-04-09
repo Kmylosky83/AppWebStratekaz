@@ -88,6 +88,68 @@
                         </div>
                     </div>
                     {% endif %}
+
+                    <!-- Conclusiones e Indicadores -->
+                    {% if ficha.conclusiones or ficha.observaciones or ficha.indicadores %}
+                    <div class="acta-conclusiones mb-4">
+                        <h5 class="mb-3">Conclusiones y Resultados</h5>
+                        
+                        {% if ficha.conclusiones %}
+                        <div class="mb-3">
+                            <h6>Conclusiones de la Capacitación</h6>
+                            <div class="border p-3">
+                                <p>{{ ficha.conclusiones }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if ficha.observaciones %}
+                        <div class="mb-3">
+                            <h6>Observaciones Adicionales</h6>
+                            <div class="border p-3">
+                                <p>{{ ficha.observaciones }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if ficha.indicadores %}
+                        <div class="mb-3">
+                            <h6>Indicadores de Cumplimiento</h6>
+                            <div class="border p-3">
+                                <ul class="mb-0">
+                                    {% for indicador in ficha.indicadores|from_json %}
+                                    <li>
+                                        {% if indicador == 'asistencia' %}
+                                        Cumplimiento de Asistencia
+                                        {% elif indicador == 'conocimiento' %}
+                                        Adquisición de Conocimientos
+                                        {% elif indicador == 'participacion' %}
+                                        Nivel de Participación
+                                        {% elif indicador == 'aplicabilidad' %}
+                                        Aplicabilidad en el Trabajo
+                                        {% else %}
+                                        {{ indicador }}
+                                        {% endif %}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- La sección de observaciones original puede quedarse o modificarse -->
+                    <div class="acta-footer mb-4">
+                        <h5 class="mb-3">Observaciones y Conclusiones</h5>
+                        <div class="border p-3" style="min-height: 150px;">
+                            {% if ficha.conclusiones %}
+                                <p>{{ ficha.conclusiones }}</p>
+                            {% else %}
+                                <p>Sin observaciones registradas.</p>
+                            {% endif %}
+                        </div>
+                    </div>
                     
                     <!-- Lista de asistentes -->
                     <div class="acta-asistentes mb-4">

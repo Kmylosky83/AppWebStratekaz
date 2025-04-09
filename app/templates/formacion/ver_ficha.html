@@ -35,7 +35,7 @@
                             <p class="mb-1"><strong>Duración:</strong> {{ ficha.duracion or 'No especificada' }}</p>
                         </div>
                         <div class="col-md-6">
-                            <p class="mb-1"><strong>Responsable:</strong> {{ ficha.responsable }}</p>
+                            <p class="mb-1"><strong>Formador / Capacitador:</strong> {{ ficha.responsable }}</p>
                             {% if ficha.empresa_id %}
                             <p class="mb-1"><strong>Empresa:</strong> {{ ficha.empresa.nombre }}</p>
                             {% endif %}
@@ -163,6 +163,9 @@
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Imágenes y Acciones del Acta</h5>
                         <div class="btn-group">
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#conclusionesModal">
+                                <i class="fas fa-clipboard-list me-1"></i>Conclusiones
+                            </button>
                             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#imagenModal">
                                 <i class="fas fa-image me-1"></i>Gestionar Imágenes
                             </button>                
@@ -278,6 +281,62 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn" style="background-color: #e83e8c; color: white;">Guardar Imágenes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal para conclusiones -->
+<div class="modal fade" id="conclusionesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #17a2b8; color: white;">
+                <h5 class="modal-title">Conclusiones y Observaciones</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('formacion.guardar_conclusiones', ficha_id=ficha.id) }}" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Conclusiones de la Capacitación</label>
+                        <textarea class="form-control" name="conclusiones" rows="5" placeholder="Escriba las conclusiones generales de la capacitación...">{{ ficha.conclusiones or '' }}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Observaciones Adicionales</label>
+                        <textarea class="form-control" name="observaciones" rows="3" placeholder="Ingrese observaciones adicionales si las hubiera...">{{ ficha.observaciones or '' }}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Indicadores de Cumplimiento</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="indicadores[]" value="asistencia" id="ind_asistencia" {{ 'checked' if ficha.indicadores and 'asistencia' in ficha.indicadores|from_json else '' }}>
+                            <label class="form-check-label" for="ind_asistencia">
+                                Cumplimiento de Asistencia
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="indicadores[]" value="conocimiento" id="ind_conocimiento" {{ 'checked' if ficha.indicadores and 'conocimiento' in ficha.indicadores|from_json else '' }}>
+                            <label class="form-check-label" for="ind_conocimiento">
+                                Adquisición de Conocimientos
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="indicadores[]" value="participacion" id="ind_participacion" {{ 'checked' if ficha.indicadores and 'participacion' in ficha.indicadores|from_json else '' }}>
+                            <label class="form-check-label" for="ind_participacion">
+                                Nivel de Participación
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="indicadores[]" value="aplicabilidad" id="ind_aplicabilidad" {{ 'checked' if ficha.indicadores and 'aplicabilidad' in ficha.indicadores|from_json else '' }}>
+                            <label class="form-check-label" for="ind_aplicabilidad">
+                                Aplicabilidad en el Trabajo
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn" style="background-color: #17a2b8; color: white;">Guardar Cambios</button>
                 </div>
             </form>
         </div>

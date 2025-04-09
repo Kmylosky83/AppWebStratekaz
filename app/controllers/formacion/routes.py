@@ -48,6 +48,7 @@ def crear_ficha():
         metodologia = request.form.get('metodologia')  # Ahora es un solo valor
         recursos = request.form.getlist('recursos')    # Esto sigue siendo una lista
         
+        
         # Generar código único para la ficha
         codigo = f"FORM-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}"
         
@@ -177,6 +178,7 @@ def registrar_asistente():
     lista_id = request.form.get('lista_id')
     nombre = request.form.get('nombre')
     email = request.form.get('email')
+    tipo_documento = request.form.get('tipo_documento')
     documento = request.form.get('documento')
     cargo = request.form.get('cargo')
     telefono = request.form.get('telefono')
@@ -186,6 +188,7 @@ def registrar_asistente():
     asistente = Asistente(
         nombre=nombre,
         email=email,
+        tipo_documento=tipo_documento,  # Nueva línea
         documento=documento,
         cargo=cargo,
         telefono=telefono,
@@ -584,3 +587,31 @@ def handle_nuevo_registro(data):
     ficha_id = data['ficha_id']
     # Emitir evento con datos actualizados
     emit('actualizar_asistentes', {'ficha_id': ficha_id}, broadcast=True)
+    
+@formacion_bp.route('/<int:ficha_id>/conclusiones', methods=['POST'])
+@login_required
+def guardar_conclusiones(ficha_id):
+    """Guardar conclusiones y observaciones de la ficha"""
+    ficha = FichaFormacion.query.get_or_404(ficha_id)
+    
+    # Verificar permiso
+    if ficha.user_id != current_user.id:
+        flash('No tienes permiso para editar esta ficha', 'danger')
+        return redirect(url_for('formacion.index'))
+    
+    # Actualizar datos
+    ficha.conclusiones = request.form.get('conclusiones')
+    ficha.observaciones = request.form.get('observaciones')
+    
+    # Procesar indicadores
+    indicadores = request.form.getlist('indicadores[]')
+    ficha.indicadores = json.dumps(indicadores) if indicadores else None
+    
+    try:
+        db.session.commit()
+        flash('Conclusiones guardadas exitosamente', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al guardar conclusiones: {str(e)}', 'danger')
+    
+    return redirect(url_for('formacion.ver_ficha', ficha_id=ficha.id))

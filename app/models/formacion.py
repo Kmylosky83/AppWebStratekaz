@@ -19,6 +19,10 @@ class FichaFormacion(db.Model):
     logo_personalizado = db.Column(db.String(255), nullable=True)
     imagen_evento1 = db.Column(db.String(255), nullable=True)
     imagen_evento2 = db.Column(db.String(255), nullable=True)
+    conclusiones = db.Column(db.Text, nullable=True)
+    observaciones = db.Column(db.Text, nullable=True)
+    indicadores = db.Column(db.Text, nullable=True)  # Almacenará lista JSON
+    
     
     # Relaciones
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -90,6 +94,7 @@ class Asistente(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
+    tipo_documento = db.Column(db.String(10), nullable=True)  # Ejemplo: "DNI", "Pasaporte"
     documento = db.Column(db.String(20), nullable=True)
     cargo = db.Column(db.String(100), nullable=True)
     telefono = db.Column(db.String(20), nullable=True)

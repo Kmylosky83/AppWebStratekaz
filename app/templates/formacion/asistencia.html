@@ -25,7 +25,7 @@
                                 <p class="mb-1"><strong>Lugar:</strong> {{ ficha.lugar or 'No especificado' }}</p>
                             </div>
                             <div class="col-md-6">
-                                <p class="mb-1"><strong>Responsable:</strong> {{ ficha.responsable }}</p>
+                                <p class="mb-1"><strong>Formador/Capacitador:</strong> {{ ficha.responsable }}</p>
                                 <p class="mb-1"><strong>Duración:</strong> {{ ficha.duracion or 'No especificada' }}</p>
                             </div>
                         </div>
@@ -46,16 +46,27 @@
                                 <input type="email" class="form-control" name="email" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Documento de Identidad</label>
-                                <input type="text" class="form-control" name="documento">
+                                <label class="form-label">Tipo de Documento *</label>
+                                <select class="form-select" name="tipo_documento" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="CC">Cédula de Ciudadanía</option>
+                                    <option value="CE">Cédula de Extranjería</option>
+                                    <option value="TI">Tarjeta de Identidad</option>
+                                    <option value="PP">Pasaporte</option>
+                                    <option value="NIT">NIT</option>
+                                </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Cargo o Rol</label>
-                                <input type="text" class="form-control" name="cargo">
+                                <label class="form-label">Documento de Identidad *</label>
+                                <input type="text" class="form-control" name="documento" pattern="[0-9\-\.]+" title="Solo números, guiones y puntos" required>                                
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Teléfono de Contacto</label>
-                                <input type="text" class="form-control" name="telefono">
+                                <label class="form-label">Cargo o Rol *</label>
+                                <input type="text" class="form-control" name="cargo" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Teléfono de Contacto *</label>
+                                <input type="tel" class="form-control" name="telefono" pattern="[0-9]{10}" maxlength="10" title="Debe contener 10 dígitos" required>                               
                             </div>
                         </div>
                         
@@ -65,15 +76,15 @@
                         <div class="mb-4">
                             {% for pregunta in preguntas %}
                             <div class="mb-3">
-                                <label class="form-label"><strong>{{ loop.index }}.</strong> {{ pregunta.texto }}</label>
+                                <label class="form-label">{{ pregunta.texto }} *</label>
                                 
                                 {% if pregunta.tipo == 'texto' %}
-                                <textarea class="form-control" name="pregunta_{{ pregunta.id }}" rows="2"></textarea>
+                                <textarea class="form-control" name="pregunta_{{ pregunta.id }}" rows="2" required></textarea>
                                 
                                 {% elif pregunta.tipo == 'si_no' %}
                                 <div>
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="pregunta_{{ pregunta.id }}" id="pregunta_{{ pregunta.id }}_si" value="Sí">
+                                        <input class="form-check-input" type="radio" name="pregunta_{{ pregunta.id }}" id="pregunta_{{ pregunta.id }}_si" value="Sí" required>
                                         <label class="form-check-label" for="pregunta_{{ pregunta.id }}_si">Sí</label>
                                     </div>
                                     <div class="form-check form-check-inline">
@@ -83,52 +94,25 @@
                                 </div>
                                 
                                 {% elif pregunta.tipo == 'opcion_multiple' %}
-                                <select class="form-select" name="pregunta_{{ pregunta.id }}">
+                                <select class="form-select" name="pregunta_{{ pregunta.id }}" required>
                                     <option value="">Seleccionar...</option>
                                     {% for opcion in pregunta.opciones|from_json %}
                                     <option value="{{ opcion }}">{{ opcion }}</option>
                                     {% endfor %}
                                 </select>
                                 {% endif %}
-                                
-                        {% endfor %}                            
+                            </div>
+                            {% endfor %}                        
                         </div>
                         {% endif %}
 
                         <!-- Sección de evaluación del capacitador -->
-                            <h6 class="border-bottom pb-2 mb-3">Evaluación del Capacitador (Opcional)</h6>
+                        <h6 class="border-bottom pb-2 mb-3">Evaluación del Capacitador *</h6>
                             <div class="mb-4">
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="form-label">Dominio del tema</label>
-                                        <select class="form-select" name="dominio_tema">
-                                            <option value="">Seleccionar...</option>
-                                            <option value="1">1 - Deficiente</option>                                        
-                                            <option value="3">3 - Bueno</option>                               
-                                            <option value="5">5 - Excelente</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Claridad de la explicación</label>
-                                        <select class="form-select" name="claridad">
-                                            <option value="">Seleccionar...</option>
-                                            <option value="1">1 - Deficiente</option>                                          
-                                            <option value="3">3 - Bueno</option>                                       
-                                            <option value="5">5 - Excelente</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Calidad del material</label>
-                                        <select class="form-select" name="material">
-                                            <option value="">Seleccionar...</option>
-                                            <option value="1">1 - Deficiente</option>                                           
-                                            <option value="3">3 - Bueno</option>                                           
-                                            <option value="5">5 - Excelente</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Manejo del tiempo</label>
-                                        <select class="form-select" name="tiempo">
+                                        <label class="form-label">Dominio del tema *</label>
+                                        <select class="form-select" name="dominio_tema" required>
                                             <option value="">Seleccionar...</option>
                                             <option value="1">1 - Deficiente</option>                                            
                                             <option value="3">3 - Bueno</option>                                            
@@ -136,11 +120,38 @@
                                         </select>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Utilidad de la formación</label>
-                                        <select class="form-select" name="utilidad">
+                                        <label class="form-label">Claridad de la explicación *</label>
+                                        <select class="form-select" name="claridad" required>
+                                            <option value="">Seleccionar...</option>
+                                            <option value="1">1 - Deficiente</option>                                            
+                                            <option value="3">3 - Bueno</option>                                            
+                                            <option value="5">5 - Excelente</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Calidad del material *</label>
+                                        <select class="form-select" name="material" required>
+                                            <option value="">Seleccionar...</option>
+                                            <option value="1">1 - Deficiente</option>                                            
+                                            <option value="3">3 - Bueno</option>                                            
+                                            <option value="5">5 - Excelente</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Manejo del tiempo *</label>
+                                        <select class="form-select" name="tiempo" required>
                                             <option value="">Seleccionar...</option>
                                             <option value="1">1 - Deficiente</option>                                           
-                                            <option value="3">3 - Bueno</option>                                        
+                                            <option value="3">3 - Bueno</option>                                            
+                                            <option value="5">5 - Excelente</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Utilidad de la formación *</label>
+                                        <select class="form-select" name="utilidad" required>
+                                            <option value="">Seleccionar...</option>
+                                            <option value="1">1 - Deficiente</option>                                            
+                                            <option value="3">3 - Bueno</option>                                          
                                             <option value="5">5 - Excelente</option>
                                         </select>
                                     </div>
@@ -193,8 +204,9 @@
                 <h4>¡Gracias por su asistencia!</h4>
                 <p class="mb-0">Su registro ha sido completado correctamente.</p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-outline-primary" id="registrarOtro">Registrar otra asistencia</button>
+                <button type="button" class="btn btn-primary" id="finalizarRegistro">Finalizar</button>
             </div>
         </div>
     </div>
@@ -203,14 +215,14 @@
 
 {% block styles %}
 <style>
+
     .signature-pad-container {
         position: relative;
         width: 100%;
         border: 1px solid #ddd;
         border-radius: 0.25rem;
         background-color: #fff;
-        margin: 10px 0;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+       
     }
     
     .signature-pad {
@@ -292,6 +304,39 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             alert('Error al enviar los datos: ' + error);
         });
+    });
+
+    // Añadir esto en la sección de JavaScript
+    // Validación para campo documento
+    document.querySelector('input[name="documento"]').addEventListener('input', function(e) {
+        // Permitir solo números, guiones y puntos
+        this.value = this.value.replace(/[^0-9\-\.]/g, '');
+    });
+
+    // Validación para campo teléfono
+    document.querySelector('input[name="telefono"]').addEventListener('input', function(e) {
+        // Permitir solo números
+        this.value = this.value.replace(/[^0-9]/g, '');
+        
+        // Limitar a 10 dígitos
+        if (this.value.length > 10) {
+            this.value = this.value.slice(0, 10);
+        }
+    });
+
+    // Agregar esto al JavaScript existente
+    document.getElementById('registrarOtro').addEventListener('click', function() {
+        // Cerrar modal
+        document.querySelector('[data-bs-dismiss="modal"]').click();
+        // Limpiar formulario
+        document.getElementById('asistenciaForm').reset();
+        signaturePad.clear();
+    });
+
+    document.getElementById('finalizarRegistro').addEventListener('click', function() {
+        // Redirigir a la página principal
+        window.close();
+        // Alternativa si no se puede cerrar: window.location.href = '/';
     });
 });
 </script>
