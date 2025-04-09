@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Acta de Formación - {{ ficha.titulo }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        .seccion {
+            margin: 20px 0;
+        }
+        
+        .firma-img {
+            max-height: 40px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Encabezado que se repetirá en cada página -->
+    <div class="header">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                {% if ficha.logo_personalizado %}
+                <img src="{{ url_for('static', filename='uploads/' + ficha.logo_personalizado, _external=True) }}" style="max-height: 50px;">
+                {% else %}
+                <img src="{{ url_for('static', filename='images/logo.png', _external=True) }}" style="max-height: 50px;">
+                {% endif %}
+            </div>
+            <div>
+                <p><strong>Código:</strong> {{ ficha.codigo }}</p>
+                <p><strong>Fecha:</strong> {{ ficha.fecha.strftime('%d/%m/%Y') }}</p>
+            </div>
+        </div>
+        <h1 style="text-align: center;">ACTA DE FORMACIÓN</h1>
+        <h2 style="text-align: center;">{{ ficha.titulo }}</h2>
+    </div>
+    
+    <!-- Información de la formación -->
+    <div class="seccion">
+        <h3>Información General</h3>
+        <table>
+            <tr>
+                <th style="width: 30%;">Formador / Capacitador:</th>
+                <td>{{ ficha.responsable }}</td>
+            </tr>
+            <tr>
+                <th>Fecha y Hora:</th>
+                <td>{{ ficha.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+            </tr>
+            <tr>
+                <th>Lugar:</th>
+                <td>{{ ficha.lugar or 'No especificado' }}</td>
+            </tr>
+            <tr>
+                <th>Duración:</th>
+                <td>{{ ficha.duracion or 'No especificada' }}</td>
+            </tr>
+            {% if ficha.empresa %}
+            <tr>
+                <th>Empresa:</th>
+                <td>{{ ficha.empresa.nombre }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+    
+    <!-- Objetivos -->
+    <div class="seccion">
+        <h3>Objetivos</h3>
+        {% if ficha.objetivos %}
+        <ol>
+            {% for objetivo in ficha.objetivos.split('\n') %}
+                {% if objetivo.strip() %}
+                <li>{{ objetivo.replace('•', '').strip() }}</li>
+                {% endif %}
+            {% endfor %}
+        </ol>
+        {% else %}
+        <p>No se especificaron objetivos.</p>
+        {% endif %}
+    </div>
+    
+    <!-- Registro fotográfico -->
+    {% if ficha.imagen_evento1 or ficha.imagen_evento2 %}
+    <div class="seccion">
+        <h3>Registro Fotográfico</h3>
+        <table>
+            <tr>
+                {% if ficha.imagen_evento1 %}
+                <td style="text-align: center; width: 50%;">
+                    <img src="{{ url_for('static', filename='uploads/' + ficha.imagen_evento1, _external=True) }}" style="max-width: 90%; max-height: 200px;">
+                </td>
+                {% endif %}
+                {% if ficha.imagen_evento2 %}
+                <td style="text-align: center; width: 50%;">
+                    <img src="{{ url_for('static', filename='uploads/' + ficha.imagen_evento2, _external=True) }}" style="max-width: 90%; max-height: 200px;">
+                </td>
+                {% endif %}
+            </tr>
+        </table>
+    </div>
+    {% endif %}
+    
+    <!-- Lista de asistentes -->
+    <div class="seccion">
+        <h3>Listado de Asistentes</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Correo Electrónico</th>
+                    <th>Cargo</th>
+                    <th>Firma</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asistente in lista.asistentes %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ asistente.nombre }}</td>
+                    <td>{{ asistente.email }}</td>
+                    <td>{{ asistente.cargo or '-' }}</td>
+                    <td style="text-align: center;">
+                        {% if asistente.firma_data %}
+                        <img src="{{ asistente.firma_data }}" alt="Firma" class="firma-img">
+                        {% else %}
+                        <span>Sin firma</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Conclusiones -->
+    {% if ficha.conclusiones or ficha.observaciones or ficha.indicadores %}
+    <div class="seccion">
+        <h3>Conclusiones y Resultados</h3>
+        
+        {% if ficha.conclusiones %}
+        <div style="margin-top: 15px;">
+            <h4>Conclusiones de la Capacitación</h4>
+            <div style="border: 1px solid #ddd; padding: 10px;">
+                <p>{{ ficha.conclusiones }}</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if ficha.observaciones %}
+        <div style="margin-top: 15px;">
+            <h4>Observaciones Adicionales</h4>
+            <div style="border: 1px solid #ddd; padding: 10px;">
+                <p>{{ ficha.observaciones }}</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if ficha.indicadores %}
+        <div style="margin-top: 15px;">
+            <h4>Indicadores de Cumplimiento</h4>
+            <div style="border: 1px solid #ddd; padding: 10px;">
+                <ul>
+                    {% for indicador in ficha.indicadores|from_json %}
+                    <li>
+                        {% if indicador == 'asistencia' %}
+                        Cumplimiento de Asistencia
+                        {% elif indicador == 'conocimiento' %}
+                        Adquisición de Conocimientos
+                        {% elif indicador == 'participacion' %}
+                        Nivel de Participación
+                        {% elif indicador == 'aplicabilidad' %}
+                        Aplicabilidad en el Trabajo
+                        {% else %}
+                        {{ indicador }}
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</body>
+</html>

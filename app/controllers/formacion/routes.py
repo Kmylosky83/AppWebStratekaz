@@ -1,26 +1,79 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
+# Agregar estas importaciones al inicio del archivo
+from flask import (
+    Blueprint, 
+    render_template, 
+    redirect, 
+    url_for, 
+    request, 
+    flash, 
+    jsonify, 
+    session,
+    current_app,
+    send_file
+)
 from flask_login import login_required, current_user
-from app.models.formacion import FichaFormacion, ListaAsistencia, Asistente, PreguntaFormacion, RespuestaFormacion
-from app.models.empresa import Empresa
-from app.config.database import db
+from flask_socketio import emit, join_room
+from werkzeug.utils import secure_filename
 from datetime import datetime
-from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify, session
+from functools import wraps
+from typing import Dict, Optional, Any
+import logging
 import json
 import uuid
-import base64
 import os
-from app.models.formacion import FichaFormacion, ListaAsistencia, Asistente, PreguntaFormacion, RespuestaFormacion, EvaluacionCapacitador
+import time
+
+# Configuración de logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+# Importaciones locales
+from app.models.formacion import (
+    FichaFormacion, 
+    ListaAsistencia, 
+    Asistente, 
+    PreguntaFormacion, 
+    RespuestaFormacion, 
+    EvaluacionCapacitador
+)
 from app.models.user import User
 from app.models.empresa import Empresa
-from werkzeug.utils import secure_filename
-import time
-import os
-from flask import current_app
-from flask_socketio import emit
-from app import socketio
+from app.config.database import db
+from app.utils.email_utils import send_email
+from app import socketio, cache
 
+# Crear Blueprint
 formacion_bp = Blueprint('formacion', __name__, url_prefix='/formacion')
 
+def allowed_file(filename: str, allowed_extensions: list) -> bool:
+    """Validar tipos de archivo permitidos"""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+def procesar_objetivos(objetivos_json: str) -> str:
+    """Procesar objetivos desde JSON a texto formateado"""
+    try:
+        objetivos_data = json.loads(objetivos_json)
+        objetivos_texto = '\n• '.join([obj['texto'] for obj in objetivos_data if obj['texto']])
+        return '• ' + objetivos_texto if objetivos_texto else ''
+    except Exception as e:
+        print(f"Error procesando objetivos: {str(e)}")
+        return ''
+
+def verificar_permiso_ficha(ficha: FichaFormacion) -> bool:
+    """Verificar si el usuario actual tiene permiso para la ficha"""
+    return ficha.user_id == current_user.id
+
+def get_ficha_con_permiso(ficha_id: int) -> FichaFormacion:
+    """Obtener ficha y verificar permisos"""
+    ficha = FichaFormacion.query.get_or_404(ficha_id)
+    if not verificar_permiso_ficha(ficha):
+        raise ValueError("No tienes permiso para esta ficha")
+    return ficha
+
+# Rutas principales
 @formacion_bp.route('/')
 @login_required
 def index():
@@ -33,114 +86,61 @@ def index():
 def crear_ficha():
     """Crear una nueva ficha de formación"""
     if request.method == 'POST':
-        # Datos básicos de la ficha
-        titulo = request.form.get('titulo')
-        descripcion = request.form.get('descripcion')
-        fecha = datetime.strptime(request.form.get('fecha'), '%Y-%m-%dT%H:%M')
-        lugar = request.form.get('lugar')
-        duracion = request.form.get('duracion')
-        responsable = request.form.get('responsable')
-        objetivos_json = request.form.get('objetivos', '[]')
-        objetivos_data = json.loads(objetivos_json)
-        objetivos_texto = '\n• '.join([obj['texto'] for obj in objetivos_data if obj['texto']])
-        objetivos = '• ' + objetivos_texto if objetivos_texto else ''
-        empresa_id = request.form.get('empresa_id') or None
-        metodologia = request.form.get('metodologia')  # Ahora es un solo valor
-        recursos = request.form.getlist('recursos')    # Esto sigue siendo una lista
-        
-        
-        # Generar código único para la ficha
-        codigo = f"FORM-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}"
-        
-              
-        # Convertir a JSON para guardar en la base de datos
-        metodologia_valor = metodologia if metodologia else None
-        recursos_json = json.dumps(recursos) if recursos else None
-        
-        # Crear la ficha
-        ficha = FichaFormacion(
-            titulo=titulo,
-            descripcion=descripcion,
-            fecha=fecha,
-            lugar=lugar,
-            duracion=duracion,
-            responsable=responsable,
-            objetivos=objetivos,
-            codigo=codigo,
-            user_id=current_user.id,
-            empresa_id=empresa_id,
-            metodologias=metodologia,  # Ya no es JSON, solo un string
-            recursos=json.dumps(recursos) if recursos else None
-        )
-        
-        # Guardar preguntas
-        preguntas_json = request.form.get('preguntas', '[]')
-        preguntas_data = json.loads(preguntas_json)
-        
         try:
-            db.session.add(ficha)
-            db.session.flush()  # Para obtener el ID de la ficha
+            # Obtener y validar datos básicos
+            datos = {
+                'titulo': request.form.get('titulo'),
+                'descripcion': request.form.get('descripcion'),
+                'fecha': datetime.strptime(request.form.get('fecha'), '%Y-%m-%dT%H:%M'),
+                'lugar': request.form.get('lugar'),
+                'duracion': request.form.get('duracion'),
+                'responsable': request.form.get('responsable'),
+                'objetivos': procesar_objetivos(request.form.get('objetivos', '[]')),
+                'empresa_id': request.form.get('empresa_id') or None,
+                'metodologia': request.form.get('metodologia'),
+                'recursos': json.dumps(request.form.getlist('recursos')) if request.form.getlist('recursos') else None
+            }
+
+            # Crear ficha
+            ficha = FichaFormacion(
+                **datos,
+                codigo=f"FORM-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:8].upper()}",
+                user_id=current_user.id
+            )
             
+            db.session.add(ficha)
+            db.session.flush()
+
+            # Procesar preguntas
+            preguntas_data = json.loads(request.form.get('preguntas', '[]'))
             for pregunta_data in preguntas_data:
                 pregunta = PreguntaFormacion(
                     texto=pregunta_data['texto'],
                     tipo=pregunta_data['tipo'],
                     opciones=json.dumps(pregunta_data.get('opciones', [])),
-                    respuesta_correcta=pregunta_data.get('respuestaCorrecta'),  # Añadir esta línea
+                    respuesta_correcta=pregunta_data.get('respuestaCorrecta'),
                     ficha_id=ficha.id
                 )
                 db.session.add(pregunta)
-            
-            # Crear lista de asistencia asociada
-            metodo_diligenciamiento = request.form.get('metodo_diligenciamiento', 'directo')
-            es_externo = metodo_diligenciamiento == 'externo'
-            email_externo = request.form.get('email_externo') if es_externo else None
 
+            # Crear lista de asistencia
             lista = ListaAsistencia(
                 ficha_id=ficha.id,
                 enlace_compartible=str(uuid.uuid4()),
-                es_externo=es_externo,
-                email_externo=email_externo
+                es_externo=request.form.get('metodo_diligenciamiento') == 'externo',
+                email_externo=request.form.get('email_externo')
             )
             db.session.add(lista)
             db.session.commit()
-            
-            # Enviar correo si es externo
-            if es_externo and email_externo:
-                try:
-                    # Importar función de envío de correo
-                    from app.utils.email_utils import send_email
-                    
-                    enlace_completo = request.host_url.rstrip('/') + url_for('formacion.lista_asistencia', enlace=lista.enlace_compartible)
-                    
-                    asunto = f"Invitación para diligenciar Ficha de Formación: {ficha.titulo}"
-                    cuerpo = f"""
-                    Hola,
-                    
-                    Has sido invitado a diligenciar una ficha de formación en la plataforma StrateKaz.
-                    
-                    Título: {ficha.titulo}
-                    Responsable: {ficha.responsable}
-                    
-                    Por favor accede al siguiente enlace para completar la información:
-                    {enlace_completo}
-                    
-                    Saludos,
-                    Equipo StrateKaz
-                    """
-                    
-                    send_email(email_externo, asunto, cuerpo)
-                    flash('Se ha enviado un correo al profesional externo con el enlace para diligenciar la ficha', 'info')
-                except Exception as e:
-                    flash(f'La ficha se creó correctamente, pero hubo un error al enviar el correo: {str(e)}', 'warning')
-            
+
             flash('Ficha de formación creada exitosamente', 'success')
             return redirect(url_for('formacion.ver_ficha', ficha_id=ficha.id))
+
         except Exception as e:
             db.session.rollback()
             flash(f'Error al crear la ficha: {str(e)}', 'danger')
             return redirect(url_for('formacion.index'))
-    
+
     # GET: Mostrar formulario
     empresas = []
     if current_user.user_type == 'company' and current_user.company_type == 'consultant':
@@ -152,466 +152,475 @@ def crear_ficha():
 @login_required
 def ver_ficha(ficha_id):
     """Ver detalles de una ficha de formación"""
-    ficha = FichaFormacion.query.get_or_404(ficha_id)
-    
-    # Verificar permiso
-    if ficha.user_id != current_user.id:
-        flash('No tienes permiso para ver esta ficha', 'danger')
-        return redirect(url_for('formacion.index'))
-    
-    lista = ListaAsistencia.query.filter_by(ficha_id=ficha.id).first()
-    
-    return render_template('formacion/ver_ficha.html', ficha=ficha, lista=lista)
-
-@formacion_bp.route('/asistencia/<string:enlace>')
-def lista_asistencia(enlace):
-    """Formulario público para registrar asistencia"""
-    lista = ListaAsistencia.query.filter_by(enlace_compartible=enlace).first_or_404()
-    ficha = lista.ficha
-    preguntas = PreguntaFormacion.query.filter_by(ficha_id=ficha.id).all()
-    
-    return render_template('formacion/asistencia.html', lista=lista, ficha=ficha, preguntas=preguntas)
-
-@formacion_bp.route('/registrar-asistente', methods=['POST'])
-def registrar_asistente():
-    """Registrar un nuevo asistente en la lista"""
-    lista_id = request.form.get('lista_id')
-    nombre = request.form.get('nombre')
-    email = request.form.get('email')
-    tipo_documento = request.form.get('tipo_documento')
-    documento = request.form.get('documento')
-    cargo = request.form.get('cargo')
-    telefono = request.form.get('telefono')
-    firma_data = request.form.get('firma_data')
-    
-    # Crear asistente
-    asistente = Asistente(
-        nombre=nombre,
-        email=email,
-        tipo_documento=tipo_documento,  # Nueva línea
-        documento=documento,
-        cargo=cargo,
-        telefono=telefono,
-        firma_data=firma_data,
-        lista_id=lista_id
-    )
-    
-    db.session.add(asistente)
-    db.session.flush()  # Para obtener el ID del asistente
-    
-    # Guardar respuestas
-    for key, value in request.form.items():
-        if key.startswith('pregunta_'):
-            pregunta_id = int(key.split('_')[1])
-            respuesta = RespuestaFormacion(
-                respuesta=value,
-                pregunta_id=pregunta_id,
-                asistente_id=asistente.id
-            )
-            db.session.add(respuesta)
-    
-    # Guardar evaluación del capacitador
-    dominio_tema = request.form.get('dominio_tema')
-    claridad = request.form.get('claridad')
-    material = request.form.get('material')
-    tiempo = request.form.get('tiempo')
-    utilidad = request.form.get('utilidad')
-    comentarios = request.form.get('comentarios')
-    
-    # Solo crear evaluación si hay al menos un campo completado
-    if dominio_tema or claridad or material or tiempo or utilidad or comentarios:
-        evaluacion = EvaluacionCapacitador(
-            dominio_tema=int(dominio_tema) if dominio_tema else None,
-            claridad=int(claridad) if claridad else None,
-            material=int(material) if material else None,
-            tiempo=int(tiempo) if tiempo else None,
-            utilidad=int(utilidad) if utilidad else None,
-            comentarios=comentarios,
-            asistente_id=asistente.id
+    try:
+        ficha = get_ficha_con_permiso(ficha_id)
+        lista = ListaAsistencia.query.filter_by(ficha_id=ficha_id).first_or_404()
+        
+        return render_template(
+            'formacion/ver_ficha.html',
+            ficha=ficha,
+            lista=lista,
+            preguntas=PreguntaFormacion.query.filter_by(ficha_id=ficha_id).all()
         )
-        db.session.add(evaluacion)
-    
-    try:
-        db.session.commit()
-        
-        # Obtener la lista desde el ID primero
-        lista = ListaAsistencia.query.get(lista_id)
-        ficha = lista.ficha  # Usa la relación directa
-        
-        # Emitir evento de socket para actualizar
-        from app import socketio
-        socketio.emit('nuevo_asistente', {
-            'id': asistente.id,
-            'nombre': asistente.nombre,
-            'email': asistente.email,
-            'cargo': asistente.cargo or '-',
-            'firma': asistente.firma_data,
-            'ficha_id': ficha.id
-        })
-        
-        # También emitir evento antiguo para compatibilidad
-        socketio.emit('actualizar_asistentes', {
-            'ficha_id': ficha.id,
-            'total_asistentes': len(lista.asistentes)
-        })
-        
-        # Continuar con el resto de la función...
-        user = User.query.get(ficha.user_id)
-        
-        # Si deseas mantener el envío de correo:
-        if user and user.email:
-            try:
-                from app.utils.email_utils import send_email
-                
-                asunto = f"Nueva firma registrada en {ficha.titulo}"
-                cuerpo = f"""
-                Hola {user.first_name or 'Usuario'},
-                
-                Se ha registrado una nueva firma en la lista de asistencia:
-                
-                Ficha: {ficha.titulo}
-                Asistente: {nombre} ({email})
-                Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M')}
-                
-                Nos puedes visitar en: <a href="https://www.stratekaz.com">www.stratekaz.com</a>
-                
-                Saludos,
-                Equipo StrateKaz               
-                """
-                
-                send_email(user.email, asunto, cuerpo)
-            except Exception as e:
-                # No interrumpir el flujo si falla el correo
-                print(f"Error al enviar correo: {str(e)}")
-        
-        return jsonify({'success': True, 'message': 'Asistencia registrada correctamente'})
     except Exception as e:
-        db.session.rollback()
-        return jsonify({'success': False, 'message': f'Error al registrar asistencia: {str(e)}'})
-   
-@formacion_bp.route('/<int:ficha_id>/generar-acta')
-@login_required
-def generar_acta(ficha_id):
-    """Generar acta de formación en PDF"""
-    ficha = FichaFormacion.query.get_or_404(ficha_id)
-    
-    # Verificar permiso
-    if ficha.user_id != current_user.id:
-        flash('No tienes permiso para generar esta acta', 'danger')
+        flash(str(e), 'danger')
         return redirect(url_for('formacion.index'))
-    
-    lista = ListaAsistencia.query.filter_by(ficha_id=ficha.id).first()
-    
-    if not lista or not lista.asistentes:
-        flash('No se puede generar el acta sin asistentes registrados', 'warning')
-        return redirect(url_for('formacion.ver_ficha', ficha_id=ficha.id))
-    
-    # Aquí iría la lógica para generar el PDF
-    # Por ahora solo mostraremos una vista previa
-    return render_template('formacion/vista_previa_acta.html', ficha=ficha, lista=lista)
-
-@formacion_bp.route('/enviar-enlace-creacion', methods=['POST'])
-@login_required
-def enviar_enlace_creacion():
-    """Enviar enlace para creación externa de ficha"""
-    data = request.json
-    email = data.get('email')
-    
-    if not email:
-        return jsonify({'success': False, 'message': 'Email requerido'})
-    
-    try:
-        # Generar token único para este enlace
-        token = str(uuid.uuid4())
-        
-        # Guardar token en sesión o base de datos para validarlo después
-        # Por simplicidad usamos sesión, pero en producción debería guardarse en BD
-        if 'enlaces_creacion' not in session:
-            session['enlaces_creacion'] = {}
-        
-        session['enlaces_creacion'][token] = {
-            'email': email,
-            'user_id': current_user.id,
-            'created_at': datetime.now().isoformat()
-        }
-        
-        # Importar función de envío de correo
-        from app.utils.email_utils import send_email
-        
-        enlace_completo = request.host_url.rstrip('/') + url_for('formacion.crear_ficha_externa', token=token)
-        
-        asunto = "Invitación para crear Ficha de Formación en StrateKaz"
-        cuerpo = f"""
-        Hola,
-        
-        Has sido invitado a crear una ficha de formación en la plataforma StrateKaz.
-        
-        Por favor accede al siguiente enlace para completar la información:
-        {enlace_completo}
-        
-        Saludos,
-        Equipo StrateKaz
-        """
-        
-        send_email(email, asunto, cuerpo)
-        return jsonify({'success': True})
-    except Exception as e:
-        return jsonify({'success': False, 'message': str(e)})
-
-@formacion_bp.route('/crear-externa/<token>')
-def crear_ficha_externa(token):
-    """Formulario para crear ficha por un externo"""
-    # Verificar token
-    enlaces = session.get('enlaces_creacion', {})
-    if token not in enlaces:
-        flash('Enlace inválido o expirado', 'danger')
-        return redirect(url_for('main.index'))
-    
-    # Usar datos del token
-    data = enlaces[token]
-    user_id = data['user_id']
-    
-    # Obtener usuario
-    from app.models.user import User
-    user = User.query.get(user_id)
-    if not user:
-        flash('Usuario no encontrado', 'danger')
-        return redirect(url_for('main.index'))
-    
-    # Mostrar formulario adaptado para externos
-    return render_template('formacion/crear_ficha.html', 
-                          token=token, 
-                          email=data['email'],
-                          es_externo=True)
 
 @formacion_bp.route('/<int:ficha_id>/editar', methods=['GET', 'POST'])
 @login_required
 def editar_ficha(ficha_id):
     """Editar una ficha de formación existente"""
-    ficha = FichaFormacion.query.get_or_404(ficha_id)
-    
-    # Verificar permiso
-    if ficha.user_id != current_user.id:
-        flash('No tienes permiso para editar esta ficha', 'danger')
-        return redirect(url_for('formacion.index'))
-    
-    # Verificar si hay asistentes registrados
-    lista = ListaAsistencia.query.filter_by(ficha_id=ficha.id).first()
-    if lista and lista.asistentes:
-        flash('No se puede editar una ficha que ya tiene asistentes registrados', 'warning')
-        return redirect(url_for('formacion.ver_ficha', ficha_id=ficha.id))
-    
-    if request.method == 'POST':
-        # Actualizar datos básicos
-        ficha.titulo = request.form.get('titulo')
-        ficha.descripcion = request.form.get('descripcion')
-        ficha.fecha = datetime.strptime(request.form.get('fecha'), '%Y-%m-%dT%H:%M')
-        ficha.lugar = request.form.get('lugar')
-        ficha.duracion = request.form.get('duracion')
-        ficha.responsable = request.form.get('responsable')
-        objetivos_json = request.form.get('objetivos', '[]')
-        objetivos_data = json.loads(objetivos_json)
-        objetivos_texto = '\n• '.join([obj['texto'] for obj in objetivos_data if obj['texto']])
-        ficha.objetivos = '• ' + objetivos_texto if objetivos_texto else ''
-        ficha.metodologias = request.form.get('metodologia')
-        ficha.recursos = json.dumps(request.form.getlist('recursos')) if request.form.getlist('recursos') else None
-        
-        # Actualizar preguntas
-        preguntas_json = request.form.get('preguntas', '[]')
-        preguntas_data = json.loads(preguntas_json)
-        
-        # Primero eliminar preguntas existentes
-        PreguntaFormacion.query.filter_by(ficha_id=ficha.id).delete()
-        
-        # Luego crear las nuevas preguntas
-        for pregunta_data in preguntas_data:
-            pregunta = PreguntaFormacion(
-                texto=pregunta_data['texto'],
-                tipo=pregunta_data['tipo'],
-                opciones=json.dumps(pregunta_data.get('opciones', [])),
-                respuesta_correcta=pregunta_data.get('respuestaCorrecta'),
-                ficha_id=ficha.id
-            )
-            db.session.add(pregunta)
-        
-        try:
-            db.session.commit()
-            flash('Ficha de formación actualizada exitosamente', 'success')
-            return redirect(url_for('formacion.ver_ficha', ficha_id=ficha.id))
-        except Exception as e:
-            db.session.rollback()
-            flash(f'Error al actualizar la ficha: {str(e)}', 'danger')
-            
-    
-    # GET: Mostrar formulario
-    preguntas = PreguntaFormacion.query.filter_by(ficha_id=ficha.id).all()
-        
-    # Preparar datos para el formulario
-    preguntas_json = []
-    for pregunta in preguntas:
-        opciones = json.loads(pregunta.opciones) if pregunta.opciones else []
-        preguntas_json.append({
-            'texto': pregunta.texto,
-            'tipo': pregunta.tipo,
-            'opciones': opciones,
-            'respuestaCorrecta': pregunta.respuesta_correcta
-        })
-
-    # Procesar objetivos para JSON
-    objetivos_json = []
-    if ficha.objetivos:
-        objetivos_texto = ficha.objetivos.replace('• ', '').split('\n')
-        for texto in objetivos_texto:
-            if texto.strip():
-                objetivos_json.append({"texto": texto.strip()})
-                
-    # Agregar un print para depuración
-    print("Objetivos procesados:", objetivos_json)
-        
-    # Obtener recursos
-    recursos = json.loads(ficha.recursos) if ficha.recursos else []
-
-    # Obtener empresas para el select
-    empresas = []
-    if current_user.user_type == 'company' and current_user.company_type == 'consultant':
-        empresas = Empresa.query.filter_by(user_id=current_user.id).all()
-        
-    print("Contenido original de objetivos:", ficha.objetivos)
-    print("Objetivos procesados:", objetivos_json)
-
-    return render_template('formacion/editar_ficha.html', 
-                        ficha=ficha,
-                        preguntas=preguntas,
-                        preguntas_json=json.dumps(preguntas_json),
-                        objetivos_json=json.dumps(objetivos_json),
-                        recursos=recursos,
-                        empresas=empresas)
-@formacion_bp.route('/<int:ficha_id>/subir-imagenes', methods=['POST'])
-@login_required
-def subir_imagenes(ficha_id):
-    """Subir imágenes para el acta"""
-    ficha = FichaFormacion.query.get_or_404(ficha_id)
-    
-    # Verificar permiso
-    if ficha.user_id != current_user.id:
-        flash('No tienes permiso para modificar esta ficha', 'danger')
-        return redirect(url_for('formacion.index'))
-    
-    # Procesar imágenes
-    if 'logo' in request.files and request.files['logo'].filename:
-        logo = request.files['logo']
-        # Validar tipo de archivo
-        if logo and allowed_file(logo.filename, ['png', 'jpg', 'jpeg']):
-            filename = secure_filename(f"logo_{ficha_id}_{int(time.time())}.{logo.filename.rsplit('.', 1)[1].lower()}")
-            logo_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            logo.save(logo_path)
-            ficha.logo_personalizado = filename
-    
-    if 'imagen1' in request.files and request.files['imagen1'].filename:
-        img1 = request.files['imagen1']
-        if img1 and allowed_file(img1.filename, ['png', 'jpg', 'jpeg']):
-            filename = secure_filename(f"img1_{ficha_id}_{int(time.time())}.{img1.filename.rsplit('.', 1)[1].lower()}")
-            img_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            img1.save(img_path)
-            ficha.imagen_evento1 = filename
-            
-    if 'imagen2' in request.files and request.files['imagen2'].filename:
-        img2 = request.files['imagen2']
-        if img2 and allowed_file(img2.filename, ['png', 'jpg', 'jpeg']):
-            filename = secure_filename(f"img2_{ficha_id}_{int(time.time())}.{img2.filename.rsplit('.', 1)[1].lower()}")
-            img_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            img2.save(img_path)
-            ficha.imagen_evento2 = filename
-    
     try:
-        db.session.commit()
-        flash('Imágenes actualizadas correctamente', 'success')
-    except Exception as e:
-        db.session.rollback()
-        flash(f'Error al guardar imágenes: {str(e)}', 'danger')
-    
-    return redirect(url_for('formacion.ver_ficha', ficha_id=ficha_id))
+        ficha = get_ficha_con_permiso(ficha_id)
+        
+        if request.method == 'POST':
+            try:
+                # Actualizar datos básicos
+                ficha.titulo = request.form.get('titulo')
+                ficha.descripcion = request.form.get('descripcion')
+                ficha.fecha = datetime.strptime(request.form.get('fecha'), '%Y-%m-%dT%H:%M')
+                ficha.lugar = request.form.get('lugar')
+                ficha.duracion = request.form.get('duracion')
+                ficha.responsable = request.form.get('responsable')
+                ficha.objetivos = procesar_objetivos(request.form.get('objetivos', '[]'))
+                ficha.metodologia = request.form.get('metodologia')
+                ficha.recursos = json.dumps(request.form.getlist('recursos')) if request.form.getlist('recursos') else None
+                
+                # Procesar imágenes si se subieron nuevas
+                for imagen_num in [1, 2]:
+                    imagen = request.files.get(f'imagen_evento{imagen_num}')
+                    if imagen and allowed_file(imagen.filename, ['jpg', 'jpeg', 'png']):
+                        filename = secure_filename(f"evento{imagen_num}_{ficha_id}_{int(time.time())}.{imagen.filename.rsplit('.', 1)[1].lower()}")
+                        imagen_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                        imagen.save(imagen_path)
+                        
+                        # Eliminar imagen anterior si existe
+                        old_imagen = getattr(ficha, f'imagen_evento{imagen_num}')
+                        if old_imagen:
+                            old_path = os.path.join(current_app.config['UPLOAD_FOLDER'], old_imagen)
+                            if os.path.exists(old_path):
+                                os.remove(old_path)
+                        
+                        setattr(ficha, f'imagen_evento{imagen_num}', filename)
 
-# Función auxiliar para validar tipos de archivo
-def allowed_file(filename, allowed_extensions):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
-    
+                db.session.commit()
+                flash('Ficha actualizada exitosamente', 'success')
+                return redirect(url_for('formacion.ver_ficha', ficha_id=ficha_id))
+                
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Error actualizando la ficha: {str(e)}', 'danger')
+                return redirect(url_for('formacion.editar_ficha', ficha_id=ficha_id))
+        
+        # GET: Mostrar formulario de edición
+        empresas = []
+        if current_user.user_type == 'company' and current_user.company_type == 'consultant':
+            empresas = Empresa.query.filter_by(user_id=current_user.id).all()
+            
+        return render_template('formacion/editar_ficha.html', ficha=ficha, empresas=empresas)
+        
+    except Exception as e:
+        flash(str(e), 'danger')
+        return redirect(url_for('formacion.index'))
+
 @formacion_bp.route('/<int:ficha_id>/eliminar', methods=['POST'])
 @login_required
 def eliminar_ficha(ficha_id):
     """Eliminar una ficha de formación"""
-    ficha = FichaFormacion.query.get_or_404(ficha_id)
-    
-    # Verificar permiso
-    if ficha.user_id != current_user.id:
-        flash('No tienes permiso para eliminar esta ficha', 'danger')
-        return redirect(url_for('formacion.index'))
-    
-    # Verificar contraseña
-    password = request.form.get('password')
-    if not current_user.check_password(password):
-        flash('Contraseña incorrecta', 'danger')
-        return redirect(url_for('formacion.ver_ficha', ficha_id=ficha.id))
-    
     try:
-        # Eliminar ficha y dependencias
-        db.session.delete(ficha)  # Las cascadas eliminarán los registros relacionados
+        ficha = get_ficha_con_permiso(ficha_id)
+        
+        # Eliminar imágenes asociadas
+        for imagen_num in [1, 2]:
+            imagen = getattr(ficha, f'imagen_evento{imagen_num}')
+            if imagen:
+                imagen_path = os.path.join(current_app.config['UPLOAD_FOLDER'], imagen)
+                if os.path.exists(imagen_path):
+                    os.remove(imagen_path)
+        
+        # Eliminar ficha y datos relacionados
+        db.session.delete(ficha)
         db.session.commit()
-        flash('Ficha eliminada correctamente', 'success')
+        
+        flash('Ficha eliminada exitosamente', 'success')
+        return jsonify({'success': True})
+        
     except Exception as e:
         db.session.rollback()
-        flash(f'Error al eliminar la ficha: {str(e)}', 'danger')
+        return jsonify({'success': False, 'error': str(e)}), 400
     
+# Rutas de Asistencia
+@formacion_bp.route('/<int:ficha_id>/asistencia', methods=['GET', 'POST'])
+@login_required
+def gestionar_asistencia(ficha_id):
+    """Gestionar la lista de asistencia de una ficha"""
+    try:
+        ficha = get_ficha_con_permiso(ficha_id)
+        lista = ListaAsistencia.query.filter_by(ficha_id=ficha_id).first_or_404()
+
+        if request.method == 'POST':
+            # Actualizar método de diligenciamiento
+            lista.es_externo = request.form.get('metodo_diligenciamiento') == 'externo'
+            lista.email_externo = request.form.get('email_externo')
+            
+            if lista.es_externo and lista.email_externo:
+                # Enviar correo con enlace
+                enlace = url_for('formacion.registro_asistencia_externo', 
+                               token=lista.enlace_compartible, 
+                               _external=True)
+                try:
+                    send_email(
+                        lista.email_externo,
+                        'Registro de Asistencia - Formación',
+                        'email/registro_asistencia.html',
+                        ficha=ficha,
+                        enlace=enlace
+                    )
+                    flash('Correo enviado exitosamente', 'success')
+                except Exception as e:
+                    flash(f'Error enviando correo: {str(e)}', 'danger')
+
+            db.session.commit()
+            return redirect(url_for('formacion.ver_ficha', ficha_id=ficha_id))
+
+        return render_template(
+            'formacion/gestionar_asistencia.html',
+            ficha=ficha,
+            lista=lista
+        )
+
+    except Exception as e:
+        flash(str(e), 'danger')
+        return redirect(url_for('formacion.index'))
+
+@formacion_bp.route('/registro-asistencia/<string:token>', methods=['GET', 'POST'])
+def registro_asistencia_externo(token):
+    """Registro de asistencia mediante enlace externo"""
+    lista = ListaAsistencia.query.filter_by(enlace_compartible=token).first_or_404()
+    ficha = lista.ficha
+
+    if request.method == 'POST':
+        try:
+            # Validar datos
+            nombre = request.form.get('nombre')
+            email = request.form.get('email')
+            cargo = request.form.get('cargo')
+            firma_data = request.form.get('firma')
+
+            if not all([nombre, email, firma_data]):
+                raise ValueError("Todos los campos son requeridos")
+
+            # Crear asistente
+            asistente = Asistente(
+                nombre=nombre,
+                email=email,
+                cargo=cargo,
+                firma_data=firma_data,
+                lista_id=lista.id
+            )
+            db.session.add(asistente)
+            db.session.commit()
+
+            # Emitir evento WebSocket
+            socketio.emit('nuevo_asistente', {
+                'nombre': asistente.nombre,
+                'lista_id': lista.id
+            })
+
+            flash('Registro completado exitosamente', 'success')
+            return jsonify({'success': True})
+
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'success': False, 'error': str(e)}), 400
+
+    return render_template(
+        'formacion/registro_asistencia.html',
+        ficha=ficha,
+        lista=lista
+    )
+
+# Rutas de manejo de imágenes
+@formacion_bp.route('/<int:ficha_id>/subir-imagen', methods=['POST'])
+@login_required
+def subir_imagen(ficha_id):
+    """Subir imagen de evento"""
+    try:
+        ficha = get_ficha_con_permiso(ficha_id)
+        
+        if 'imagen' not in request.files:
+            raise ValueError("No se envió ninguna imagen")
+            
+        imagen = request.files['imagen']
+        tipo = request.form.get('tipo')  # 'evento1' o 'evento2'
+        
+        if imagen and allowed_file(imagen.filename, ['jpg', 'jpeg', 'png']):
+            # Generar nombre único
+            filename = secure_filename(
+                f"{tipo}_{ficha_id}_{int(time.time())}.{imagen.filename.rsplit('.', 1)[1].lower()}"
+            )
+            
+            # Guardar imagen
+            imagen_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            imagen.save(imagen_path)
+            
+            # Actualizar ficha
+            old_imagen = getattr(ficha, f'imagen_{tipo}')
+            if old_imagen:
+                old_path = os.path.join(current_app.config['UPLOAD_FOLDER'], old_imagen)
+                if os.path.exists(old_path):
+                    os.remove(old_path)
+                    
+            setattr(ficha, f'imagen_{tipo}', filename)
+            db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'filename': filename,
+                'url': url_for('static', filename=f'uploads/{filename}')
+            })
+            
+        raise ValueError("Tipo de archivo no permitido")
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@formacion_bp.route('/<int:ficha_id>/eliminar-imagen', methods=['POST'])
+@login_required
+def eliminar_imagen(ficha_id):
+    """Eliminar imagen de evento"""
+    try:
+        ficha = get_ficha_con_permiso(ficha_id)
+        tipo = request.form.get('tipo')  # 'evento1' o 'evento2'
+        
+        imagen = getattr(ficha, f'imagen_{tipo}')
+        if imagen:
+            imagen_path = os.path.join(current_app.config['UPLOAD_FOLDER'], imagen)
+            if os.path.exists(imagen_path):
+                os.remove(imagen_path)
+            
+            setattr(ficha, f'imagen_{tipo}', None)
+            db.session.commit()
+            
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+    
+    # Rutas para PDF y Actas
+@formacion_bp.route('/<int:ficha_id>/vista-previa-acta')
+@login_required
+def vista_previa_acta(ficha_id):
+    """Vista previa del acta de formación"""
+    try:
+        ficha = get_ficha_con_permiso(ficha_id)
+        lista = ListaAsistencia.query.filter_by(ficha_id=ficha_id).first_or_404()
+        
+        if not lista.asistentes:
+            flash('No se puede generar el acta sin asistentes registrados', 'warning')
+            return redirect(url_for('formacion.ver_ficha', ficha_id=ficha_id))
+            
+        return render_template(
+            'formacion/vista_previa_acta.html',
+            ficha=ficha,
+            lista=lista
+        )
+        
+    except Exception as e:
+        flash(str(e), 'danger')
+        return redirect(url_for('formacion.index'))
+
+@formacion_bp.route('/<int:ficha_id>/descargar-acta-pdf')
+@login_required
+def descargar_acta_pdf(ficha_id):
+    """Generar y descargar acta de formación en PDF"""
+    temp_file = None
+    try:
+        ficha = get_ficha_con_permiso(ficha_id)
+        lista = ListaAsistencia.query.filter_by(ficha_id=ficha_id).first_or_404()
+        
+        if not lista.asistentes:
+            flash('No se puede generar el acta sin asistentes registrados', 'warning')
+            return redirect(url_for('formacion.ver_ficha', ficha_id=ficha_id))
+
+        # Generar PDF usando el servicio
+        from app.services.formacion_service import FormacionService
+        pdf_service = FormacionService()
+        temp_file = pdf_service.generar_pdf_acta(ficha, lista)
+        
+        if not temp_file or not os.path.exists(temp_file):
+            raise ValueError("Error generando el archivo PDF")
+            
+        return send_file(
+            temp_file,
+            download_name=f"Acta_{ficha.codigo}.pdf",
+            as_attachment=True,
+            mimetype='application/pdf'
+        )
+        
+    except Exception as e:
+        if temp_file and os.path.exists(temp_file):
+            try:
+                os.unlink(temp_file)
+            except OSError:
+                pass
+        flash(f'Error generando PDF: {str(e)}', 'danger')
+        return redirect(url_for('formacion.ver_ficha', ficha_id=ficha_id))
+
+@formacion_bp.route('/<int:ficha_id>/actualizar-conclusiones', methods=['POST'])
+@login_required
+def actualizar_conclusiones(ficha_id):
+    """Actualizar conclusiones y observaciones del acta"""
+    try:
+        ficha = get_ficha_con_permiso(ficha_id)
+        
+        ficha.conclusiones = request.form.get('conclusiones')
+        ficha.observaciones = request.form.get('observaciones')
+        ficha.indicadores = json.dumps(request.form.getlist('indicadores')) if request.form.getlist('indicadores') else None
+        
+        db.session.commit()
+        flash('Conclusiones actualizadas exitosamente', 'success')
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+@formacion_bp.route('/<int:ficha_id>/firmar-acta', methods=['POST'])
+@login_required
+def firmar_acta(ficha_id):
+    """Registrar firma del responsable en el acta"""
+    try:
+        ficha = get_ficha_con_permiso(ficha_id)
+        firma_data = request.form.get('firma')
+        
+        if not firma_data:
+            raise ValueError("No se proporcionó la firma")
+            
+        ficha.firma_responsable = firma_data
+        db.session.commit()
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 400
+
+# Manejo de errores
+@formacion_bp.errorhandler(404)
+def not_found_error(error):
+    flash('El recurso solicitado no existe', 'danger')
     return redirect(url_for('formacion.index'))
 
-@formacion_bp.route('/<int:ficha_id>/asistentes')
-@login_required
-def lista_completa_asistentes(ficha_id):
-    ficha = FichaFormacion.query.get_or_404(ficha_id)
-    
-    # Verificar permiso
-    if ficha.user_id != current_user.id:
-        flash('No tienes permiso para ver esta lista', 'danger')
-        return redirect(url_for('formacion.index'))
-    
-    lista = ListaAsistencia.query.filter_by(ficha_id=ficha.id).first_or_404()
-    
-    return render_template('formacion/lista_completa_asistentes.html', 
-                           ficha=ficha, 
-                           lista=lista, 
-                           asistentes=lista.asistentes)
+@formacion_bp.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    flash('Error interno del servidor', 'danger')
+    return redirect(url_for('formacion.index'))
 
-@socketio.on('nuevo_registro', namespace='/formacion')
-def handle_nuevo_registro(data):
-    # Lógica para emitir actualización
-    ficha_id = data['ficha_id']
-    # Emitir evento con datos actualizados
-    emit('actualizar_asistentes', {'ficha_id': ficha_id}, broadcast=True)
-    
-@formacion_bp.route('/<int:ficha_id>/conclusiones', methods=['POST'])
+# Utilidades para manejo de sesión y caché
+def get_cached_ficha(ficha_id: int) -> Optional[FichaFormacion]:
+    """Obtener ficha desde caché o base de datos"""
+    cache_key = f'ficha_{ficha_id}'
+    ficha = cache.get(cache_key)
+    if not ficha:
+        ficha = FichaFormacion.query.get(ficha_id)
+        if ficha:
+            cache.set(cache_key, ficha, timeout=300)  # 5 minutos
+    return ficha
+
+def clear_ficha_cache(ficha_id: int) -> None:
+    """Limpiar caché de una ficha"""
+    cache.delete(f'ficha_{ficha_id}')
+
+# Decoradores personalizados
+def validate_ficha_access(f):
+    """Decorador para validar acceso a ficha"""
+    @wraps(f)
+    def decorated_function(ficha_id, *args, **kwargs):
+        try:
+            ficha = get_ficha_con_permiso(ficha_id)
+            return f(ficha, *args, **kwargs)
+        except Exception as e:
+            flash(str(e), 'danger')
+            return redirect(url_for('formacion.index'))
+    return decorated_function
+
+# WebSocket events
+@socketio.on('connect', namespace='/formacion')
+def handle_connect():
+    """Manejar conexión WebSocket"""
+    if not current_user.is_authenticated:
+        return False
+    join_room(f'user_{current_user.id}')
+    return True
+
+@socketio.on('asistente_registrado', namespace='/formacion')
+def handle_nuevo_asistente(data):
+    """Manejar registro de nuevo asistente"""
+    try:
+        lista_id = data.get('lista_id')
+        if lista_id:
+            lista = ListaAsistencia.query.get(lista_id)
+            if lista:
+                room = f'ficha_{lista.ficha_id}'
+                emit('actualizar_asistentes', {
+                    'count': len(lista.asistentes),
+                    'last': data.get('nombre')
+                }, room=room)
+    except Exception as e:
+        logger.error(f"Error en WebSocket: {str(e)}")
+
+# Mejoras en rutas existentes
+@formacion_bp.route('/<int:ficha_id>/estadisticas')
 @login_required
-def guardar_conclusiones(ficha_id):
-    """Guardar conclusiones y observaciones de la ficha"""
-    ficha = FichaFormacion.query.get_or_404(ficha_id)
-    
-    # Verificar permiso
-    if ficha.user_id != current_user.id:
-        flash('No tienes permiso para editar esta ficha', 'danger')
-        return redirect(url_for('formacion.index'))
-    
-    # Actualizar datos
-    ficha.conclusiones = request.form.get('conclusiones')
-    ficha.observaciones = request.form.get('observaciones')
-    
-    # Procesar indicadores
-    indicadores = request.form.getlist('indicadores[]')
-    ficha.indicadores = json.dumps(indicadores) if indicadores else None
+@validate_ficha_access
+def estadisticas_ficha(ficha: FichaFormacion):
+    """Ver estadísticas de la ficha de formación"""
+    try:
+        lista = ListaAsistencia.query.filter_by(ficha_id=ficha.id).first_or_404()
+        stats = {
+            'total_asistentes': len(lista.asistentes),
+            'promedio_evaluacion': calcular_promedio_evaluacion(ficha),
+            'indicadores_cumplidos': contar_indicadores_cumplidos(ficha)
+        }
+        
+        return render_template(
+            'formacion/estadisticas.html',
+            ficha=ficha,
+            stats=stats
+        )
+        
+    except Exception as e:
+        logger.error(f"Error obteniendo estadísticas: {str(e)}")
+        flash('Error obteniendo estadísticas', 'danger')
+        return redirect(url_for('formacion.ver_ficha', ficha_id=ficha.id))
+
+def calcular_promedio_evaluacion(ficha: FichaFormacion) -> float:
+    """Calcular promedio de evaluaciones"""
+    evaluaciones = EvaluacionCapacitador.query.filter_by(ficha_id=ficha.id).all()
+    if not evaluaciones:
+        return 0.0
+    total = sum(e.puntaje for e in evaluaciones)
+    return round(total / len(evaluaciones), 2)
+
+def contar_indicadores_cumplidos(ficha: FichaFormacion) -> Dict[str, int]:
+    """Contar indicadores cumplidos"""
+    if not ficha.indicadores:
+        return {}
     
     try:
-        db.session.commit()
-        flash('Conclusiones guardadas exitosamente', 'success')
-    except Exception as e:
-        db.session.rollback()
-        flash(f'Error al guardar conclusiones: {str(e)}', 'danger')
+        indicadores = json.loads(ficha.indicadores)
+        conteo = {
+            'asistencia': 0,
+            'conocimiento': 0,
+            'participacion': 0,
+            'aplicabilidad': 0
+        }
+        for ind in indicadores:
+            if ind in conteo:
+                conteo[ind] += 1
+        return conteo
+    except:
+        return {}
     
-    return redirect(url_for('formacion.ver_ficha', ficha_id=ficha.id))

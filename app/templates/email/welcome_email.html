@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>¡Bienvenido a StrateKaz!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .feature {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>¡Bienvenido a StrateKaz!</h1>
+        </div>
+        <h2>¡Hola {{ user.nombre }}!</h2>
+        <p>Gracias por unirte a StrateKaz. Estamos emocionados de tenerte con nosotros.</p>
+
+        <div class="feature">
+            <h3>Próximos pasos:</h3>
+            <ul>
+                <li>Completa tu perfil</li>
+                <li>Explora nuestras funcionalidades</li>
+                <li>Comienza a crear tus primeros proyectos</li>
+            </ul>
+        </div>
+
+        <p>Si tienes alguna pregunta, no dudes en contactar a nuestro equipo de soporte.</p>
+
+        <hr>
+        <p style="font-size: 12px; color: #666;">
+            Este es un correo automático, por favor no respondas a este mensaje.<br>
+            © {{ current_year }} StrateKaz. Todos los derechos reservados.
+        </p>
+    </div>
+</body>
+</html>
