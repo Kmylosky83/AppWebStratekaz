@@ -1,8 +1,8 @@
-from app.config.database import db
+from app.extensions import db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, timedelta
-from flask_login import current_user
+from datetime import datetime
+from app.models.role import Role, Permission, role_permissions
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -10,24 +10,34 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256))
-    #login_attempts = db.Column(db.Integer, default=0)
-    #last_attempt_time = db.Column(db.DateTime, nullable=True)
-    #is_locked = db.Column(db.Boolean, default=False)
+    password_hash = db.Column(db.String(256), nullable=False)
     
-    user_type = db.Column(db.String(20), nullable=True)  # 'professional' o 'company'
-    company_type = db.Column(db.String(20), nullable=True)  # 'direct' o 'consultant'
+    # Campos comunes
+    user_type = db.Column(db.String(20), nullable=False)  # 'professional' o 'company'
+    phone = db.Column(db.String(20))
+    city = db.Column(db.String(100))
+    department = db.Column(db.String(100))
+    
+    # Campos para profesionales
+    first_name = db.Column(db.String(100))
+    last_name = db.Column(db.String(100))
+    profession = db.Column(db.String(100))
+    
+    # Campos para empresas
+    company_type = db.Column(db.String(20))  # 'direct' o 'consultant'
+    company_name = db.Column(db.String(200))
+    nit = db.Column(db.String(20), unique=True)
+    industry = db.Column(db.String(100))
+    contact_position = db.Column(db.String(100))
+    
+    # Relación con roles
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    
+    # Campos de control
     account_verified = db.Column(db.Boolean, default=False)
     last_login = db.Column(db.DateTime, nullable=True)
-    
-    # Campos adicionales para información personal
-    first_name = db.Column(db.String(100), nullable=True)
-    last_name = db.Column(db.String(100), nullable=True)
-    company_name = db.Column(db.String(200), nullable=True)
-    nit = db.Column(db.String(20), nullable=True)
-    profession = db.Column(db.String(100), nullable=True)
-    phone = db.Column(db.String(20), nullable=True)
-    city = db.Column(db.String(100), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -38,30 +48,30 @@ class User(UserMixin, db.Model):
     def get_id(self):
         return str(self.id)
     
-    def increment_login_attempts(self):
-        """Incrementa los intentos de login y bloquea si es necesario"""
-        #now = datetime.utcnow()
+    def has_permission(self, permission_name):
+        """Verifica si el usuario tiene un permiso específico a través de su rol"""
+        if not self.role:
+            return False
         
-        # Resetear intentos si han pasado más de 15 minutos
-        #if (self.last_attempt_time and 
-        #    now - self.last_attempt_time > timedelta(minutes=15)):
-        #    self.login_attempts = 0
+        # Buscar el permiso por nombre
+        permission = Permission.query.filter_by(name=permission_name).first()
+        if not permission:
+            return False
         
-        #self.login_attempts += 1
-        #self.last_attempt_time = now
-        
-        # Bloquear después de 5 intentos fallidos
-        #if self.login_attempts >= 5:
-        #    self.is_locked = True
-        
-        #db.session.commit()
-
-    def reset_login_attempts(self):
-        """Resetea los intentos de login"""
-        #self.login_attempts = 0
-        #self.is_locked = False
-        #self.last_attempt_time = None
-        #db.session.commit()
+        # Verificar si el rol tiene ese permiso
+        return db.session.query(role_permissions).filter(
+            role_permissions.c.role_id == self.role_id,
+            role_permissions.c.permission_id == permission.id
+        ).count() > 0
+    
+    def assign_role(self, role_name):
+        """Asigna un rol al usuario por nombre"""
+        from app.models.role import Role
+        role = Role.query.filter_by(name=role_name).first()
+        if role:
+            self.role_id = role.id
+            return True
+        return False
 
     @staticmethod
     def validate_password_strength(password):
@@ -77,16 +87,3 @@ class User(UserMixin, db.Model):
         if not any(char in "!@#$%^&*()_+-=[]{}|;:,.<>?" for char in password):
             return False
         return True
-    
-    @staticmethod
-    def generate_unique_username(base_username):
-        """Genera un nombre de usuario único basado en el email o nombre proporcionado"""
-        username = base_username
-        counter = 1
-        
-        # Verificar si existe y añadir un número hasta encontrar uno único
-        while User.query.filter_by(username=username).first():
-            username = f"{base_username}{counter}"
-            counter += 1
-            
-        return username

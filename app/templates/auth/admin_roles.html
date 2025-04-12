@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Administración de Roles - StrateKaz{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <div class="d-flex justify-content-between">
+                        <h4 class="mb-0">Administración de Roles</h4>
+                    </div>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-3">
+                        <table class="table align-items-center mb-0" id="roles-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">ID</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nombre</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Descripción</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tipo</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Permisos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for role in roles %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ role.id }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ role.name }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs text-secondary mb-0">{{ role.description }}</p>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-sm bg-gradient-primary">{{ role.role_type }}</span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#permissionsModal{{ role.id }}">
+                                            Ver Permisos
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Modal para ver permisos -->
+                                <div class="modal fade" id="permissionsModal{{ role.id }}" tabindex="-1" aria-labelledby="permissionsModalLabel{{ role.id }}" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="permissionsModalLabel{{ role.id }}">Permisos del Rol: {{ role.name }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Tablas de permisos por módulo -->
+                                                <h6 class="text-uppercase text-secondary font-weight-bolder opacity-8 mb-3">Administración del Sistema</h6>
+                                                <div class="table-responsive">
+                                                    <!-- Aquí iría la tabla de permisos del sistema -->
+                                                </div>
+                                                
+                                                <h6 class="text-uppercase text-secondary font-weight-bolder opacity-8 mb-3 mt-4">Gestión Documental</h6>
+                                                <div class="table-responsive">
+                                                    <!-- Aquí iría la tabla de permisos documentales -->
+                                                </div>
+                                                
+                                                <h6 class="text-uppercase text-secondary font-weight-bolder opacity-8 mb-3 mt-4">Gestión de Procesos</h6>
+                                                <div class="table-responsive">
+                                                    <!-- Aquí iría la tabla de permisos de procesos -->
+                                                </div>
+                                                
+                                                <h6 class="text-uppercase text-secondary font-weight-bolder opacity-8 mb-3 mt-4">Auditorías</h6>
+                                                <div class="table-responsive">
+                                                    <!-- Aquí iría la tabla de permisos de auditorías -->
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    $(document).ready(function() {
+        $('#roles-table').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+            }
+        });
+    });
+</script>
+{% endblock %}

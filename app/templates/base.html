@@ -203,6 +203,15 @@
                                 <li><a class="dropdown-item" href="{{ url_for('dashboard.perfil') }}">
                                     <i class="fas fa-user-circle me-2"></i>Mi Perfil
                                 </a></li>
+                                {% if has_permission('admin_users') %}                                
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.admin_users') }}">
+                                    <i class="fas fa-users me-2"></i>Gestión de Usuarios
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('auth.admin_roles') }}">
+                                    <i class="fas fa-user-tag me-2"></i>Gestión de Roles
+                                </a></li>
+                                {% endif %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
                                     <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión

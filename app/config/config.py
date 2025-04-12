@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 # Cargar variables de entorno
 load_dotenv()
 
+# Obtener la ruta base del proyecto
+basedir = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+
 class Config:
     """Configuración base"""
     # Configuración básica
@@ -11,8 +14,8 @@ class Config:
     DEBUG = False
     TESTING = False
 
-    # Configuración de base de datos
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///app.db')
+    # Configuración de base de datos - Simple y directa
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://Kmylosky:Airetupal99*@localhost/stratekaz'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Configuración de correo

@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Administración de Usuarios - StrateKaz{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <div class="d-flex justify-content-between">
+                        <h4 class="mb-0">Administración de Usuarios</h4>
+                    </div>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-3">
+                        <table class="table align-items-center mb-0" id="users-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Usuario</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Email</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tipo</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Rol Actual</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Último Acceso</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ user.username }}</h6>
+                                                {% if user.first_name and user.last_name %}
+                                                <p class="text-xs text-secondary mb-0">{{ user.first_name }} {{ user.last_name }}</p>
+                                                {% elif user.company_name %}
+                                                <p class="text-xs text-secondary mb-0">{{ user.company_name }}</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs text-secondary mb-0">{{ user.email }}</p>
+                                    </td>
+                                    <td>
+                                        {% if user.user_type == 'professional' %}
+                                        <span class="badge badge-sm bg-gradient-info">Profesional</span>
+                                        {% elif user.user_type == 'company' and user.company_type == 'direct' %}
+                                        <span class="badge badge-sm bg-gradient-success">Empresa Directa</span>
+                                        {% elif user.user_type == 'company' and user.company_type == 'consultant' %}
+                                        <span class="badge badge-sm bg-gradient-warning">Empresa Consultora</span>
+                                        {% else %}
+                                        <span class="badge badge-sm bg-gradient-secondary">Otro</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if user.role %}
+                                        <span class="badge badge-sm bg-gradient-primary">{{ user.role.name }}</span>
+                                        {% else %}
+                                        <span class="badge badge-sm bg-gradient-secondary">Sin rol</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if user.last_login %}
+                                        <p class="text-xs text-secondary mb-0">{{ user.last_login.strftime('%d/%m/%Y %H:%M') }}</p>
+                                        {% else %}
+                                        <p class="text-xs text-secondary mb-0">Nunca</p>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editRoleModal{{ user.id }}">
+                                            <i class="fas fa-user-tag"></i> Cambiar Rol
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Modal para editar rol -->
+                                <div class="modal fade" id="editRoleModal{{ user.id }}" tabindex="-1" aria-labelledby="editRoleModalLabel{{ user.id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="editRoleModalLabel{{ user.id }}">Cambiar Rol: {{ user.username }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <form action="{{ url_for('auth.update_user_role', user_id=user.id) }}" method="POST">
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label for="roleSelect{{ user.id }}" class="form-label">Seleccionar Rol</label>
+                                                        <select class="form-select" id="roleSelect{{ user.id }}" name="role_id" required>
+                                                            <option value="" disabled selected>Selecciona un rol</option>
+                                                            {% for role in roles %}
+                                                            <option value="{{ role.id }}" {% if user.role_id == role.id %}selected{% endif %}>
+                                                                {{ role.name }} - {{ role.description }}
+                                                            </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    $(document).ready(function() {
+        $('#users-table').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json'
+            }
+        });
+    });
+</script>
+{% endblock %}
